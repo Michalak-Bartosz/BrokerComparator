@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.message</groupId>
-	<artifactId>comparator </artifactId>
+	<artifactId>comparator</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>comparator </name>
+	<name>comparator</name>
 	<description>Broker comparator tool</description>
 	<properties>
 		<java.version>17</java.version>
