@@ -1,17 +1,13 @@
 package org.message.producer.util;
 
 import com.github.javafaker.Faker;
-import com.github.javafaker.service.FakeValuesService;
-import com.github.javafaker.service.RandomService;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.message.producer.model.Address;
 import org.message.producer.model.Comment;
 import org.message.producer.model.Report;
 import org.message.producer.model.User;
 import org.message.producer.model.util.ReportStatus;
-import org.springframework.cglib.core.Local;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,27 +21,33 @@ public class RandomUtil {
         faker = getRandomFaker();
         Address address = generateAddress();
         List<Report> reports = generateReports();
-        return new User(faker.idNumber().valid(),
-                faker.name().firstName(),
-                faker.name().lastName(),
-                faker.phoneNumber().cellPhone(),
-                faker.internet().emailAddress(),
+
+        String idNumber = faker.idNumber().valid();
+        String name = faker.name().firstName();
+        String lastName = faker.name().lastName();
+        String email = faker.internet().emailAddress();
+        String cellPhone = faker.phoneNumber().cellPhone();
+        return new User(idNumber,
+                name,
+                lastName,
+                email,
+                cellPhone,
                 address,
                 reports);
     }
 
     private static final Map<Integer, Locale> availableLocale = Map.of(
-            1, new Locale("en-GB"),
-            2, new Locale("en-US"),
-            3, new Locale("pl_PL"),
-            4, new Locale("de_DE"),
-            5, new Locale("fr_FR")
+            0, Locale.ENGLISH,
+            1, Locale.US,
+            2, Locale.FRANCE,
+            3, Locale.GERMANY,
+            4, Locale.ITALY
     );
 
     private static Faker faker;
 
     private static Faker getRandomFaker() {
-        int randomLocaleId = RandomUtils.nextInt(0, 6);
+        int randomLocaleId = RandomUtils.nextInt(0, 5);
         Locale locale = availableLocale.get(randomLocaleId);
         return new Faker(locale);
     }
