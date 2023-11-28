@@ -1,0 +1,27 @@
+package org.message.producer.model;
+
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class User {
+    private Long id;
+    private String idNumber;
+    private String name;
+    private String surname;
+    private String email;
+    private String phone;
+    private Address address;
+    private List<Report> reports;
+
+    public User(String idNumber, String name, String surname, String email, String phone, Address address, List<Report> reports) {
+        this.idNumber = idNumber;
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.reports = reports;
+    }
+}
