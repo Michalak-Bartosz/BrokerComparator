@@ -1,4 +1,4 @@
-package org.message.producer.exception;
+package org.message.producer.kafka.exception;
 
 public class UnsupportedProducerRecordException extends RuntimeException {
 
