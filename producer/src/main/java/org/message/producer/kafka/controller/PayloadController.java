@@ -14,9 +14,15 @@ public class PayloadController {
 
     private final KafkaProducer kafkaProducer;
 
-    @GetMapping("/publish")
-    public ResponseEntity<String> publish() {
-        kafkaProducer.sendMessage();
-        return ResponseEntity.ok("Json message sent to kafka topic.");
+    @GetMapping("/publish/user")
+    public ResponseEntity<String> publishUser() {
+        kafkaProducer.sendUserRecord();
+        return ResponseEntity.ok("User record sent to kafka topic.");
+    }
+
+    @GetMapping("/publish/report")
+    public ResponseEntity<String> publishReport() {
+        kafkaProducer.sendReportRecord();
+        return ResponseEntity.ok("Report record sent to kafka topic.");
     }
 }

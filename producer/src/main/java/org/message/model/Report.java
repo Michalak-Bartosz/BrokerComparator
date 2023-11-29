@@ -1,7 +1,7 @@
-package org.message.producer.model;
+package org.message.model;
 
 import lombok.Data;
-import org.message.producer.model.util.ReportStatus;
+import org.message.model.util.ReportStatus;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package org.message.consumer.kafka.model;
+package org.message.model;
 
 import lombok.Data;
 

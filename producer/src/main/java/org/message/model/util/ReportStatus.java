@@ -1,4 +1,4 @@
-package org.message.producer.model.util;
+package org.message.model.util;
 
 import lombok.Getter;
 import org.apache.commons.lang3.RandomUtils;

@@ -1,4 +1,4 @@
-package org.message.consumer.kafka.model;
+package org.message.model;
 
 import lombok.Data;
 
@@ -9,4 +9,9 @@ public class Comment {
     private UUID uuid;
     private UUID reportUuid;
     private String description;
+
+    public Comment(String description) {
+        this.uuid = UUID.randomUUID();
+        this.description = description;
+    }
 }

@@ -1,7 +1,7 @@
-package org.message.consumer.kafka.model;
+package org.message.model;
 
 import lombok.Data;
-import org.message.consumer.kafka.model.util.ReportStatus;
+import org.message.model.util.ReportStatus;
 
 import java.util.List;
 import java.util.UUID;

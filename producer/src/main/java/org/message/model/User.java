@@ -1,4 +1,4 @@
-package org.message.producer.model;
+package org.message.model;
 
 import lombok.Data;
 

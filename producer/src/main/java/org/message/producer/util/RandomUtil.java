@@ -3,11 +3,11 @@ package org.message.producer.util;
 import com.github.javafaker.Faker;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.RandomUtils;
-import org.message.producer.model.Address;
-import org.message.producer.model.Comment;
-import org.message.producer.model.Report;
-import org.message.producer.model.User;
-import org.message.producer.model.util.ReportStatus;
+import org.message.model.Address;
+import org.message.model.Comment;
+import org.message.model.Report;
+import org.message.model.User;
+import org.message.model.util.ReportStatus;
 
 import java.util.ArrayList;
 import java.util.List;

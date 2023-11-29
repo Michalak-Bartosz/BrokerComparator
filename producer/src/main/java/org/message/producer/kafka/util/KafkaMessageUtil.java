@@ -5,10 +5,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
+import org.message.model.Report;
+import org.message.model.User;
 import org.message.producer.kafka.exception.NullProducerRecordException;
 import org.message.producer.kafka.exception.UnsupportedProducerRecordException;
-import org.message.producer.model.Report;
-import org.message.producer.model.User;
+import org.springframework.kafka.support.KafkaHeaders;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -18,15 +19,15 @@ import java.util.UUID;
 @UtilityClass
 public class KafkaMessageUtil {
     private static final Integer USER_TOPIC_PARTITION = 1;
-    private static final Integer RECORD_TOPIC_PARTITION = 2;
+    private static final Integer REPORT_TOPIC_PARTITION = 2;
     private static final Integer DEBUG_TOPIC_PARTITION = 3;
 
     public static <T> ProducerRecord<String, T> getKafkaProducerRecord(String topic, T object) {
         return switch (object) {
             case User u ->
-                    new ProducerRecord<>(topic, USER_TOPIC_PARTITION, generateKafkaKey(u.getUuid(), User.class.getSimpleName()), (T) u, generateHeaders(User.class.getSimpleName()));
+                    new ProducerRecord<>(topic, USER_TOPIC_PARTITION, generateKafkaKey(u.getUuid(), User.class.getSimpleName()), (T) u, generateHeaders(User.class.getSimpleName(), USER_TOPIC_PARTITION));
             case Report r ->
-                    new ProducerRecord<>(topic, RECORD_TOPIC_PARTITION, generateKafkaKey(r.getUserUuid(), Report.class.getSimpleName()), (T) r, generateHeaders(Report.class.getSimpleName()));
+                    new ProducerRecord<>(topic, REPORT_TOPIC_PARTITION, generateKafkaKey(r.getUserUuid(), Report.class.getSimpleName()), (T) r, generateHeaders(Report.class.getSimpleName(), REPORT_TOPIC_PARTITION));
             case null -> throw new NullProducerRecordException();
             default -> throw new UnsupportedProducerRecordException();
         };
@@ -36,8 +37,9 @@ public class KafkaMessageUtil {
         return StringUtils.lowerCase("kafka-" + className + "-key-" + uuid);
     }
 
-    private static List<Header> generateHeaders(String className) {
-        return List.of(new RecordHeader("produce-time", Instant.now().toString().getBytes(StandardCharsets.UTF_8)),
+    private static List<Header> generateHeaders(String className, Integer partition) {
+        return List.of(new RecordHeader(KafkaHeaders.PARTITION, partition.toString().getBytes(StandardCharsets.UTF_8)),
+                new RecordHeader("produced-time", Instant.now().toString().getBytes(StandardCharsets.UTF_8)),
                 new RecordHeader("record-type", className.getBytes(StandardCharsets.UTF_8)));
     }
 }
