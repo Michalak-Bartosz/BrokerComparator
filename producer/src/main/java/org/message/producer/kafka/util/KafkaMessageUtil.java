@@ -7,6 +7,7 @@ import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.message.model.Report;
 import org.message.model.User;
+import org.message.model.util.KafkaCustomHeaders;
 import org.message.producer.kafka.exception.NullProducerRecordException;
 import org.message.producer.kafka.exception.UnsupportedProducerRecordException;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -39,7 +40,7 @@ public class KafkaMessageUtil {
 
     private static List<Header> generateHeaders(String className, Integer partition) {
         return List.of(new RecordHeader(KafkaHeaders.PARTITION, partition.toString().getBytes(StandardCharsets.UTF_8)),
-                new RecordHeader("produced-time", Instant.now().toString().getBytes(StandardCharsets.UTF_8)),
-                new RecordHeader("record-type", className.getBytes(StandardCharsets.UTF_8)));
+                new RecordHeader(KafkaCustomHeaders.EVENT_PRODUCED_TIME, Instant.now().toString().getBytes(StandardCharsets.UTF_8)),
+                new RecordHeader(KafkaCustomHeaders.RECORD_TYPE, className.getBytes(StandardCharsets.UTF_8)));
     }
 }

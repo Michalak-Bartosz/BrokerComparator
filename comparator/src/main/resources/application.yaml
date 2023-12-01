@@ -4,3 +4,18 @@ server:
 spring:
   application:
     name: "comparator-application"
+  datasource:
+    url: jdbc:mysql://localhost:3306/broker_comparison?encrypt=true&trustServerCertificate=true
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: root
+    password: HasloDoMySql9925!
+  jpa:
+    properties.hibernate.format_sql: true
+    hibernate.ddl-auto: create-drop
+application:
+  security:
+    jwt:
+      secret-key: 35250645367566B59727207538782F413F4428472B4B6404E635266556A586E3
+      expiration: 86400000 # a day
+      refresh-token:
+        expiration: 604800000 # 7 days

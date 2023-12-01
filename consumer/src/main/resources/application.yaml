@@ -15,8 +15,13 @@ spring:
         spring:
           json:
             trusted.packages: "org.message.model"
-#            value.default.type: "org.message.consumer.kafka.model"
     topic:
       identification-data-topic: "identification-data-events"
-
-
+  datasource:
+    url: jdbc:mysql://localhost:3306/broker_comparison?encrypt=true&trustServerCertificate=true
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: root
+    password: HasloDoMySql9925!
+  jpa:
+    properties.hibernate.format_sql: true
+    hibernate.ddl-auto: update
