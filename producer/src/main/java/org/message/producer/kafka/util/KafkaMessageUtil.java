@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
+import org.message.model.DebugInfo;
 import org.message.model.Report;
 import org.message.model.User;
 import org.message.model.util.KafkaCustomHeaders;
@@ -21,7 +22,7 @@ import java.util.UUID;
 public class KafkaMessageUtil {
     private static final Integer USER_TOPIC_PARTITION = 1;
     private static final Integer REPORT_TOPIC_PARTITION = 2;
-    private static final Integer DEBUG_TOPIC_PARTITION = 3;
+    private static final Integer DEBUG_INFO_TOPIC_PARTITION = 3;
 
     public static <T> ProducerRecord<String, T> getKafkaProducerRecord(String topic, T object) {
         return switch (object) {
@@ -29,6 +30,8 @@ public class KafkaMessageUtil {
                     new ProducerRecord<>(topic, USER_TOPIC_PARTITION, generateKafkaKey(u.getUuid(), User.class.getSimpleName()), (T) u, generateHeaders(User.class.getSimpleName(), USER_TOPIC_PARTITION));
             case Report r ->
                     new ProducerRecord<>(topic, REPORT_TOPIC_PARTITION, generateKafkaKey(r.getUserUuid(), Report.class.getSimpleName()), (T) r, generateHeaders(Report.class.getSimpleName(), REPORT_TOPIC_PARTITION));
+            case DebugInfo d ->
+                    new ProducerRecord<>(topic, DEBUG_INFO_TOPIC_PARTITION, generateKafkaKey(d.getUuid(), DebugInfo.class.getSimpleName()), (T) d, generateHeaders(DebugInfo.class.getSimpleName(), DEBUG_INFO_TOPIC_PARTITION));
             case null -> throw new NullProducerRecordException();
             default -> throw new UnsupportedProducerRecordException();
         };

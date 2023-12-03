@@ -1,12 +1,18 @@
-// import { useErrorStatus } from "errors/ErrorHandler";
+import { effect, signal } from "@preact/signals-react";
 import useHttpApi from "./useHttpApi";
+
+export const user = signal({});
+
+effect(() => {
+  localStorage.setItem("user", JSON.stringify(user.value));
+});
 
 const useApi = () => {
   const httpApi = useHttpApi();
 
-  async function authenticate(user) {
+  async function loginUser(user) {
     try {
-      const response = await httpApi.post("/auth/authenticate", user);
+      const response = await httpApi.post("/auth/login", user);
       return response;
     } catch (error) {
       throw error;
@@ -120,7 +126,7 @@ const useApi = () => {
   // }
 
   return {
-    authenticate,
+    loginUser,
     registerUser,
     refreshToken,
   };

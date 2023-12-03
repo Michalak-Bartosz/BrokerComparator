@@ -9,31 +9,32 @@ import org.message.model.Report;
 import org.message.model.User;
 import org.message.model.util.ReportStatus;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @UtilityClass
 public class RandomUtil {
 
     public static User generateUser() {
+        UUID userUUID = UUID.randomUUID();
         faker = getRandomFaker();
-        Address address = generateAddress();
-        List<Report> reports = generateReports();
+        Address address = generateAddress(userUUID);
+        List<Report> reports = generateReports(userUUID);
 
         String idNumber = faker.idNumber().valid();
         String name = faker.name().firstName();
         String lastName = faker.name().lastName();
         String email = faker.internet().emailAddress();
         String cellPhone = faker.phoneNumber().cellPhone();
-        return new User(idNumber,
-                name,
-                lastName,
-                email,
-                cellPhone,
-                address,
-                reports);
+        return User.builder()
+                .uuid(userUUID)
+                .idNumber(idNumber)
+                .name(name)
+                .lastName(lastName)
+                .email(email)
+                .cellPhone(cellPhone)
+                .address(address)
+                .reports(reports)
+                .build();
     }
 
     private static final Map<Integer, Locale> availableLocale = Map.of(
@@ -52,42 +53,63 @@ public class RandomUtil {
         return new Faker(locale);
     }
 
-    private static Address generateAddress() {
+    private static Address generateAddress(UUID userUUID) {
+        UUID addressUUID = UUID.randomUUID();
         String streetName = faker.address().streetName();
         String number = faker.address().buildingNumber();
         String city = faker.address().city();
         String country = faker.address().country();
-        return new Address(streetName, number, city, country);
+        return Address.builder()
+                .uuid(addressUUID)
+                .userUuid(userUUID)
+                .streetName(streetName)
+                .number(number)
+                .city(city)
+                .country(country)
+                .build();
     }
 
-    private static List<Report> generateReports() {
+    private static List<Report> generateReports(UUID userUUID) {
         int numberOfReports = RandomUtils.nextInt(1, 10);
         List<Report> reports = new ArrayList<>();
 
         do {
-            reports.add(generateReport());
+            reports.add(generateReport(userUUID));
             numberOfReports--;
         } while (numberOfReports > 0);
 
         return reports;
     }
 
-    private static Report generateReport() {
+    private static Report generateReport(UUID userUUID) {
+        UUID reportUUID = UUID.randomUUID();
         int summaryWords = RandomUtils.nextInt(1, 3);
         int sentenceCount = RandomUtils.nextInt(3, 6);
-        return new Report(faker.lorem().sentence(summaryWords),
-                faker.lorem().paragraph(sentenceCount),
-                ReportStatus.randomReportStatus(),
-                getComments());
+        return Report.builder()
+                .uuid(reportUUID)
+                .userUuid(userUUID)
+                .summary(faker.lorem().sentence(summaryWords))
+                .description(faker.lorem().paragraph(sentenceCount))
+                .status(ReportStatus.randomReportStatus())
+                .comments(getComments(reportUUID))
+                .build();
     }
 
-    private static List<Comment> getComments() {
+    private static List<Comment> getComments(UUID reportUUID) {
         int commentsCount = RandomUtils.nextInt(6, 18);
         List<Comment> comments = new ArrayList<>();
         do {
-            comments.add(new Comment(faker.lorem().paragraph()));
+            comments.add(getComment(reportUUID));
             commentsCount--;
         } while (commentsCount > 0);
         return comments;
+    }
+
+    private static Comment getComment(UUID reportUUID) {
+        return Comment.builder()
+                .uuid(UUID.randomUUID())
+                .reportUuid(reportUUID)
+                .description(faker.lorem().paragraph())
+                .build();
     }
 }

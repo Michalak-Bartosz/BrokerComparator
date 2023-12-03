@@ -1,24 +1,21 @@
 import React from "react";
-import useApi from "../../connections/api/useApi";
+import { WsClient } from "../../connections/ws/WsClient";
+import KafkaMessagesChart from "../charts/KafkaMessagesChart";
 
 function MainDashboardPage(props) {
-  const api = useApi();
-
-  async function refreshToken() {
-    try {
-      const user = JSON.stringify(localStorage.getItem("user"));
-      console.log(user);
-      await api.refreshToken(user).then((result) => {
-        console.log(result);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
   return (
-    <div>
-      <h1 className="text-4xl text-rose-500">Main DashboardPage!</h1>
-      <button onClick={refreshToken}>Refresh Token</button>
+    <div className="">
+      <WsClient />
+      <div className="flex text-center">
+        <div id="kafka-content-wrapper" className="w-1/2">
+          <h1 className="text-5xl font-bold text-blue-500">Kafka</h1>
+          <KafkaMessagesChart />
+        </div>
+        <div className="flex-none w-1 min-h-full rounded-md bg-slate-500 mx-4" />
+        <div id="rabbitmq-content-wrapper" className="w-1/2">
+          <h1 className="grow text-5xl font-bold text-blue-500">Rabbit Mq</h1>
+        </div>
+      </div>
     </div>
   );
 }

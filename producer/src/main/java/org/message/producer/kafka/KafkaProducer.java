@@ -3,12 +3,16 @@ package org.message.producer.kafka;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.message.model.DebugInfo;
 import org.message.model.Report;
 import org.message.model.User;
+import org.message.producer.util.DebugInfoUtil;
 import org.message.producer.util.RandomUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static org.message.producer.kafka.util.KafkaMessageUtil.getKafkaProducerRecord;
 
@@ -22,20 +26,28 @@ public class KafkaProducer {
 
     private final KafkaTemplate<String, User> kafkaTemplateUserEvent;
     private final KafkaTemplate<String, Report> kafkaTemplateReportEvent;
+    private final KafkaTemplate<String, DebugInfo> kafkaTemplateDebugInfoEvent;
 
-    public void sendUserRecord() {
+    public void sendRecord() {
         User user = RandomUtil.generateUser();
-        ProducerRecord<String, User> kafkaRecord = getKafkaProducerRecord(identificationTopicName, user);
+        ProducerRecord<String, User> userKafkaRecord = getKafkaProducerRecord(identificationTopicName, user);
 
-        log.info("User sent -> {}", kafkaRecord);
-        kafkaTemplateUserEvent.send(kafkaRecord);
-    }
+        kafkaTemplateUserEvent.send(userKafkaRecord);
+        log.info("User sent -> {}", userKafkaRecord);
 
-    public void sendReportRecord() {
-        User user = RandomUtil.generateUser();
-        ProducerRecord<String, Report> kafkaRecord = getKafkaProducerRecord(identificationTopicName, user.getReports().get(0));
+        List<ProducerRecord<String, Report>> reportRecordList = user.getReports().stream()
+                .map(report -> getKafkaProducerRecord(identificationTopicName, user.getReports().get(0)))
+                .toList();
 
-        log.info("Report sent -> {}", kafkaRecord);
-        kafkaTemplateReportEvent.send(kafkaRecord);
+        reportRecordList.forEach(reportProducerRecord -> {
+            kafkaTemplateReportEvent.send(reportProducerRecord);
+            log.info("Report sent -> {}", reportProducerRecord);
+        });
+
+        DebugInfo debugInfo = DebugInfoUtil.generateDebugInfo();
+        ProducerRecord<String, DebugInfo> debugInfoKafkaRecord = getKafkaProducerRecord(identificationTopicName, debugInfo);
+
+        kafkaTemplateDebugInfoEvent.send(debugInfoKafkaRecord);
+        log.info("DebugInfo sent -> {}", debugInfoKafkaRecord);
     }
 }

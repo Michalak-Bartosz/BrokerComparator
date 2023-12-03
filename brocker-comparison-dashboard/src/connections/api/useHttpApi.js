@@ -42,7 +42,6 @@ const useHttpApi = () => {
       const response = await fetch(BASE_URL.API_URL + url, request);
 
       if (response.ok && returnsOutput) {
-        console.log(response)
         const jsonOut = await response.json();
         return jsonOut;
       } else if (response.ok) {

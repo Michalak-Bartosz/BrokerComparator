@@ -50,6 +50,7 @@ export function WsClient() {
       <StompSessionProvider url={BASE_URL.WS_URL}>
         <UserListener />
         <ReportListener />
+        {/* <PublishMessage /> */}
       </StompSessionProvider>
     </div>
   );

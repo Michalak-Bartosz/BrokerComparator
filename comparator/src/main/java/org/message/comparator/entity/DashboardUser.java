@@ -14,7 +14,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @Builder
 @Data
-@Entity(name = "Dashboard_User")
+@Entity(name = "dashboard_user")
 public class DashboardUser implements UserDetails {
 
     @Id

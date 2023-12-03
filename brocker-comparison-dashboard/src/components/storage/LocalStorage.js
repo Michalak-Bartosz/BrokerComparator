@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
+import { effect, signal } from "@preact/signals-react";
 
 function getStorageValue(key, defaultValue) {
   const saved = localStorage.getItem(key);
-  const initial = JSON.parse(saved);
+  const initial = JSON.parse(saved.value);
   return initial || defaultValue;
 }
 
 export const useLocalStorage = (key, defaultValue) => {
-  const [value, setValue] = useState(() => {
+  const item = signal(() => {
     return getStorageValue(key, defaultValue);
   });
 
-  useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(value));
-  }, [key, value]);
+  effect(() => {
+    localStorage.setItem(key, JSON.stringify(item.value));
+  });
 
-  return [value, setValue];
+  return item;
 };
