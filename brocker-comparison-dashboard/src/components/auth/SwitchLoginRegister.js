@@ -28,7 +28,7 @@ function SwitchLoginRegister(props) {
           }`}
         >
           <div className="flex p-2 items-center">
-            Login
+            LogIn
             <IoLogInOutline className="ml-2" />
           </div>
         </span>

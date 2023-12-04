@@ -1,40 +1,42 @@
-import { effect, signal } from "@preact/signals-react";
+import useTokenService from "./useTokenService";
 import useHttpApi from "./useHttpApi";
-
-export const user = signal({});
-
-effect(() => {
-  localStorage.setItem("user", JSON.stringify(user.value));
-});
 
 const useApi = () => {
   const httpApi = useHttpApi();
+  const tokenService = useTokenService();
 
-  async function loginUser(user) {
+  async function registerUser(registerForm) {
     try {
-      const response = await httpApi.post("/auth/login", user);
+      const response = await httpApi.post("/auth/register", registerForm);
+      console.log("Register");
+      console.log(response);
+      console.log(response.accessToken);
+      if (response.accessToken) {
+        tokenService.setUser(response);
+      }
       return response;
     } catch (error) {
       throw error;
     }
   }
 
-  async function registerUser(user) {
+  async function logInUser(logInForm) {
     try {
-      const response = await httpApi.post("/auth/register", user);
+      const response = await httpApi.post("/auth/login", logInForm);
+      console.log("LogIn");
+
+      if (response.accessToken) {
+        tokenService.setUser(response);
+        console.log(response);
+      }
       return response;
     } catch (error) {
       throw error;
     }
   }
 
-  async function refreshToken(user) {
-    try {
-      const response = await httpApi.post("/auth/refresh-token", user);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+  async function logOutUser() {
+    tokenService.removeUser();
   }
 
   // async function getMaze(mazeId) {
@@ -126,9 +128,9 @@ const useApi = () => {
   // }
 
   return {
-    loginUser,
     registerUser,
-    refreshToken,
+    logInUser,
+    logOutUser,
   };
 };
 

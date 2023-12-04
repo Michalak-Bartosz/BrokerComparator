@@ -1,4 +1,5 @@
 import BASE_URL from "../constants/BASE_URL";
+import useTokenService, { user } from "./useTokenService";
 import ApiError from "./errors/ApiError";
 import BadRequestError from "./errors/BadRequestError";
 import ConflictError from "./errors/ConflictError";
@@ -7,17 +8,28 @@ import NotFoundError from "./errors/NotFoundError";
 import UnauthorizedError from "./errors/UnauthorizedError";
 
 const useHttpApi = () => {
-  let headers = new Headers();
+  const tokenService = useTokenService();
+  function getHeaders() {
+    let headers = new Headers();
 
-  headers.append("Content-Type", "application/json");
-  headers.append("Accept", "application/json");
-  headers.append("Origin", "http://localhost:3000");
+    headers.append("Content-Type", "application/json");
+    headers.append("Accept", "application/json");
+    headers.append("Origin", "http://localhost:3000");
+    if (user && user.accessToken) {
+      console.log("Authorization");
+      headers.append(
+        "Authorization",
+        "Bearer " + tokenService.getLocalAccessToken()
+      );
+    }
+    return headers;
+  }
 
   function getRequest(method, body) {
     return {
       method: method,
       RequestMode: "cors",
-      headers: headers,
+      headers: getHeaders(),
       body: body,
     };
   }
@@ -93,13 +105,26 @@ const useHttpApi = () => {
       case 401:
         throw new UnauthorizedError();
       case 403:
-        throw new ForbiddenError();
+        handleRefreashToken();
+        break;
       case 404:
         throw new NotFoundError();
       case 409:
         throw new ConflictError();
       default:
         throw new ApiError("Unhandled error occurred.", -1);
+    }
+  }
+
+  function handleRefreashToken() {
+    try {
+      const response = post("/auth/refresh-token", {
+        refreshToken: useTokenService.getLocalRefreshToken(),
+      });
+      const { accessToken } = response.data.accessToken;
+      useTokenService.updateNewAccessToken(accessToken);
+    } catch (_error) {
+      throw new ForbiddenError();
     }
   }
 

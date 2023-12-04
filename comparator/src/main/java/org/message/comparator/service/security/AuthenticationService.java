@@ -10,6 +10,7 @@ import org.message.comparator.dto.security.RegisterRequestDto;
 import org.message.comparator.entity.DashboardUser;
 import org.message.comparator.entity.Token;
 import org.message.comparator.entity.TokenType;
+import org.message.comparator.exception.UserAlreadyExistException;
 import org.message.comparator.repository.DashboardUserRepository;
 import org.message.comparator.repository.security.TokenRepository;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,14 +32,19 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponseDto register(RegisterRequestDto request) {
-        var user = DashboardUser.builder()
+        Optional<DashboardUser> user = dashboardUserRepository.findByUsername(request.getUsername());
+        if (user.isPresent()) {
+            throw new UserAlreadyExistException(request.getUsername());
+        }
+
+        var newUser = DashboardUser.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .build();
-        var savedUser = dashboardUserRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        var savedUser = dashboardUserRepository.save(newUser);
+        var jwtToken = jwtService.generateToken(newUser);
+        var refreshToken = jwtService.generateRefreshToken(newUser);
         saveUserToken(savedUser, jwtToken);
         return AuthenticationResponseDto.builder()
                 .accessToken(jwtToken)

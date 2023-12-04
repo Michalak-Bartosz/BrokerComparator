@@ -1,8 +1,11 @@
 import React from "react";
 import { IoGitCompareSharp } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useTokenService, { user } from "../connections/api/useTokenService";
 
 function Navbar() {
+  const tokenService = useTokenService();
+  const navigate = useNavigate();
   return (
     <div
       id="navbar"
@@ -15,14 +18,21 @@ function Navbar() {
         </h1>
       </div>
       <div id="button-wrapper" className="flex my-auto ml-auto">
-        <Link
-          id="logout-link"
-          className="mr-4 px-4 py-2 bg-slate-200 text-slate-800 text-2xl font-bold rounded-md outline outline-offset-2 outline-blue-500 hover:bg-blue-300"
-          to="/"
-          onClick={() => console.log("Logout")}
-        >
-          Log Out
-        </Link>
+        {user.value !== undefined ? (
+          <Link
+            id="logout-link"
+            className="mr-4 px-4 py-2 bg-slate-200 text-slate-800 text-2xl font-bold rounded-md outline outline-offset-2 outline-blue-500 hover:bg-blue-300"
+            to="/"
+            onClick={() => {
+              tokenService.removeUser();
+              navigate("/");
+            }}
+          >
+            Log Out
+          </Link>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

@@ -3,16 +3,15 @@ import MainDashboardPage from "./pages/MainDashboardPage";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import AuthPage from "./pages/AuthPage";
+import { user } from "../connections/api/useTokenService";
 
 function App() {
   function PrivateRoute() {
-    const user = localStorage.getItem("user");
-    return user !== "{}" ? <Outlet /> : <Navigate to="/login" replace />;
+    return user.value === undefined ? <Navigate to="/auth" replace /> : <Outlet />;
   }
 
   function AnonymousRoute() {
-    const user = localStorage.getItem("user");
-    return user !== "{}" ? <Navigate to="/" replace /> : <Outlet />;
+    return user.value === undefined ? <Outlet /> : <Navigate to="/" replace />;
   }
 
   return (
@@ -27,7 +26,7 @@ function App() {
             <Route path="/" element={<MainDashboardPage />} />
           </Route>
           <Route element={<AnonymousRoute />}>
-            <Route path="/login" element={<AuthPage />} />
+            <Route path="/auth" element={<AuthPage />} />
           </Route>
         </Routes>
       </div>

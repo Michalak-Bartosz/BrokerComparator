@@ -1,29 +1,25 @@
 import React from "react";
-import useApi, { user } from "../../connections/api/useApi";
 import { signal } from "@preact/signals-react";
 import { useNavigate } from "react-router-dom";
+import usepApi from "../../connections/api/useApi";
 
 function RegisterForm() {
   const navigate = useNavigate();
-  const api = useApi();
+  const api = usepApi();
   const username = signal(null);
   const password = signal(null);
   const error = signal(null);
 
   async function registerUser() {
     try {
-      let registerUserDto = {
+      let registerForm = {
         username: username,
         password: password,
         role: "USER",
       };
-      await api.registerUser(registerUserDto).then((result) => {
-        error.value = null;
-        user.value = result;
-        navigate("/");
-      });
-    } catch (error) {
-      error.value = error.status;
+      await api.registerUser(registerForm).then(() => navigate("/"));
+    } catch (e) {
+      error.value = e.status;
     }
   }
 
