@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.message.comparator.dto.security.AuthenticationRequestDto;
 import org.message.comparator.dto.security.AuthenticationResponseDto;
+import org.message.comparator.dto.security.LogInRequestDto;
 import org.message.comparator.dto.security.RegisterRequestDto;
 import org.message.comparator.entity.DashboardUser;
 import org.message.comparator.entity.Token;
 import org.message.comparator.entity.TokenType;
+import org.message.comparator.exception.LogInRequestNullException;
+import org.message.comparator.exception.RegisterRequestNullException;
 import org.message.comparator.exception.UserAlreadyExistException;
 import org.message.comparator.repository.DashboardUserRepository;
 import org.message.comparator.repository.security.TokenRepository;
@@ -32,6 +34,10 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponseDto register(RegisterRequestDto request) {
+        if (request.getUsername() == null || request.getPassword() == null) {
+            throw new RegisterRequestNullException(request);
+        }
+
         Optional<DashboardUser> user = dashboardUserRepository.findByUsername(request.getUsername());
         if (user.isPresent()) {
             throw new UserAlreadyExistException(request.getUsername());
@@ -52,7 +58,10 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponseDto authenticate(AuthenticationRequestDto request) {
+    public AuthenticationResponseDto logIn(LogInRequestDto request) {
+        if (request.getUsername() == null || request.getPassword() == null) {
+            throw new LogInRequestNullException(request);
+        }
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),

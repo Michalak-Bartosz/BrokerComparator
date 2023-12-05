@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ControllerExceptionAdvice {
 
-    @ExceptionHandler(value = {UserAlreadyExistException.class})
+    @ExceptionHandler(value = {UserAlreadyExistException.class, RegisterRequestNullException.class, LogInRequestNullException.class})
     public ResponseEntity<HttpStatus> userAlreadyExist() {
-        return ResponseEntity.badRequest().build();
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 }

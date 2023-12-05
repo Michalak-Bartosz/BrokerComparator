@@ -1,26 +1,27 @@
 import BASE_URL from "../constants/BASE_URL";
-import useTokenService, { user } from "./useTokenService";
 import ApiError from "./errors/ApiError";
 import BadRequestError from "./errors/BadRequestError";
 import ConflictError from "./errors/ConflictError";
 import ForbiddenError from "./errors/ForbiddenError";
 import NotFoundError from "./errors/NotFoundError";
 import UnauthorizedError from "./errors/UnauthorizedError";
+import { updateAccessTokenAction } from "../../components/redux/actions/tokenActions";
+import { useDispatch, useSelector } from "react-redux";
 
 const useHttpApi = () => {
-  const tokenService = useTokenService();
+  const accessToken = useSelector((state) => state.token.accessToken);
+  const refreshToken = useSelector((state) => state.token.refreshToken);
+  const dispatch = useDispatch();
+
   function getHeaders() {
     let headers = new Headers();
 
     headers.append("Content-Type", "application/json");
     headers.append("Accept", "application/json");
     headers.append("Origin", "http://localhost:3000");
-    if (user && user.accessToken) {
-      console.log("Authorization");
-      headers.append(
-        "Authorization",
-        "Bearer " + tokenService.getLocalAccessToken()
-      );
+    if (accessToken) {
+      console.log("Authorization " + accessToken);
+      headers.append("Authorization", "Bearer " + accessToken);
     }
     return headers;
   }
@@ -105,8 +106,8 @@ const useHttpApi = () => {
       case 401:
         throw new UnauthorizedError();
       case 403:
-        handleRefreashToken();
-        break;
+        tryRefreashToken();
+        throw new ForbiddenError();
       case 404:
         throw new NotFoundError();
       case 409:
@@ -116,15 +117,13 @@ const useHttpApi = () => {
     }
   }
 
-  function handleRefreashToken() {
-    try {
+  function tryRefreashToken() {
+    if (refreshToken) {
       const response = post("/auth/refresh-token", {
-        refreshToken: useTokenService.getLocalRefreshToken(),
+        refreshToken: refreshToken,
       });
       const { accessToken } = response.data.accessToken;
-      useTokenService.updateNewAccessToken(accessToken);
-    } catch (_error) {
-      throw new ForbiddenError();
+      dispatch(updateAccessTokenAction(accessToken));
     }
   }
 

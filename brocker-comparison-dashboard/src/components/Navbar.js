@@ -1,11 +1,17 @@
 import React from "react";
 import { IoGitCompareSharp } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
-import useTokenService, { user } from "../connections/api/useTokenService";
+import { useSelector } from "react-redux";
+import useApi from "../connections/api/useApi";
+import { signal } from "@preact/signals-react";
+
+export const username = signal("");
 
 function Navbar() {
-  const tokenService = useTokenService();
+  const accessToken = useSelector((state) => state.token.accessToken);
   const navigate = useNavigate();
+  const api = useApi();
+
   return (
     <div
       id="navbar"
@@ -18,18 +24,26 @@ function Navbar() {
         </h1>
       </div>
       <div id="button-wrapper" className="flex my-auto ml-auto">
-        {user.value !== undefined ? (
-          <Link
-            id="logout-link"
-            className="mr-4 px-4 py-2 bg-slate-200 text-slate-800 text-2xl font-bold rounded-md outline outline-offset-2 outline-blue-500 hover:bg-blue-300"
-            to="/"
-            onClick={() => {
-              tokenService.removeUser();
-              navigate("/");
-            }}
-          >
-            Log Out
-          </Link>
+        {accessToken !== undefined ? (
+          <div className="flex">
+            <div className="flex">
+              <h1 className="m-auto font-bold text-2xl">User:&nbsp;</h1>
+              <h1 className="m-auto font-bold text-2xl text-green-400">
+                {username}
+              </h1>
+            </div>
+            <Link
+              id="logout-link"
+              className="m-4 px-4 py-2 bg-slate-200 text-slate-800 text-2xl font-bold rounded-md outline outline-offset-2 outline-blue-500 hover:bg-blue-300"
+              to="/"
+              onClick={() => {
+                api.logOutUser();
+                navigate("/");
+              }}
+            >
+              Log Out
+            </Link>
+          </div>
         ) : (
           <></>
         )}

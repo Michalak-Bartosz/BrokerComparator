@@ -3,15 +3,16 @@ import MainDashboardPage from "./pages/MainDashboardPage";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import AuthPage from "./pages/AuthPage";
-import { user } from "../connections/api/useTokenService";
+import { useSelector } from "react-redux";
 
 function App() {
+  const accessToken = useSelector((state) => state.token.accessToken);
   function PrivateRoute() {
-    return user.value === undefined ? <Navigate to="/auth" replace /> : <Outlet />;
+    return accessToken === undefined ? (<Navigate to="/auth" replace />) : (<Outlet />);
   }
 
   function AnonymousRoute() {
-    return user.value === undefined ? <Outlet /> : <Navigate to="/" replace />;
+    return accessToken === undefined ? <Outlet /> : <Navigate to="/" replace />;
   }
 
   return (

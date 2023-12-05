@@ -1,18 +1,19 @@
-import useTokenService from "./useTokenService";
+import { useDispatch } from "react-redux";
 import useHttpApi from "./useHttpApi";
+import {
+  addTokenAction,
+  removeTokenAction,
+} from "../../components/redux/actions/tokenActions";
 
 const useApi = () => {
   const httpApi = useHttpApi();
-  const tokenService = useTokenService();
+  const dispatch = useDispatch();
 
   async function registerUser(registerForm) {
     try {
       const response = await httpApi.post("/auth/register", registerForm);
-      console.log("Register");
-      console.log(response);
-      console.log(response.accessToken);
-      if (response.accessToken) {
-        tokenService.setUser(response);
+      if (response?.accessToken) {
+        dispatch(addTokenAction(response));
       }
       return response;
     } catch (error) {
@@ -23,11 +24,9 @@ const useApi = () => {
   async function logInUser(logInForm) {
     try {
       const response = await httpApi.post("/auth/login", logInForm);
-      console.log("LogIn");
 
-      if (response.accessToken) {
-        tokenService.setUser(response);
-        console.log(response);
+      if (response?.accessToken) {
+        dispatch(addTokenAction(response));
       }
       return response;
     } catch (error) {
@@ -36,7 +35,7 @@ const useApi = () => {
   }
 
   async function logOutUser() {
-    tokenService.removeUser();
+    dispatch(removeTokenAction());
   }
 
   // async function getMaze(mazeId) {

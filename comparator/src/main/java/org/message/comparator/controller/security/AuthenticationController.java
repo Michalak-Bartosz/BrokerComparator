@@ -3,7 +3,7 @@ package org.message.comparator.controller.security;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.message.comparator.dto.security.AuthenticationRequestDto;
+import org.message.comparator.dto.security.LogInRequestDto;
 import org.message.comparator.dto.security.AuthenticationResponseDto;
 import org.message.comparator.dto.security.RegisterRequestDto;
 import org.message.comparator.service.security.AuthenticationService;
@@ -33,9 +33,9 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponseDto> authenticate(
-            @RequestBody AuthenticationRequestDto request
+            @RequestBody LogInRequestDto request
     ) {
-        return ResponseEntity.ok(authenticationService.authenticate(request));
+        return ResponseEntity.ok(authenticationService.logIn(request));
     }
 
     @PostMapping("/refresh-token")

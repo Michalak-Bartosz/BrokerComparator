@@ -1,10 +1,15 @@
+import { signal } from "@preact/signals-react";
 import React from "react";
 import { IoLogInOutline } from "react-icons/io5";
 import { PiTrademarkRegisteredFill } from "react-icons/pi";
+import { authErrorMessage } from "./ErrorMessage";
 
-function SwitchLoginRegister(props) {
+export const authMode = signal(true);
+
+function SwitchLoginRegister() {
   const handleCheckboxChange = () => {
-    props.status.value = !props.status.value;
+    authMode.value = !authMode.value;
+    authErrorMessage.value = null;
   };
 
   return (
@@ -15,14 +20,14 @@ function SwitchLoginRegister(props) {
       <input
         id="input-switch"
         type="checkbox"
-        checked={props.status.value}
+        checked={authMode.value}
         onChange={handleCheckboxChange}
         className="sr-only"
       />
       <div className="flex m-auto text-2xl h-max w-full items-center justify-center rounded-t-md">
         <span
           className={`flex w-full items-center justify-center rounded-t-md ${
-            !props.status.value
+            !authMode.value
               ? "bg-white text-slate-300"
               : "bg-slate-500 bg-opacity-30"
           }`}
@@ -34,7 +39,7 @@ function SwitchLoginRegister(props) {
         </span>
         <span
           className={`flex w-full items-center justify-center rounded-t-md ${
-            props.status.value
+            authMode.value
               ? "bg-white text-slate-300"
               : "bg-slate-500 bg-opacity-30"
           }`}
