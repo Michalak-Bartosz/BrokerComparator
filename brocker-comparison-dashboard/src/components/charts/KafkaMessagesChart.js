@@ -10,7 +10,6 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { users } from "../../connections/ws/WsClient";
 import { effect, signal } from "@preact/signals-react";
 
 function KafkaMessagesChart() {
@@ -38,8 +37,9 @@ function KafkaMessagesChart() {
   };
 
   const getCount = (timestamp) => {
-    let newUsers = users.value.filter((user) => user.timestamp === timestamp);
-    return newUsers[0].countOfMessages;
+    // let newUsers = users.value.filter((user) => user.timestamp === timestamp);
+    // return newUsers[0].countOfMessages;
+    return 0;
   };
   const chartData = signal({});
   const changeChart = (labelsValue) => {
@@ -56,9 +56,9 @@ function KafkaMessagesChart() {
     };
   };
 
-  effect(() => {
-    changeChart(users.value.map((user) => user.timestamp));
-  });
+  // effect(() => {
+  //   changeChart(users.value.map((user) => user.timestamp));
+  // });
 
   return <Line options={options} data={chartData.value} />;
 }

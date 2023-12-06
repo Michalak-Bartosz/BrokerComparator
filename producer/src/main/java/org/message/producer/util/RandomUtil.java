@@ -14,11 +14,11 @@ import java.util.*;
 @UtilityClass
 public class RandomUtil {
 
-    public static User generateUser() {
+    public static User generateUser(UUID testUUID) {
         UUID userUUID = UUID.randomUUID();
         faker = getRandomFaker();
         Address address = generateAddress(userUUID);
-        List<Report> reports = generateReports(userUUID);
+        List<Report> reports = generateReports(userUUID, testUUID);
 
         String idNumber = faker.idNumber().valid();
         String name = faker.name().firstName();
@@ -27,6 +27,7 @@ public class RandomUtil {
         String cellPhone = faker.phoneNumber().cellPhone();
         return User.builder()
                 .uuid(userUUID)
+                .testUUID(testUUID)
                 .idNumber(idNumber)
                 .name(name)
                 .lastName(lastName)
@@ -69,24 +70,25 @@ public class RandomUtil {
                 .build();
     }
 
-    private static List<Report> generateReports(UUID userUUID) {
+    private static List<Report> generateReports(UUID userUUID, UUID testUUID) {
         int numberOfReports = RandomUtils.nextInt(1, 10);
         List<Report> reports = new ArrayList<>();
 
         do {
-            reports.add(generateReport(userUUID));
+            reports.add(generateReport(userUUID, testUUID));
             numberOfReports--;
         } while (numberOfReports > 0);
 
         return reports;
     }
 
-    private static Report generateReport(UUID userUUID) {
+    private static Report generateReport(UUID userUUID, UUID testUUID) {
         UUID reportUUID = UUID.randomUUID();
         int summaryWords = RandomUtils.nextInt(1, 3);
         int sentenceCount = RandomUtils.nextInt(3, 6);
         return Report.builder()
                 .uuid(reportUUID)
+                .testUUID(testUUID)
                 .userUuid(userUUID)
                 .summary(faker.lorem().sentence(summaryWords))
                 .description(faker.lorem().paragraph(sentenceCount))

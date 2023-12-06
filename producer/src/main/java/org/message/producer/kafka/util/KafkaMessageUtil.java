@@ -20,9 +20,9 @@ import java.util.UUID;
 
 @UtilityClass
 public class KafkaMessageUtil {
-    private static final Integer USER_TOPIC_PARTITION = 1;
-    private static final Integer REPORT_TOPIC_PARTITION = 2;
-    private static final Integer DEBUG_INFO_TOPIC_PARTITION = 3;
+    private static final Integer USER_TOPIC_PARTITION = 0;
+    private static final Integer REPORT_TOPIC_PARTITION = 1;
+    private static final Integer DEBUG_INFO_TOPIC_PARTITION = 2;
 
     public static <T> ProducerRecord<String, T> getKafkaProducerRecord(String topic, T object) {
         return switch (object) {
@@ -46,4 +46,6 @@ public class KafkaMessageUtil {
                 new RecordHeader(KafkaCustomHeaders.EVENT_PRODUCED_TIME, Instant.now().toString().getBytes(StandardCharsets.UTF_8)),
                 new RecordHeader(KafkaCustomHeaders.RECORD_TYPE, className.getBytes(StandardCharsets.UTF_8)));
     }
+
+
 }
