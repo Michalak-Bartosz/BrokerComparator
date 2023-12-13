@@ -5,7 +5,7 @@ import ConflictError from "./errors/ConflictError";
 import ForbiddenError from "./errors/ForbiddenError";
 import NotFoundError from "./errors/NotFoundError";
 import UnauthorizedError from "./errors/UnauthorizedError";
-import { updateAccessTokenAction } from "../../components/redux/actions/tokenActions";
+import { updateAccessTokenAction } from "../../redux/actions/tokenActions";
 import { useDispatch, useSelector } from "react-redux";
 
 const useHttpApi = () => {
@@ -15,12 +15,10 @@ const useHttpApi = () => {
 
   function getHeaders() {
     let headers = new Headers();
-
     headers.append("Content-Type", "application/json");
     headers.append("Accept", "application/json");
     headers.append("Origin", "http://localhost:3000");
     if (accessToken) {
-      console.log("Authorization " + accessToken);
       headers.append("Authorization", "Bearer " + accessToken);
     }
     return headers;
@@ -31,6 +29,7 @@ const useHttpApi = () => {
       method: method,
       RequestMode: "cors",
       headers: getHeaders(),
+      withCridentials: true,
       body: body,
     };
   }
@@ -117,14 +116,22 @@ const useHttpApi = () => {
     }
   }
 
-  function tryRefreashToken() {
-    if (refreshToken) {
-      const response = post("/auth/refresh-token", {
-        refreshToken: refreshToken,
-      });
-      const { accessToken } = response.data.accessToken;
-      dispatch(updateAccessTokenAction(accessToken));
-    }
+  async function tryRefreashToken() {
+    // if (refreshToken) {
+    //   const body = {
+    //     refreshToken: refreshToken,
+    //   };
+    //   const request = getRequest("POST", JSON.stringify(body));
+    //   const response = await fetch(
+    //     BASE_URL.API_URL + "/auth/refresh-token",
+    //     request
+    //   );
+    //   if (response.ok) {
+    //     const jsonOut = await response.json();
+    //     const { accessToken } = jsonOut.accessToken;
+    //     dispatch(updateAccessTokenAction(accessToken));
+    //   }
+    // }
   }
 
   return { get, post, put, remove };

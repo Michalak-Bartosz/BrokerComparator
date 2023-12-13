@@ -1,9 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { signal } from "@preact/signals-react";
 
 function LogInForm(props) {
   const username = signal(null);
   const password = signal(null);
+  useEffect(() => {
+    const listener = (event) => {
+      if (event.code === "Enter" || event.code === "NumpadEnter") {
+        console.log("Enter key was pressed. Run your function.");
+        event.preventDefault();
+        props.logInUser(username.value, password.value);
+      }
+    };
+    document.addEventListener("keydown", listener);
+    return () => {
+      document.removeEventListener("keydown", listener);
+    };
+  }, [password.value, props, username.value]);
 
   return (
     <div className="transition-all block pb-8 pt-6 px-16 w-96 text-left mx-auto bg-slate-500 bg-opacity-30 rounded-b-md shadow-md">

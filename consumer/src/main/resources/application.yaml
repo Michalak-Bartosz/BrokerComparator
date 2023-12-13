@@ -8,7 +8,7 @@ spring:
     consumer:
       bootstrap-servers: localhost:9092
       group-id: identificationDataGroup
-      auto-offset-reset: earliest
+      auto-offset-reset: latest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
@@ -16,7 +16,9 @@ spring:
           json:
             trusted.packages: "org.message.model"
     topic:
-      identification-data-topic: "identification-data-events"
+      user-data-topic: "user-data-events-topic"
+      report-data-topic: "report-data-events-topic"
+      debug-info-data-topic: "debug-info-data-events-topic"
   datasource:
     url: jdbc:mysql://localhost:3306/broker_comparison?encrypt=true&trustServerCertificate=true
     driverClassName: com.mysql.cj.jdbc.Driver

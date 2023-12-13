@@ -5,7 +5,6 @@ import SwitchLoginRegister, { authMode } from "../auth/SwitchLoginRegister";
 import { useNavigate } from "react-router-dom";
 import useApi from "../../connections/api/useApi";
 import ErrorMessage, { authErrorMessage } from "../auth/ErrorMessage";
-import { username as loggedUsername } from "../../components/Navbar";
 
 function AuthPage() {
   const navigate = useNavigate();
@@ -18,7 +17,6 @@ function AuthPage() {
         password: password,
       };
       await api.logInUser(loginForm).then(() => {
-        loggedUsername.value = username;
         navigate("/");
       });
     } catch (e) {
@@ -36,7 +34,6 @@ function AuthPage() {
         role: "USER",
       };
       await api.registerUser(registerForm).then((response) => {
-        loggedUsername.value = username;
         navigate("/");
       });
     } catch (e) {

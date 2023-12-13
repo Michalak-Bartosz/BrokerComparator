@@ -52,8 +52,22 @@ public class StreamMessageUtil {
         }
     }
 
-    public static int getCountMessages() {
-        log.debug("COUNT MESSAGE TO CONSUME: {}", DEBUG_INFO_STREAM_QUEUE.size());
-        return DEBUG_INFO_STREAM_QUEUE.size();
+    public static int getCountMessages(MessageType messageType) {
+        switch (messageType) {
+            case DEBUG_INFO -> {
+                log.debug("COUNT DEBUG INFO MESSAGE TO CONSUME: {}", DEBUG_INFO_STREAM_QUEUE.size());
+                return DEBUG_INFO_STREAM_QUEUE.size();
+            }
+            case USER -> {
+                log.debug("COUNT USER MESSAGE TO CONSUME: {}", USER_STREAM_QUEUE.size());
+                return USER_STREAM_QUEUE.size();
+            }
+            case REPORT -> {
+                log.debug("COUNT REPORT MESSAGE TO CONSUME: {}", REPORT_STREAM_QUEUE.size());
+                return REPORT_STREAM_QUEUE.size();
+            }
+            case null -> throw new ConsumeStreamMessageTypeNPException();
+            default -> throw new NotValidStreamMessageTypeException();
+        }
     }
 }

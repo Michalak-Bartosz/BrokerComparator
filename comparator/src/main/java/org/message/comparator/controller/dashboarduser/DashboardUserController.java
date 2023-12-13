@@ -24,8 +24,7 @@ public class DashboardUserController {
     @PatchMapping
     public ResponseEntity<HttpStatus> changePassword(
             @RequestBody ChangePasswordRequestDto request,
-            Principal connectedUser
-    ) {
+            Principal connectedUser) {
         dashboardUserService.changePassword(request, connectedUser);
         return ResponseEntity.ok().build();
     }

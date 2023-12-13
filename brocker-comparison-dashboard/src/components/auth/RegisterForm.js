@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { signal } from "@preact/signals-react";
 import { IoMdInformationCircle } from "react-icons/io";
 import { Tooltip } from "react-tooltip";
@@ -35,7 +35,7 @@ function RegisterForm(props) {
     return false;
   };
 
-  const submit = () => {
+  const submit = useCallback(() => {
     if (passwordValidate(password.value)) {
       props.registerUser(username.value, password.value);
       setIsPasswordValid(true);
@@ -44,7 +44,21 @@ function RegisterForm(props) {
     }
     setIsPasswordValid(false);
     authErrorMessage.value = "Invalid password!";
-  };
+  }, [password.value, props, username.value]);
+
+  useEffect(() => {
+    const listener = (event) => {
+      if (event.code === "Enter" || event.code === "NumpadEnter") {
+        console.log("Enter key was pressed. Run your function.");
+        event.preventDefault();
+        submit();
+      }
+    };
+    document.addEventListener("keydown", listener);
+    return () => {
+      document.removeEventListener("keydown", listener);
+    };
+  }, [submit]);
 
   return (
     <div className="transition-all block pb-8 pt-6 px-8 w-96 text-left mx-auto bg-slate-500 bg-opacity-30 rounded-b-md shadow-md">

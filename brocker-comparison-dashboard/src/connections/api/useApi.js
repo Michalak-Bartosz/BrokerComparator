@@ -3,7 +3,11 @@ import useHttpApi from "./useHttpApi";
 import {
   addTokenAction,
   removeTokenAction,
-} from "../../components/redux/actions/tokenActions";
+} from "../../redux/actions/tokenActions";
+import {
+  addUserAction,
+  removeUserAction,
+} from "../../redux/actions/userActions";
 
 const useApi = () => {
   const httpApi = useHttpApi();
@@ -14,6 +18,7 @@ const useApi = () => {
       const response = await httpApi.post("/auth/register", registerForm);
       if (response?.accessToken) {
         dispatch(addTokenAction(response));
+        dispatch(addUserAction(registerForm.username));
       }
       return response;
     } catch (error) {
@@ -27,6 +32,7 @@ const useApi = () => {
 
       if (response?.accessToken) {
         dispatch(addTokenAction(response));
+        dispatch(addUserAction(logInForm.username));
       }
       return response;
     } catch (error) {
@@ -36,6 +42,17 @@ const useApi = () => {
 
   async function logOutUser() {
     dispatch(removeTokenAction());
+    dispatch(removeUserAction());
+    localStorage.clear();
+  }
+
+  async function performTest(testSettings) {
+    try {
+      const response = await httpApi.post("/test/perform", testSettings);
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 
   // async function getMaze(mazeId) {
@@ -130,6 +147,7 @@ const useApi = () => {
     registerUser,
     logInUser,
     logOutUser,
+    performTest,
   };
 };
 

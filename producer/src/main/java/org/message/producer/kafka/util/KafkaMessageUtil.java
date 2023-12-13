@@ -21,8 +21,8 @@ import java.util.UUID;
 @UtilityClass
 public class KafkaMessageUtil {
     private static final Integer USER_TOPIC_PARTITION = 0;
-    private static final Integer REPORT_TOPIC_PARTITION = 1;
-    private static final Integer DEBUG_INFO_TOPIC_PARTITION = 2;
+    private static final Integer REPORT_TOPIC_PARTITION = 0;
+    private static final Integer DEBUG_INFO_TOPIC_PARTITION = 0;
 
     public static <T> ProducerRecord<String, T> getKafkaProducerRecord(String topic, T object) {
         return switch (object) {

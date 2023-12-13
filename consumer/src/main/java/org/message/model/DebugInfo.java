@@ -4,7 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.message.model.metric.CPUMetric;
+import org.message.model.metric.MemoryMetric;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -18,11 +21,11 @@ public class DebugInfo {
     private double testStatusPercentage;
     private Instant producedTimestamp;
     private Instant consumedTimestamp;
-    private Instant deltaTimestamp;
-    private Long countOfProducedMessages;
-    private Long countOfReceivedMessages;
-    private Integer averageCpuUsagePercentProducer;
-    private Integer averageCpuUsagePercentConsumer;
-    private Integer averageMemoUsagePercentProducer;
-    private Integer averageMemoUsagePercentConsumer;
+    private Duration deltaTimestamp;
+    private Integer countOfProducedMessages;
+    private Integer countOfConsumedMessages;
+    private MemoryMetric producerMemoryMetrics;
+    private MemoryMetric consumerMemoryMetrics;
+    private CPUMetric producerCPUMetrics;
+    private CPUMetric consumerCPUMetrics;
 }

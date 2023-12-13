@@ -1,6 +1,5 @@
 package org.message.comparator.dto.security;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,27 +1,25 @@
 package org.message.comparator.service.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.message.comparator.dto.security.AuthenticationResponseDto;
 import org.message.comparator.dto.security.LogInRequestDto;
 import org.message.comparator.dto.security.RegisterRequestDto;
 import org.message.comparator.entity.DashboardUser;
 import org.message.comparator.entity.Token;
-import org.message.comparator.entity.TokenType;
 import org.message.comparator.exception.LogInRequestNullException;
+import org.message.comparator.exception.RefreshTokenException;
 import org.message.comparator.exception.RegisterRequestNullException;
 import org.message.comparator.exception.UserAlreadyExistException;
 import org.message.comparator.repository.DashboardUserRepository;
 import org.message.comparator.repository.security.TokenRepository;
+import org.message.comparator.util.TokenType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -102,13 +100,10 @@ public class AuthenticationService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-    public void refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
+    public AuthenticationResponseDto refreshToken(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeader == null || !authHeader.startsWith(TokenType.BEARER.name())) {
-            return;
+        if (authHeader == null || !authHeader.startsWith(TokenType.BEARER.getName())) {
+            throw new RefreshTokenException();
         }
         final String refreshToken = authHeader.substring(7);
         final String username = jwtService.extractUsername(refreshToken);
@@ -119,11 +114,27 @@ public class AuthenticationService {
                 var accessToken = jwtService.generateToken(user);
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
-                var authResponse = AuthenticationResponseDto.builder()
+                return AuthenticationResponseDto.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .build();
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+            }
+        }
+        throw new RefreshTokenException();
+    }
+
+    public void logout(HttpServletRequest request) {
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null || !authHeader.startsWith(TokenType.BEARER.getName())) {
+            throw new RefreshTokenException();
+        }
+        final String refreshToken = authHeader.substring(7);
+        final String username = jwtService.extractUsername(refreshToken);
+        if (username != null) {
+            var user = this.dashboardUserRepository.findByUsername(username)
+                    .orElseThrow();
+            if (jwtService.isTokenValid(refreshToken, user)) {
+                revokeAllUserTokens(user);
             }
         }
     }

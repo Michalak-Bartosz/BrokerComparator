@@ -1,5 +1,7 @@
 package org.message.consumer.util;
 
+import org.springframework.util.CollectionUtils;
+
 import java.util.AbstractQueue;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -30,11 +32,16 @@ public class StreamQueue<T> extends AbstractQueue<T> {
 
     @Override
     public T poll() {
+        if (CollectionUtils.isEmpty(elements)) {
+            return null;
+        }
         Iterator<T> iterator = elements.iterator();
-        T t = iterator.next();
-        if (t != null) {
-            iterator.remove();
-            return t;
+        if (iterator.hasNext()) {
+            T t = iterator.next();
+            if (t != null) {
+                iterator.remove();
+                return t;
+            }
         }
         return null;
     }

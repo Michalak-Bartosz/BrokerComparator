@@ -10,4 +10,6 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     topic:
-      identification-data-topic: "identification-data-events"
+      user-data-topic: "user-data-events-topic"
+      report-data-topic: "report-data-events-topic"
+      debug-info-data-topic: "debug-info-data-events-topic"

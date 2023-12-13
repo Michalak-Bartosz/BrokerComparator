@@ -3,19 +3,16 @@ import { IoGitCompareSharp } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useApi from "../connections/api/useApi";
-import { signal } from "@preact/signals-react";
-
-export const username = signal("");
 
 function Navbar() {
   const accessToken = useSelector((state) => state.token.accessToken);
+  const username = useSelector((state) => state.user.username);
   const navigate = useNavigate();
   const api = useApi();
-
   return (
     <div
       id="navbar"
-      className="nav fixed flex p-4 w-full h-32 bg-slate-800 text-white top-0 left-0"
+      className="nav fixed z-50 flex p-4 w-full h-32 bg-slate-800 text-white top-0 left-0"
     >
       <div id="title-wrapper" className="flex my-auto">
         <IoGitCompareSharp className="text-6xl text-blue-500 mr-4 my-auto" />
@@ -24,7 +21,7 @@ function Navbar() {
         </h1>
       </div>
       <div id="button-wrapper" className="flex my-auto ml-auto">
-        {accessToken !== undefined ? (
+        {accessToken !== null ? (
           <div className="flex">
             <div className="flex">
               <h1 className="m-auto font-bold text-2xl">User:&nbsp;</h1>
