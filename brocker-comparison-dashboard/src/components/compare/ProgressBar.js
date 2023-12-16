@@ -8,7 +8,7 @@ function ProgressBar(props) {
         <h1>TEST PROGRESS:&nbsp;</h1>
         <h1 className="text-green-500">{props.testStatus}%</h1>
       </div>
-      <Progress progress={props.testStatus} size="lg" />
+      <Progress progress={props.testStatus} size="lg" color="green" />
     </div>
   );
 }

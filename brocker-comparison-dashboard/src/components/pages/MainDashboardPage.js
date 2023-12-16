@@ -24,7 +24,7 @@ function MainDashboardPage() {
   }
 
   return (
-    <div className="block m-4">
+    <div className="block m-8">
       <TestSettingsMenu
         numberOfMessagesToSend={numberOfMessagesToSend}
         setNumberOfMessagesToSend={setNumberOfMessagesToSend}
@@ -34,16 +34,10 @@ function MainDashboardPage() {
       <div className="flex text-center my-10">
         <div id="kafka-content-wrapper" className="w-full">
           <h1 className="text-5xl font-bold text-blue-500 mb-4">Kafka</h1>
-          <div className="bg-lime-600 bg-opacity-20 rounded-lg p-4">
-            <h1 className="text-3xl font-bold text-lime-600 rounded-md border-y-4 border-slate-600 py-4 mx-6 m-auto">
-              Producer App
-            </h1>
+          <div className="bg-lime-600 bg-opacity-20 rounded-lg p-4 mb-8">
             <ProducerDataVisualization testUUID={testUUID} />
           </div>
-          <div className="bg-teal-600 bg-opacity-20 rounded-lg p-4 m-4">
-            <h1 className="text-3xl font-bold text-teal-600 rounded-md border-y-4 border-slate-600 py-4 mx-6 m-auto">
-              Consumer App
-            </h1>
+          <div className="bg-teal-600 bg-opacity-20 rounded-lg p-4">
             <ConsumerDataVisualization testUUID={testUUID} />
           </div>
         </div>

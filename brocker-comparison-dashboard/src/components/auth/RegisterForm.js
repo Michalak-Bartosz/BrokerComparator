@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { signal } from "@preact/signals-react";
 import { IoMdInformationCircle } from "react-icons/io";
 import { Tooltip } from "react-tooltip";
 import { authErrorMessage } from "./ErrorMessage";
 
 function RegisterForm(props) {
-  const username = signal(null);
-  const password = signal(null);
+  const [username, setUserName] = useState(null);
+  const [password, setPassword] = useState(null);
   const [isPasswordValid, setIsPasswordValid] = useState(true);
 
   const passwordValidationRules = `<h1>Password rules:</h1>
@@ -36,20 +35,19 @@ function RegisterForm(props) {
   };
 
   const submit = useCallback(() => {
-    if (passwordValidate(password.value)) {
-      props.registerUser(username.value, password.value);
+    if (passwordValidate(password)) {
+      props.registerUser(username, password);
       setIsPasswordValid(true);
       authErrorMessage.value = null;
       return;
     }
     setIsPasswordValid(false);
     authErrorMessage.value = "Invalid password!";
-  }, [password.value, props, username.value]);
+  }, [password, props, username]);
 
   useEffect(() => {
     const listener = (event) => {
       if (event.code === "Enter" || event.code === "NumpadEnter") {
-        console.log("Enter key was pressed. Run your function.");
         event.preventDefault();
         submit();
       }
@@ -72,7 +70,7 @@ function RegisterForm(props) {
           className="px-4 py-2 rounded-md w-64"
           type="text"
           placeholder="Provide username..."
-          onChange={(e) => (username.value = e.target.value)}
+          onChange={(e) => setUserName(e.target.value)}
         />
         <div className="flex m-0 p-0">
           <label id="username">Password:</label>
@@ -95,7 +93,7 @@ function RegisterForm(props) {
           }`}
           type="password"
           placeholder="Provide password..."
-          onChange={(e) => (password.value = e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
         <button
           className="m-auto my-2 bg-slate-100 px-4 py-2 rounded-md text-2xl outline outline-offset-2 outline-blue-500 font-bold hover:bg-blue-300"

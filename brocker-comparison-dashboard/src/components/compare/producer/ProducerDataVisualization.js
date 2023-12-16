@@ -11,6 +11,7 @@ import ProgressBar from "../ProgressBar";
 import { getDateFromTimestampString } from "../../util/DateUtil";
 import LiveChart from "../chart/LiveChart";
 import Counter from "../Counter";
+import UsageBar from "../UsageBar";
 
 function ProducerDataVisualization(props) {
   const dispatch = useDispatch();
@@ -21,6 +22,10 @@ function ProducerDataVisualization(props) {
   const [appCpuChartData, setAppCpuChartData] = useState([]);
   const [datasetColor, setDatasetColor] = useState(null);
   const [datasetName, setDatasetName] = useState(null);
+  const [initialMemoryGB, setInitialMemoryGB] = useState(0);
+  const [usedHeapMemoryGB, setUsedHeapMemoryGB] = useState(0);
+  const [maxHeapMemoryGB, setMaxHeapMemoryGB] = useState(0);
+  const [committedMemoryGB, setCommittedMemoryGB] = useState(0);
 
   useEffect(() => {
     let eventSource;
@@ -94,6 +99,10 @@ function ProducerDataVisualization(props) {
       appCpuArray
     ) => {
       setTestStatus(debugInfo.testStatusPercentage);
+      setInitialMemoryGB(debugInfo.producerMemoryMetrics.initialMemoryGB);
+      setUsedHeapMemoryGB(debugInfo.producerMemoryMetrics.usedHeapMemoryGB);
+      setMaxHeapMemoryGB(debugInfo.producerMemoryMetrics.maxHeapMemoryGB);
+      setCommittedMemoryGB(debugInfo.producerMemoryMetrics.committedMemoryGB);
       setProducedMessages(debugInfo.countOfProducedMessages);
       let producedMsgData = {
         xVal: getDateFromTimestampString(debugInfo.producedTimestamp),
@@ -146,6 +155,9 @@ function ProducerDataVisualization(props) {
 
   return (
     <div className="block">
+      <h1 className="text-3xl font-bold text-lime-600 rounded-md border-y-4 border-slate-600 py-4 m-auto mx-8">
+        Producer App
+      </h1>
       <ProgressBar testStatus={testStatus} />
       <Counter name={"Produced messages"} value={producedMessages} />
       <LiveChart
@@ -155,24 +167,52 @@ function ProducerDataVisualization(props) {
         chartName={"Produced messages in time"}
         yAxisName={"Produced messages"}
       />
-      <div className="flex">
-        <div className="w-1/2">
-          <LiveChart
-            data={systemCpuChartData}
-            datasetColor={datasetColor}
-            datasetName={datasetName}
-            chartName={"System CPU usage [%] in time"}
-            yAxisName={"CPU usage [%]"}
+      <div>
+        <h1 className="font-bold text-2xl text-teal-600 rounded-md border-y-2 border-slate-600 py-4 m-auto mx-8">
+          Memory Metrics
+        </h1>
+        <div className="py-4">
+          <UsageBar
+            usageLabel={"Initial Memory"}
+            usageStatus={initialMemoryGB}
+          />
+          <UsageBar
+            usageLabel={"Used Heap Memory"}
+            usageStatus={usedHeapMemoryGB}
+          />
+          <UsageBar
+            usageLabel={"Max Heap Memory"}
+            usageStatus={maxHeapMemoryGB}
+          />
+          <UsageBar
+            usageLabel={"Committed Memory"}
+            usageStatus={committedMemoryGB}
           />
         </div>
-        <div className="w-1/2">
-          <LiveChart
-            data={appCpuChartData}
-            datasetColor={datasetColor}
-            datasetName={datasetName}
-            chartName={"Consumer App CPU usage [%] in time"}
-            yAxisName={"CPU usage [%]"}
-          />
+      </div>
+      <div>
+        <h1 className="font-bold text-2xl text-teal-600 rounded-md border-y-2 border-slate-600 py-4 m-auto mx-8">
+          CPU metrics
+        </h1>
+        <div className="flex">
+          <div className="w-1/2">
+            <LiveChart
+              data={systemCpuChartData}
+              datasetColor={datasetColor}
+              datasetName={datasetName}
+              chartName={"System CPU usage [%] in time"}
+              yAxisName={"CPU usage [%]"}
+            />
+          </div>
+          <div className="w-1/2">
+            <LiveChart
+              data={appCpuChartData}
+              datasetColor={datasetColor}
+              datasetName={datasetName}
+              chartName={"Consumer App CPU usage [%] in time"}
+              yAxisName={"CPU usage [%]"}
+            />
+          </div>
         </div>
       </div>
     </div>

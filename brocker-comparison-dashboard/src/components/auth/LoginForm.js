@@ -1,22 +1,20 @@
-import React, { useEffect } from "react";
-import { signal } from "@preact/signals-react";
+import React, { useEffect, useState } from "react";
 
 function LogInForm(props) {
-  const username = signal(null);
-  const password = signal(null);
+  const [username, setUserName] = useState(null);
+  const [password, setPassword] = useState(null);
   useEffect(() => {
     const listener = (event) => {
       if (event.code === "Enter" || event.code === "NumpadEnter") {
-        console.log("Enter key was pressed. Run your function.");
         event.preventDefault();
-        props.logInUser(username.value, password.value);
+        props.logInUser(username, password);
       }
     };
     document.addEventListener("keydown", listener);
     return () => {
       document.removeEventListener("keydown", listener);
     };
-  }, [password.value, props, username.value]);
+  }, [password, props, username]);
 
   return (
     <div className="transition-all block pb-8 pt-6 px-16 w-96 text-left mx-auto bg-slate-500 bg-opacity-30 rounded-b-md shadow-md">
@@ -30,7 +28,7 @@ function LogInForm(props) {
           className="px-4 py-2 rounded-md w-64"
           type="text"
           placeholder="Provide username..."
-          onChange={(e) => (username.value = e.target.value)}
+          onChange={(e) => setUserName(e.target.value)}
         />
         <label id="username">Password:</label>
         <input
@@ -38,11 +36,11 @@ function LogInForm(props) {
           className="px-4 py-2 rounded-md w-64"
           type="password"
           placeholder="Provide password..."
-          onChange={(e) => (password.value = e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
         <button
           className="m-auto my-2 bg-slate-100 px-4 py-2 rounded-md text-2xl outline outline-offset-2 outline-blue-500 font-bold hover:bg-blue-300"
-          onClick={() => props.logInUser(username.value, password.value)}
+          onClick={() => props.logInUser(username, password)}
         >
           LogIn
         </button>

@@ -11,6 +11,7 @@ import ProgressBar from "../ProgressBar";
 import { getDateFromTimestampString } from "../../util/DateUtil";
 import LiveChart from "../chart/LiveChart";
 import Counter from "../Counter";
+import UsageBar from "../UsageBar";
 
 function ConsumerDataVisualization(props) {
   const dispatch = useDispatch();
@@ -21,6 +22,10 @@ function ConsumerDataVisualization(props) {
   const [appCpuChartData, setAppCpuChartData] = useState([]);
   const [datasetColor, setDatasetColor] = useState(null);
   const [datasetName, setDatasetName] = useState(null);
+  const [initialMemoryGB, setInitialMemoryGB] = useState(0);
+  const [usedHeapMemoryGB, setUsedHeapMemoryGB] = useState(0);
+  const [maxHeapMemoryGB, setMaxHeapMemoryGB] = useState(0);
+  const [committedMemoryGB, setCommittedMemoryGB] = useState(0);
 
   useEffect(() => {
     let eventSource;
@@ -37,9 +42,6 @@ function ConsumerDataVisualization(props) {
       setAppCpuChartData([]);
       setDatasetColor(null);
       setDatasetName([]);
-      consumedMsgArray = [];
-      systemCpuArray = [];
-      appCpuArray = [];
     };
 
     const startListenDebugInfoMessageStream = () => {
@@ -97,6 +99,10 @@ function ConsumerDataVisualization(props) {
       appCpuArray
     ) => {
       setTestStatus(debugInfo.testStatusPercentage);
+      setInitialMemoryGB(debugInfo.consumerMemoryMetrics.initialMemoryGB);
+      setUsedHeapMemoryGB(debugInfo.consumerMemoryMetrics.usedHeapMemoryGB);
+      setMaxHeapMemoryGB(debugInfo.consumerMemoryMetrics.maxHeapMemoryGB);
+      setCommittedMemoryGB(debugInfo.consumerMemoryMetrics.committedMemoryGB);
       setConsumedMessages(debugInfo.countOfConsumedMessages);
       let consumedMsgData = {
         xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
@@ -149,6 +155,9 @@ function ConsumerDataVisualization(props) {
 
   return (
     <div className="block">
+      <h1 className="text-3xl font-bold text-teal-600 rounded-md border-y-4 border-slate-600 py-4 m-auto mx-8">
+        Consumer App
+      </h1>
       <ProgressBar testStatus={testStatus} />
       <Counter name={"Consumed massages"} value={consumedMessages} />
       <LiveChart
@@ -158,24 +167,52 @@ function ConsumerDataVisualization(props) {
         chartName={"Consumed message in time"}
         yAxisName={"Consumed messages"}
       />
-      <div className="flex">
-        <div className="w-1/2">
-          <LiveChart
-            data={systemCpuChartData}
-            datasetColor={datasetColor}
-            datasetName={datasetName}
-            chartName={"System CPU usage [%] in time"}
-            yAxisName={"CPU usage [%]"}
+      <div>
+        <h1 className="font-bold text-2xl text-teal-600 rounded-md border-y-2 border-slate-600 py-4 m-auto mx-8">
+          Memory Metrics
+        </h1>
+        <div className="py-4">
+          <UsageBar
+            usageLabel={"Initial Memory"}
+            usageStatus={initialMemoryGB}
+          />
+          <UsageBar
+            usageLabel={"Used Heap Memory"}
+            usageStatus={usedHeapMemoryGB}
+          />
+          <UsageBar
+            usageLabel={"Max Heap Memory"}
+            usageStatus={maxHeapMemoryGB}
+          />
+          <UsageBar
+            usageLabel={"Committed Memory"}
+            usageStatus={committedMemoryGB}
           />
         </div>
-        <div className="w-1/2">
-          <LiveChart
-            data={appCpuChartData}
-            datasetColor={datasetColor}
-            datasetName={datasetName}
-            chartName={"Consumer App CPU usage [%] in time"}
-            yAxisName={"CPU usage [%]"}
-          />
+      </div>
+      <div>
+        <h1 className="font-bold text-2xl text-teal-600 rounded-md border-y-2 border-slate-600 py-4 m-auto mx-8">
+          CPU Metrics
+        </h1>
+        <div className="flex">
+          <div className="w-1/2">
+            <LiveChart
+              data={systemCpuChartData}
+              datasetColor={datasetColor}
+              datasetName={datasetName}
+              chartName={"System CPU usage [%] in time"}
+              yAxisName={"CPU usage [%]"}
+            />
+          </div>
+          <div className="w-1/2">
+            <LiveChart
+              data={appCpuChartData}
+              datasetColor={datasetColor}
+              datasetName={datasetName}
+              chartName={"Consumer App CPU usage [%] in time"}
+              yAxisName={"CPU usage [%]"}
+            />
+          </div>
         </div>
       </div>
     </div>
