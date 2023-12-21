@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.message.model.User;
 import org.message.producer.dto.TestSettingsDto;
+import org.message.producer.exception.DelayBetweenTestException;
 import org.message.producer.exception.UnsupportedBrokerTypeException;
 import org.message.producer.kafka.KafkaProducer;
 import org.message.producer.rabbitmq.RabbitMqProducer;
@@ -29,17 +30,23 @@ public class TestService {
     @PostConstruct
     private void initTestRunnerMap() {
         this.testRunnerMap = Map.of(
-                BrokerType.KAFKA, kafkaProducer::sendRecords,
-                BrokerType.RABBITMQ, rabbitMqProducer::sendRecords);
+                BrokerType.KAFKA, kafkaProducer::sendRecord,
+                BrokerType.RABBITMQ, rabbitMqProducer::sendRecord);
     }
 
     @Transactional
     public synchronized void performTest(TestSettingsDto testSettingsDto) {
+        Integer totalMessagesToSend = testSettingsDto.getNumberOfMessagesToSend() * testSettingsDto.getNumberOfAttempts();
         List<User> users = new ArrayList<>();
-        prepareData(testSettingsDto.getTestUUID(), testSettingsDto.getNumberOfMessagesToSend(), users);
+        prepareData(testSettingsDto.getTestUUID(), totalMessagesToSend, users);
         testSettingsDto.getBrokerTypes().forEach(brokerType ->
-                Optional.ofNullable(testRunnerMap.get(brokerType)).orElseThrow(() -> new UnsupportedBrokerTypeException(brokerType))
-                        .apply(testSettingsDto.getTestUUID(), testSettingsDto.getNumberOfMessagesToSend(), users));
+                sendRecords(brokerType,
+                        testSettingsDto.getTestUUID(),
+                        testSettingsDto.getNumberOfMessagesToSend(),
+                        testSettingsDto.getNumberOfAttempts(),
+                        testSettingsDto.getDelayInMilliseconds(),
+                        users)
+        );
     }
 
     private static void prepareData(UUID testUUID, Integer numberOfMessagesToSend, List<User> users) {
@@ -51,8 +58,49 @@ public class TestService {
         }
     }
 
+    public void sendRecords(BrokerType brokerType,
+                            UUID testUUID,
+                            Integer numberOfMessagesToSend,
+                            Integer numberOfAttempts,
+                            Long delayInMilliseconds,
+                            List<User> users) {
+        TestRunnerFunction testRunnerFunction = Optional.ofNullable(testRunnerMap.get(brokerType))
+                .orElseThrow(() -> new UnsupportedBrokerTypeException(brokerType));
+        int totalMessagesToSend = numberOfMessagesToSend * numberOfAttempts;
+        int totalMessagesObtained = 1;
+        int attemptCounter = 0;
+
+        while (attemptCounter < numberOfAttempts) {
+            int messagesObtainedInTest = 1;
+            while (messagesObtainedInTest <= numberOfMessagesToSend) {
+                User user = users.get(totalMessagesObtained - 1);
+                testRunnerFunction.apply(testUUID,
+                        messagesObtainedInTest,
+                        totalMessagesObtained,
+                        totalMessagesToSend,
+                        user);
+                messagesObtainedInTest++;
+                totalMessagesObtained++;
+            }
+            attemptCounter++;
+            waitBetweenNextTest(numberOfAttempts, delayInMilliseconds);
+        }
+    }
+
+    public void waitBetweenNextTest(Integer numberOfAttempts, Long delayInMilliseconds) {
+        if (numberOfAttempts == 1) {
+            return;
+        }
+        try {
+            Thread.sleep(delayInMilliseconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new DelayBetweenTestException(e);
+        }
+    }
+
     @FunctionalInterface
     private interface TestRunnerFunction {
-        void apply(UUID testUUID, Integer numberOfMessagesToSend, List<User> users);
+        void apply(UUID testUUID, int messagesObtainedInTest, int totalMessagesObtained, int totalMessagesToSend, User user);
     }
 }

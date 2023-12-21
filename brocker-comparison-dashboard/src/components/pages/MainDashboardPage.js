@@ -8,39 +8,27 @@ import DbOverview from "../compare/DbOverview";
 
 function MainDashboardPage() {
   const api = useApi();
-  const [testInProgress, setTestInProgress] = useState(null);
+  const [testInProgressProducer, setTestInProgressProducer] = useState(false);
+  const [testInProgressConsumer, setTestInProgressConsumer] = useState(false);
   const [testUUID, setTestUUID] = useState(null);
   const [numberOfMessagesToSend, setNumberOfMessagesToSend] = useState(10);
   const [numberOfAttempts, setNumberOfAttempts] = useState(1);
+  const [delayInMilliseconds, setDelayInMilliseconds] = useState(0);
   const [brokerTypes, setBrokerTypes] = useState(KAFKA_BROKER.value);
 
-  async function sendRequest() {
+  async function performTest() {
     try {
       let testSettings = {
         brokerTypes: brokerTypes,
         numberOfMessagesToSend: numberOfMessagesToSend,
+        numberOfAttempts: numberOfAttempts,
+        delayInMilliseconds: delayInMilliseconds,
       };
       const response = await api.performTest(testSettings);
       setTestUUID(response.testUUID);
     } catch (e) {
       console.log(e);
     }
-  }
-
-  const transactions = {};
-
-  function doTransaction(name, promiseFunc) {
-    transactions[name] = (transactions[name] || Promise.resolve()).then(
-      promiseFunc
-    );
-  }
-
-  function performTest() {
-    setTestInProgress(true);
-    for (let i = 0; i < numberOfAttempts; i++) {
-      doTransaction(i, sendRequest());
-    }
-    setTestInProgress(false);
   }
 
   return (
@@ -51,9 +39,12 @@ function MainDashboardPage() {
           setNumberOfMessagesToSend={setNumberOfMessagesToSend}
           numberOfAttempts={numberOfAttempts}
           setNumberOfAttempts={setNumberOfAttempts}
+          delayInMilliseconds={delayInMilliseconds}
+          setDelayInMilliseconds={setDelayInMilliseconds}
           setBrokerTypes={setBrokerTypes}
           performTest={performTest}
-          testInProgress={testInProgress}
+          testInProgressProducer={testInProgressProducer}
+          testInProgressConsumer={testInProgressConsumer}
         />
         <div className="col-span-2">
           <DbOverview />
@@ -65,10 +56,18 @@ function MainDashboardPage() {
           <ProducerDataVisualization
             testUUID={testUUID}
             brokerTypes={brokerTypes}
+            numberOfMessagesToSend={numberOfMessagesToSend}
+            numberOfAttempts={numberOfAttempts}
+            isInProgress={testInProgressProducer}
+            setIsInProgress={setTestInProgressProducer}
           />
           <ConsumerDataVisualization
             testUUID={testUUID}
             brokerTypes={brokerTypes}
+            numberOfMessagesToSend={numberOfMessagesToSend}
+            numberOfAttempts={numberOfAttempts}
+            isInProgress={testInProgressConsumer}
+            setIsInProgress={setTestInProgressConsumer}
           />
         </div>
       </div>

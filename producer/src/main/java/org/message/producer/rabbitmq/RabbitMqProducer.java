@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
@@ -37,17 +36,11 @@ public class RabbitMqProducer {
     private final ConnectionFactory factory = new ConnectionFactory();
     private static final String BROKER_TYPE = "RABBITMQ";
 
-    public void sendRecords(UUID testUUID, Integer numberOfMessagesToSend, List<User> users) {
-        int messagesTotal = numberOfMessagesToSend;
-        int messagesObtained = 1;
-        while (messagesObtained <= numberOfMessagesToSend) {
-            User user = users.get(messagesObtained - 1);
-            sendRecord(testUUID, messagesObtained, messagesTotal, user);
-            messagesObtained++;
-        }
-    }
-
-    private void sendRecord(UUID testUUID, int messagesObtained, int messagesTotal, User user) {
+    public void sendRecord(UUID testUUID,
+                           int messagesObtainedInTest,
+                           int totalMessagesObtained,
+                           int totalMessagesToSend,
+                           User user) {
         final double systemCpuBefore = getSystemCpuUsagePercentage();
         final double appCpuBefore = getAppCpuUsagePercentage();
 
@@ -71,8 +64,8 @@ public class RabbitMqProducer {
 
             DebugInfo debugInfo = generateDebugInfo(testUUID,
                     BROKER_TYPE,
-                    getTestStatusPercentage(messagesObtained, messagesTotal),
-                    messagesObtained,
+                    getTestStatusPercentage(totalMessagesObtained, totalMessagesToSend),
+                    messagesObtainedInTest,
                     systemAverageCpu,
                     appAverageCpu);
             StreamMessageUtil.addMessage(debugInfo);

@@ -10,6 +10,7 @@ import Counter from "../Counter";
 import LiveChart from "../chart/LiveChart";
 import { randomDatasetColor } from "../../util/ColorUtil";
 import { getDateFromTimestampString } from "../../util/DateUtil";
+import TestStatus from "../TestStatus";
 
 function ConsumerDataVisualization(props) {
   const dispatch = useDispatch();
@@ -25,7 +26,6 @@ function ConsumerDataVisualization(props) {
   const [appCpuData, setAppCpuData] = useState([]);
 
   const [chartDataArray, setChartDataArray] = useState([]);
-  const [isInProgress, setIsInProgress] = useState(false);
 
   useEffect(() => {
     let eventSource;
@@ -151,7 +151,10 @@ function ConsumerDataVisualization(props) {
     };
 
     const startListenDebugInfoMessageStream = (brokerType) => {
-      setIsInProgress(true);
+      let totalMessagesInTest =
+        props.numberOfMessagesToSend * props.numberOfAttempts;
+      let receivedMsgCounter = 0;
+      props.setIsInProgress(true);
       setDatasetName(getDatasetName(brokerType));
       eventSource = new EventSource(
         BASE_URL.CONSUMER_STREAM_DATA_API_URL + "/debug-info"
@@ -165,7 +168,8 @@ function ConsumerDataVisualization(props) {
         if (event.data) {
           const debugInfo = JSON.parse(event.data);
           updateChartData(debugInfo);
-          if (debugInfo.testStatusPercentage === 100) {
+          receivedMsgCounter++;
+          if (receivedMsgCounter === totalMessagesInTest) {
             endListenDebugInfoMessageStream(brokerType);
           }
         }
@@ -186,10 +190,10 @@ function ConsumerDataVisualization(props) {
     };
 
     const endListenDebugInfoMessageStream = (brokerType) => {
-      eventSource.close();
       console.log("STOP CONSUMER LISTEN DEBUG INFO DATA STREAM.");
       updateChartDataArray(brokerType);
-      setIsInProgress(false);
+      props.setIsInProgress(false);
+      eventSource.close();
       saveData();
     };
 
@@ -215,7 +219,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getConsumedMessages = () => {
-    return receivedMsgData?.at(-1)?.yVal;
+    return receivedMsgData?.at(-1) ? receivedMsgData?.at(-1).yVal : 0;
   };
 
   const createChartDataElement = (data, datasetName, datasetColor) => {
@@ -227,7 +231,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getConsumedMessagesChartData = () => {
-    if (isInProgress) {
+    if (props.isInProgress) {
       return [createChartDataElement(receivedMsgData, datasetName)];
     }
     return [
@@ -242,7 +246,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getInitialMemoryChartData = () => {
-    if (isInProgress) {
+    if (props.isInProgress) {
       return [createChartDataElement(initialMemoryData, datasetName)];
     }
     return [
@@ -257,7 +261,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getUsedHeapMemoryChartData = () => {
-    if (isInProgress) {
+    if (props.isInProgress) {
       return [createChartDataElement(usedHeapMemoryData, datasetName)];
     }
     return [
@@ -272,7 +276,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getMaxHeapMemoryChartData = () => {
-    if (isInProgress) {
+    if (props.isInProgress) {
       return [createChartDataElement(maxHeapMemoryData, datasetName)];
     }
     return [
@@ -287,7 +291,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getCommittedMemoryChartData = () => {
-    if (isInProgress) {
+    if (props.isInProgress) {
       return [createChartDataElement(committedMemoryData, datasetName)];
     }
     return [
@@ -302,7 +306,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getSystemCpuChartData = () => {
-    if (isInProgress) {
+    if (props.isInProgress) {
       return [createChartDataElement(systemCpuData, datasetName)];
     }
     return [
@@ -317,7 +321,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getAppCpuChartData = () => {
-    if (isInProgress) {
+    if (props.isInProgress) {
       return [createChartDataElement(appCpuData, datasetName)];
     }
     return [
@@ -338,7 +342,13 @@ function ConsumerDataVisualization(props) {
           Consumer App
         </h1>
         <ProgressBar testStatus={getTestProgressStatus()} />
-        <Counter name={"Consumed messages"} value={getConsumedMessages()} />
+        <div className="grid grid-cols-2 gap-6">
+          <TestStatus
+            isInProgress={props.isInProgress}
+            testStatus={getTestProgressStatus()}
+          />
+          <Counter name={"Produced messages"} value={getConsumedMessages()} />
+        </div>
         <LiveChart
           chartData={getConsumedMessagesChartData()}
           chartName={"Consumed messages in time"}

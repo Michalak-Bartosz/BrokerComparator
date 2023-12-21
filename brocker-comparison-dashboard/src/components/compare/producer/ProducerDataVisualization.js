@@ -10,6 +10,7 @@ import Counter from "../Counter";
 import LiveChart from "../chart/LiveChart";
 import { randomDatasetColor } from "../../util/ColorUtil";
 import { getDateFromTimestampString } from "../../util/DateUtil";
+import TestStatus from "../TestStatus";
 
 function ProducerDataVisualizationTEST(props) {
   const dispatch = useDispatch();
@@ -25,7 +26,6 @@ function ProducerDataVisualizationTEST(props) {
   const [appCpuData, setAppCpuData] = useState([]);
 
   const [chartDataArray, setChartDataArray] = useState([]);
-  const [isInProgress, setIsInProgress] = useState(false);
 
   useEffect(() => {
     let eventSource;
@@ -151,7 +151,10 @@ function ProducerDataVisualizationTEST(props) {
     };
 
     const startListenDebugInfoMessageStream = (brokerType) => {
-      setIsInProgress(true);
+      let totalMessagesInTest =
+        props.numberOfMessagesToSend * props.numberOfAttempts;
+      let receivedMsgCounter = 0;
+      props.setIsInProgress(true);
       setDatasetName(getDatasetName(brokerType));
       eventSource = new EventSource(
         BASE_URL.PRODUCER_STREAM_DATA_API_URL + "/debug-info"
@@ -165,7 +168,8 @@ function ProducerDataVisualizationTEST(props) {
         if (event.data) {
           const debugInfo = JSON.parse(event.data);
           updateChartData(debugInfo);
-          if (debugInfo.testStatusPercentage === 100) {
+          receivedMsgCounter++;
+          if (receivedMsgCounter === totalMessagesInTest) {
             endListenDebugInfoMessageStream(brokerType);
           }
         }
@@ -186,10 +190,10 @@ function ProducerDataVisualizationTEST(props) {
     };
 
     const endListenDebugInfoMessageStream = (brokerType) => {
-      eventSource.close();
       console.log("STOP PRODUCER LISTEN DEBUG INFO DATA STREAM.");
       updateChartDataArray(brokerType);
-      setIsInProgress(false);
+      props.setIsInProgress(false);
+      eventSource.close();
       saveData();
     };
 
@@ -207,7 +211,7 @@ function ProducerDataVisualizationTEST(props) {
     if (props.testUUID) {
       handleStartTest();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.testUUID]);
 
   const getTestProgressStatus = () => {
@@ -215,7 +219,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getProducedMessages = () => {
-    return receivedMsgData?.at(-1)?.yVal;
+    return receivedMsgData?.at(-1) ? receivedMsgData?.at(-1).yVal : 0;
   };
 
   const createChartDataElement = (data, datasetName, datasetColor) => {
@@ -227,7 +231,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getProducedMessagesChartData = () => {
-    if (isInProgress) {
+    if (props.isInProgress) {
       return [createChartDataElement(receivedMsgData, datasetName)];
     }
     return [
@@ -242,7 +246,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getInitialMemoryChartData = () => {
-    if (isInProgress) {
+    if (props.isInProgress) {
       return [createChartDataElement(initialMemoryData, datasetName)];
     }
     return [
@@ -257,7 +261,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getUsedHeapMemoryChartData = () => {
-    if (isInProgress) {
+    if (props.isInProgress) {
       return [createChartDataElement(usedHeapMemoryData, datasetName)];
     }
     return [
@@ -272,7 +276,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getMaxHeapMemoryChartData = () => {
-    if (isInProgress) {
+    if (props.isInProgress) {
       return [createChartDataElement(maxHeapMemoryData, datasetName)];
     }
     return [
@@ -287,7 +291,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getCommittedMemoryChartData = () => {
-    if (isInProgress) {
+    if (props.isInProgress) {
       return [createChartDataElement(committedMemoryData, datasetName)];
     }
     return [
@@ -302,7 +306,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getSystemCpuChartData = () => {
-    if (isInProgress) {
+    if (props.isInProgress) {
       return [createChartDataElement(systemCpuData, datasetName)];
     }
     return [
@@ -317,7 +321,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getAppCpuChartData = () => {
-    if (isInProgress) {
+    if (props.isInProgress) {
       return [createChartDataElement(appCpuData, datasetName)];
     }
     return [
@@ -338,7 +342,13 @@ function ProducerDataVisualizationTEST(props) {
           Producer App
         </h1>
         <ProgressBar testStatus={getTestProgressStatus()} />
-        <Counter name={"Produced messages"} value={getProducedMessages()} />
+        <div className="grid grid-cols-2 gap-6">
+          <TestStatus
+            isInProgress={props.isInProgress}
+            testStatus={getTestProgressStatus()}
+          />
+          <Counter name={"Produced messages"} value={getProducedMessages()} />
+        </div>
         <LiveChart
           chartData={getProducedMessagesChartData()}
           chartName={"Produced messages in time"}

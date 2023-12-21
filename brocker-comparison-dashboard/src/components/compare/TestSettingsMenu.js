@@ -15,6 +15,8 @@ function TestSettingsMenu(props) {
     "You can send from 1 do 2000 messages in one test.";
   const numberOfAttemptsTooltip =
     "You can set from 1 do 50 attempts in one test.";
+  const delayInMillisecondsTooltip =
+    "You can set from 0 do 60 000 milliseconds of delay between attempts in test.";
   const startTestTooltip =
     "You can not start test without messages to send or zero attempts in test.";
 
@@ -59,27 +61,29 @@ function TestSettingsMenu(props) {
               className="text-2xl text-white"
             />
           </div>
-          <TextInput
-            id="number-messages-to-send-input"
-            className="rounded-md text-2xl"
-            type="number"
-            step="1"
-            min="1"
-            max="2000"
-            onWheel={numberInputOnWheelPreventChange}
-            defaultValue={props.numberOfMessagesToSend}
-            onChange={(e) => props.setNumberOfMessagesToSend(e.target.value)}
-          />
-          <Tooltip
-            id="number-of-messages-to-send-tooltip"
-            className="text-2xl"
-          />
-          <IoMdInformationCircle
-            className="m-auto ml-3 text-4xl text-blue-500"
-            data-tooltip-id="number-of-messages-to-send-tooltip"
-            data-tooltip-html={numberOfMessagesToSendTooltip}
-            data-tooltip-place="top"
-          />
+          <div className="flex m-auto mr-0">
+            <TextInput
+              id="number-messages-to-send-input"
+              className="rounded-md text-2xl w-20"
+              type="number"
+              step="1"
+              min="1"
+              max="2000"
+              onWheel={numberInputOnWheelPreventChange}
+              defaultValue={props.numberOfMessagesToSend}
+              onChange={(e) => props.setNumberOfMessagesToSend(e.target.value)}
+            />
+            <Tooltip
+              id="number-of-messages-to-send-tooltip"
+              className="text-2xl"
+            />
+            <IoMdInformationCircle
+              className="m-auto ml-3 text-4xl text-blue-500"
+              data-tooltip-id="number-of-messages-to-send-tooltip"
+              data-tooltip-html={numberOfMessagesToSendTooltip}
+              data-tooltip-place="right"
+            />
+          </div>
         </div>
         <div className="flex items-center py-2">
           <FaDotCircle className="text-blue-500 mr-2" />
@@ -90,24 +94,56 @@ function TestSettingsMenu(props) {
               className="text-2xl text-white"
             />
           </div>
-          <TextInput
-            id="number-of-attempts-input"
-            className="rounded-md text-2xl"
-            type="number"
-            step="1"
-            min="1"
-            max="50"
-            onWheel={numberInputOnWheelPreventChange}
-            defaultValue={props.numberOfAttempts}
-            onChange={(e) => props.setNumberOfAttempts(e.target.value)}
-          />
-          <Tooltip id="number-of-attempts-tooltip" className="text-2xl" />
-          <IoMdInformationCircle
-            className="m-auto ml-3 text-4xl text-blue-500"
-            data-tooltip-id="number-of-attempts-tooltip"
-            data-tooltip-html={numberOfAttemptsTooltip}
-            data-tooltip-place="top"
-          />
+          <div className="flex m-auto mr-0">
+            <TextInput
+              id="number-of-attempts-input"
+              className="rounded-md text-2xl w-20"
+              type="number"
+              step="1"
+              min="1"
+              max="50"
+              onWheel={numberInputOnWheelPreventChange}
+              defaultValue={props.numberOfAttempts}
+              onChange={(e) => props.setNumberOfAttempts(e.target.value)}
+            />
+            <Tooltip id="number-of-attempts-tooltip" className="text-2xl" />
+            <IoMdInformationCircle
+              className="m-auto ml-3 text-4xl text-blue-500"
+              data-tooltip-id="number-of-attempts-tooltip"
+              data-tooltip-html={numberOfAttemptsTooltip}
+              data-tooltip-place="right"
+            />
+          </div>
+        </div>
+        <div className="flex items-center py-2">
+          <FaDotCircle className="text-blue-500 mr-2" />
+          <div>
+            <Label
+              htmlFor="delay-in-milliseconds-input"
+              value="Delay between attempts [ms]:&nbsp;"
+              className="text-2xl text-white"
+            />
+          </div>
+          <div className="flex m-auto mr-0">
+            <TextInput
+              id="delay-in-milliseconds-input"
+              className="rounded-md text-2xl w-20"
+              type="number"
+              step="1"
+              min="0"
+              max="60 000"
+              onWheel={numberInputOnWheelPreventChange}
+              defaultValue={props.delayInMilliseconds}
+              onChange={(e) => props.setDelayInMilliseconds(e.target.value)}
+            />
+            <Tooltip id="delay-in-milliseconds-tooltip" className="text-2xl" />
+            <IoMdInformationCircle
+              className="m-auto ml-3 text-4xl text-blue-500"
+              data-tooltip-id="delay-in-milliseconds-tooltip"
+              data-tooltip-html={delayInMillisecondsTooltip}
+              data-tooltip-place="right"
+            />
+          </div>
         </div>
         <div className="flex items-center pt-2">
           <FaDotCircle className="text-blue-500 mr-2" />
@@ -118,21 +154,24 @@ function TestSettingsMenu(props) {
               className="text-2xl text-white"
             />
           </div>
-          <Select
-            id="broker-select"
-            onChange={(e) =>
-              props.setBrokerTypes(JSON.parse(e.target.value).value)
-            }
-            required
-          >
-            {selectBrokerOptions.map((option) => {
-              return (
-                <option key={option.value} value={JSON.stringify(option)}>
-                  {option.label}
-                </option>
-              );
-            })}
-          </Select>
+          <div className="flex m-auto mr-0">
+            <Select
+              id="broker-select"
+              className="w-32"
+              onChange={(e) =>
+                props.setBrokerTypes(JSON.parse(e.target.value).value)
+              }
+              required
+            >
+              {selectBrokerOptions.map((option) => {
+                return (
+                  <option key={option.value} value={JSON.stringify(option)}>
+                    {option.label}
+                  </option>
+                );
+              })}
+            </Select>
+          </div>
         </div>
       </div>
       <div className="h-0 rounded-lg border-2 border-slate-600 my-8" />
@@ -148,7 +187,8 @@ function TestSettingsMenu(props) {
         disabled={
           !props.numberOfMessagesToSend ||
           !props.numberOfAttempts ||
-          props.testInProgress
+          props.testInProgressProducer ||
+          props.testInProgressConsumer
         }
         onClick={() => props.performTest()}
       >

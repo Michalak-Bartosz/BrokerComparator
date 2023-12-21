@@ -16,5 +16,7 @@ import java.util.UUID;
 public class TestSettingsDto {
     private List<BrokerType> brokerTypes;
     private Integer numberOfMessagesToSend;
+    private Integer numberOfAttempts;
+    private Long delayInMilliseconds;
     private UUID testUUID;
 }
