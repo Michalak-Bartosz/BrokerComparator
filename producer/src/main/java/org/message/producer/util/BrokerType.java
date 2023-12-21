@@ -1,5 +1,5 @@
 package org.message.producer.util;
 
 public enum BrokerType {
-    KAFKA, RABBITMQ, ALL;
+    KAFKA, RABBITMQ;
 }

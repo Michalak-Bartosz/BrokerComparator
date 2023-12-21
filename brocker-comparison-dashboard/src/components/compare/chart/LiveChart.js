@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
+import SwitchChartMode from "./SwitchChartMode";
 
 function LiveChart(props) {
+  const [isTimestampMode, setIsTimestampMode] = useState(true);
+
   const [chartOptions, setChartOption] = useState({
     chart: {
       backgroundColor: "rgba(255,255,255, 0.6)",
+      borderWidth: 2,
+      borderColor: "rgb(71 85 105)",
       borderRadius: "10",
       type: "area",
+      height: props.heightPercentage ? props.heightPercentage : null,
+      width: null,
     },
     title: {
       text: `<h1 id="chart-title">${
@@ -23,44 +30,32 @@ function LiveChart(props) {
     },
     plotOptions: {
       series: {
-        color: props.datasetColor
-          ? props.datasetColor.rgb
-          : Highcharts.getOptions().colors[0],
+        color: Highcharts.getOptions().colors[0],
         fillColor: {
-          linearGradient: [0, 0, 0, 300],
+          linearGradient: [0, 0, 0, 200],
           stops: [
-            [
-              0,
-              props.datasetColor
-                ? props.datasetColor.rgb
-                : Highcharts.getOptions().colors[0],
-            ],
+            [0, Highcharts.getOptions().colors[0]],
             [
               1,
-              props.datasetColor
-                ? props.datasetColor.rgba
-                : Highcharts.color(Highcharts.getOptions().colors[0])
-                    .setOpacity(0)
-                    .get("rgba"),
+              Highcharts.color(Highcharts.getOptions().colors[0])
+                .setOpacity(0)
+                .get("rgba"),
             ],
           ],
         },
       },
     },
     xAxis: {
+      type: "datetime",
+      tickInterval: 1,
+      visible: true,
       title: {
         text: props.xAxisName ? props.xAxisName : "Timestamp",
         style: {
           fontSize: "18px",
         },
       },
-      categories: props.data.map((v) => {
-        return Highcharts.dateFormat(
-          //   "%Y-%m-%d
-          "%H:%M:%S.%L",
-          new Date(v.xVal).getTime()
-        );
-      }),
+      categories: "",
     },
     yAxis: {
       title: {
@@ -70,68 +65,118 @@ function LiveChart(props) {
         },
       },
     },
-    series: [
-      {
-        name: props.datasetName ? props.datasetName : "",
-        data: props.data.map((v) => {
-          return v.yVal;
-        }),
-      },
-    ],
+    series: {
+      name: "",
+      data: "",
+    },
   });
 
   useEffect(() => {
-    const updateChartOptions = () => {
-      setChartOption({
-        plotOptions: {
-          series: {
-            color: props.datasetColor
-              ? props.datasetColor.rgb
-              : Highcharts.getOptions().colors[0],
-            fillColor: {
-              linearGradient: [0, 0, 0, 200],
-              stops: [
-                [
-                  0,
-                  props.datasetColor
-                    ? props.datasetColor.rgb
-                    : Highcharts.getOptions().colors[0],
-                ],
-                [
-                  1,
-                  props.datasetColor
-                    ? props.datasetColor.rgba
-                    : Highcharts.color(Highcharts.getOptions().colors[0])
-                        .setOpacity(0)
-                        .get("rgba"),
-                ],
-              ],
-            },
-          },
+    const getSeriesColors = (data) => {
+      return {
+        color: data.datasetColor
+          ? data.datasetColor.rgb
+          : Highcharts.getOptions().colors[0],
+        fillColor: {
+          linearGradient: [0, 0, 0, 200],
+          stops: [
+            [
+              0,
+              data.datasetColor
+                ? data.datasetColor.rgb
+                : Highcharts.getOptions().colors[0],
+            ],
+            [
+              1,
+              data.datasetColor
+                ? data.datasetColor.rgba
+                : Highcharts.color(Highcharts.getOptions().colors[0])
+                    .setOpacity(0)
+                    .get("rgba"),
+            ],
+          ],
         },
-        xAxis: {
-          categories: props.data.map((v) => {
-            return Highcharts.dateFormat(
-              //   "%Y-%m-%d
-              "%H:%M:%S.%L",
-              new Date(v.xVal).getTime()
-            );
-          }),
-        },
-        series: {
-          name: props.datasetName ? props.datasetName : "",
-          data: props.data.map((v) => {
-            return v.yVal;
-          }),
-        },
+      };
+    };
+
+    const getCategories = (data) => {
+      if (isTimestampMode) {
+        return data.dataArray
+          ? data.dataArray.map((value, index) => {
+              return Highcharts.dateFormat(
+                //   "%Y-%m-%d
+                "%H:%M:%S.%L",
+                new Date(value.xVal).getTime()
+              );
+            })
+          : "";
+      } else {
+        return null;
+      }
+    };
+
+    const calculateSeriesData = () => {
+      let maxIndex = 0;
+      return props.chartData.map((data) => {
+        if (data) {
+          const seriesData = getSeriesData(maxIndex, data);
+          maxIndex = maxIndex + data.dataArray.length;
+          return seriesData;
+        } else {
+          return "";
+        }
       });
     };
-    updateChartOptions();
-  }, [props.data, props.datasetColor, props.datasetName]);
+
+    const getSeriesData = (maxIndex, data) => {
+      let datasetName = data.datasetName ? data.datasetName : "No data";
+      let seriesData;
+      if (data.dataArray) {
+        seriesData = data.dataArray.map((value, currentIndex) => {
+          let categoryIndex = currentIndex;
+          if (isTimestampMode) {
+            categoryIndex = categoryIndex + maxIndex;
+          }
+          return [categoryIndex, value.yVal];
+        });
+      } else {
+        seriesData = "";
+      }
+
+      return {
+        name: datasetName,
+        data: seriesData,
+      };
+    };
+
+    const updatePlotOptions = () => {
+      return {
+        plotOptions: {
+          series: props.chartData.map((data) =>
+            data ? getSeriesColors(data) : ""
+          ),
+        },
+        xAxis: {
+          categories: props.chartData
+            .map((data) => getCategories(data))
+            .flat(1),
+        },
+        series: calculateSeriesData(),
+      };
+    };
+
+    if (props.chartData) {
+      setChartOption(updatePlotOptions());
+    }
+  }, [props.chartData, isTimestampMode]);
 
   return (
-    <div className="w-full h-full p-6">
+    <div className="block p-6 max-w-full min-w-fit">
       <HighchartsReact highcharts={Highcharts} options={chartOptions} />
+      <SwitchChartMode
+        isTimestampMode={isTimestampMode}
+        setIsTimestampMode={setIsTimestampMode}
+      />
     </div>
   );
 }

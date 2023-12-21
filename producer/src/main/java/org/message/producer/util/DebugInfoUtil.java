@@ -16,6 +16,7 @@ public class DebugInfoUtil {
 
     public static DebugInfo generateDebugInfo(
             UUID testUUID,
+            String brokerType,
             double testStatusPercent,
             Integer messagesObtained,
             double systemAverageCpu,
@@ -26,6 +27,7 @@ public class DebugInfoUtil {
         return DebugInfo.builder()
                 .uuid(debugInfoUUID)
                 .testUUID(testUUID)
+                .brokerType(brokerType)
                 .testStatusPercentage(testStatusPercent)
                 .producedTimestamp(Instant.now())
                 .consumedTimestamp(null)

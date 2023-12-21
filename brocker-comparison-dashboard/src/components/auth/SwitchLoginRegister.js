@@ -28,8 +28,8 @@ function SwitchLoginRegister() {
         <span
           className={`flex w-full items-center justify-center rounded-t-md ${
             !authMode.value
-              ? "bg-white text-slate-300"
-              : "bg-slate-500 bg-opacity-30"
+              ? "bg-white text-slate-500"
+              : "bg-slate-800 bg-opacity-80"
           }`}
         >
           <div className="flex p-2 items-center">
@@ -40,8 +40,8 @@ function SwitchLoginRegister() {
         <span
           className={`flex w-full items-center justify-center rounded-t-md ${
             authMode.value
-              ? "bg-white text-slate-300"
-              : "bg-slate-500 bg-opacity-30"
+              ? "bg-white text-slate-500"
+              : "bg-slate-800 bg-opacity-80"
           }`}
         >
           <div className="flex p-2 items-center">

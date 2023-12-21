@@ -18,6 +18,7 @@ import java.util.UUID;
 public class DebugInfo {
     private UUID uuid;
     private UUID testUUID;
+    private String brokerType;
     private double testStatusPercentage;
     private Instant producedTimestamp;
     private Instant consumedTimestamp;

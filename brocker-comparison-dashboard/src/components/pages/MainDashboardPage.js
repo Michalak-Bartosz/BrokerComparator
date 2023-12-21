@@ -3,17 +3,21 @@ import useApi from "../../connections/api/useApi";
 import ConsumerDataVisualization from "../compare/consumer/ConsumerDataVisualization";
 import ProducerDataVisualization from "../compare/producer/ProducerDataVisualization";
 import TestSettingsMenu from "../compare/TestSettingsMenu";
+import { KAFKA_BROKER } from "../compare/constants/brokerType";
+import DbOverview from "../compare/DbOverview";
 
 function MainDashboardPage() {
   const api = useApi();
+  const [testInProgress, setTestInProgress] = useState(null);
   const [testUUID, setTestUUID] = useState(null);
-  const [numberOfMessagesToSend, setNumberOfMessagesToSend] = useState(20);
-  const [brokerType, setBrokerType] = useState("KAFKA");
+  const [numberOfMessagesToSend, setNumberOfMessagesToSend] = useState(10);
+  const [numberOfAttempts, setNumberOfAttempts] = useState(1);
+  const [brokerTypes, setBrokerTypes] = useState(KAFKA_BROKER.value);
 
-  async function performTest() {
+  async function sendRequest() {
     try {
       let testSettings = {
-        brokerType: brokerType,
+        brokerTypes: brokerTypes,
         numberOfMessagesToSend: numberOfMessagesToSend,
       };
       const response = await api.performTest(testSettings);
@@ -23,28 +27,50 @@ function MainDashboardPage() {
     }
   }
 
+  const transactions = {};
+
+  function doTransaction(name, promiseFunc) {
+    transactions[name] = (transactions[name] || Promise.resolve()).then(
+      promiseFunc
+    );
+  }
+
+  function performTest() {
+    setTestInProgress(true);
+    for (let i = 0; i < numberOfAttempts; i++) {
+      doTransaction(i, sendRequest());
+    }
+    setTestInProgress(false);
+  }
+
   return (
     <div className="block m-8">
-      <TestSettingsMenu
-        numberOfMessagesToSend={numberOfMessagesToSend}
-        setNumberOfMessagesToSend={setNumberOfMessagesToSend}
-        setBrokerType={setBrokerType}
-        performTest={performTest}
-      />
-      <div className="flex text-center my-10">
-        <div id="kafka-content-wrapper" className="w-full">
-          <h1 className="text-5xl font-bold text-blue-500 mb-4">Kafka</h1>
-          <div className="bg-lime-600 bg-opacity-20 rounded-lg p-4 mb-8">
-            <ProducerDataVisualization testUUID={testUUID} />
-          </div>
-          <div className="bg-teal-600 bg-opacity-20 rounded-lg p-4">
-            <ConsumerDataVisualization testUUID={testUUID} />
-          </div>
+      <div className="grid grid-cols-3 gap-6">
+        <TestSettingsMenu
+          numberOfMessagesToSend={numberOfMessagesToSend}
+          setNumberOfMessagesToSend={setNumberOfMessagesToSend}
+          numberOfAttempts={numberOfAttempts}
+          setNumberOfAttempts={setNumberOfAttempts}
+          setBrokerTypes={setBrokerTypes}
+          performTest={performTest}
+          testInProgress={testInProgress}
+        />
+        <div className="col-span-2">
+          <DbOverview />
         </div>
-        {/* <div className="flex-none w-1 min-h-full rounded-md bg-slate-500 mx-4" /> */}
-        {/* <div id="rabbitmq-content-wrapper" className="w-1/2">
-          <h1 className="grow text-5xl font-bold text-blue-500">Rabbit Mq</h1>
-        </div> */}
+      </div>
+
+      <div className="flex text-center my-10">
+        <div id="content-wrapper" className="w-full">
+          <ProducerDataVisualization
+            testUUID={testUUID}
+            brokerTypes={brokerTypes}
+          />
+          <ConsumerDataVisualization
+            testUUID={testUUID}
+            brokerTypes={brokerTypes}
+          />
+        </div>
       </div>
     </div>
   );

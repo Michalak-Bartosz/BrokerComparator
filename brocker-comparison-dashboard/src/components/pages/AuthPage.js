@@ -44,7 +44,7 @@ function AuthPage() {
   }
 
   return (
-    <div className="block m-auto mt-24 w-fit rounded-md">
+    <div className="block mx-auto my-12 w-fit rounded-md">
       <SwitchLoginRegister />
       {authMode.value ? (
         <LogInForm logInUser={logInUser} />

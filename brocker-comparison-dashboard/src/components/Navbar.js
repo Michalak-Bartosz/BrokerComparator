@@ -16,7 +16,7 @@ function Navbar() {
     >
       <div id="title-wrapper" className="flex my-auto">
         <IoGitCompareSharp className="text-6xl text-blue-500 mr-4 my-auto" />
-        <h1 className="font-bold text-4xl my-auto">
+        <h1 className="font-bold text-4xl my-auto drop-shadow-[0_3.2px_3.2px_rgba(37,99,235,1)]">
           Broker Comparator Dashboard
         </h1>
       </div>

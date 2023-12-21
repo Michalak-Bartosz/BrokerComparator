@@ -1,6 +1,5 @@
 package org.message.consumer.kafka;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.message.consumer.util.DebugInfoUtil;
 import org.message.consumer.util.StreamMessageUtil;
@@ -8,7 +7,6 @@ import org.message.model.DebugInfo;
 import org.message.model.Report;
 import org.message.model.User;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.annotation.PartitionOffset;
 import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
@@ -19,11 +17,10 @@ import static org.message.consumer.util.MetricUtil.*;
 
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class KafkaConsumer {
 
     @KafkaListener(topicPartitions = @TopicPartition(topic = "${spring.kafka.topic.user-data-topic}",
-            partitionOffsets = {@PartitionOffset(partition = "0", initialOffset = "0")}),
+            partitions = "0"),
             groupId = "${spring.kafka.consumer.group-id}")
     public void consumeUsers(@Payload User user,
                              @Header(KafkaHeaders.PARTITION) String partition,
@@ -34,7 +31,7 @@ public class KafkaConsumer {
     }
 
     @KafkaListener(topicPartitions = @TopicPartition(topic = "${spring.kafka.topic.report-data-topic}",
-            partitionOffsets = {@PartitionOffset(partition = "0", initialOffset = "0")}),
+            partitions = "0"),
             groupId = "${spring.kafka.consumer.group-id}")
     public void consumeReports(@Payload Report report,
                                @Header(KafkaHeaders.PARTITION) String partition,
@@ -45,7 +42,7 @@ public class KafkaConsumer {
     }
 
     @KafkaListener(topicPartitions = @TopicPartition(topic = "${spring.kafka.topic.debug-info-data-topic}",
-            partitionOffsets = {@PartitionOffset(partition = "0", initialOffset = "0")}),
+            partitions = "0"),
             groupId = "${spring.kafka.consumer.group-id}")
     public void consumeDebugInfo(@Payload DebugInfo debugInfo,
                                  @Header(KafkaHeaders.PARTITION) String partition,

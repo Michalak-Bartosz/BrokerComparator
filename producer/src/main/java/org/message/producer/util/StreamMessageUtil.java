@@ -8,10 +8,15 @@ import org.message.model.User;
 import org.message.producer.exception.ConsumeStreamMessageTypeNPException;
 import org.message.producer.exception.NotValidStreamMessageTypeException;
 
+import java.util.Comparator;
+import java.util.PriorityQueue;
+
+import static org.message.producer.util.MessageType.*;
+
 @Slf4j
 @UtilityClass
 public class StreamMessageUtil {
-    private static final StreamQueue<DebugInfo> DEBUG_INFO_STREAM_QUEUE = new StreamQueue<>();
+    private static final PriorityQueue<DebugInfo> DEBUG_INFO_STREAM_QUEUE = new PriorityQueue<>(Comparator.comparingInt(DebugInfo::getCountOfProducedMessages));
     private static final StreamQueue<User> USER_STREAM_QUEUE = new StreamQueue<>();
     private static final StreamQueue<Report> REPORT_STREAM_QUEUE = new StreamQueue<>();
 
@@ -33,19 +38,28 @@ public class StreamMessageUtil {
     public static Object consumeMessage(MessageType messageType) {
         switch (messageType) {
             case DEBUG_INFO -> {
-                DebugInfo debugInfo = DEBUG_INFO_STREAM_QUEUE.poll();
-                log.debug("CONSUMED DEBUG INFO MESSAGE: {}", debugInfo);
-                return debugInfo;
+                if (getCountMessages(DEBUG_INFO) > 0) {
+                    DebugInfo debugInfo = DEBUG_INFO_STREAM_QUEUE.poll();
+                    log.debug("CONSUMED DEBUG INFO MESSAGE: {}", debugInfo);
+                    return debugInfo;
+                }
+                return null;
             }
             case USER -> {
-                User user = USER_STREAM_QUEUE.poll();
-                log.debug("CONSUMED USER MESSAGE: {}", user);
-                return user;
+                if (getCountMessages(USER) > 0) {
+                    User user = USER_STREAM_QUEUE.poll();
+                    log.debug("CONSUMED USER MESSAGE: {}", user);
+                    return user;
+                }
+                return null;
             }
             case REPORT -> {
-                Report report = REPORT_STREAM_QUEUE.poll();
-                log.debug("CONSUMED DEBUG INFO MESSAGE: {}", report);
-                return report;
+                if (getCountMessages(REPORT) > 0) {
+                    Report report = REPORT_STREAM_QUEUE.poll();
+                    log.debug("CONSUMED DEBUG INFO MESSAGE: {}", report);
+                    return report;
+                }
+                return null;
             }
             case null -> throw new ConsumeStreamMessageTypeNPException();
             default -> throw new NotValidStreamMessageTypeException();

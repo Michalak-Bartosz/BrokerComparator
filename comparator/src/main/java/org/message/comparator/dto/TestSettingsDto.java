@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.message.comparator.util.BrokerType;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -13,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TestSettingsDto {
-    private BrokerType brokerType;
+    private List<BrokerType> brokerTypes;
     private Integer numberOfMessagesToSend;
     private UUID testUUID;
 }

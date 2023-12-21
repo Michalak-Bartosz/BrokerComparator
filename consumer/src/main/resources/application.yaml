@@ -19,6 +19,11 @@ spring:
       user-data-topic: "user-data-events-topic"
       report-data-topic: "report-data-events-topic"
       debug-info-data-topic: "debug-info-data-events-topic"
+  rabbitmq:
+    exchange:
+      user-name: "user-data-exchange"
+      report-name: "report-data-exchange"
+      debug-info-name: "debug-info-exchange"
   datasource:
     url: jdbc:mysql://localhost:3306/broker_comparison?encrypt=true&trustServerCertificate=true
     driverClassName: com.mysql.cj.jdbc.Driver

@@ -16,7 +16,6 @@ import org.springframework.kafka.support.KafkaHeaders;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 @UtilityClass
 public class KafkaMessageUtil {
@@ -27,18 +26,18 @@ public class KafkaMessageUtil {
     public static <T> ProducerRecord<String, T> getKafkaProducerRecord(String topic, T object) {
         return switch (object) {
             case User u ->
-                    new ProducerRecord<>(topic, USER_TOPIC_PARTITION, generateKafkaKey(u.getUuid(), User.class.getSimpleName()), (T) u, generateHeaders(User.class.getSimpleName(), USER_TOPIC_PARTITION));
+                    new ProducerRecord<>(topic, USER_TOPIC_PARTITION, generateKafkaKey(User.class.getSimpleName()), (T) u, generateHeaders(User.class.getSimpleName(), USER_TOPIC_PARTITION));
             case Report r ->
-                    new ProducerRecord<>(topic, REPORT_TOPIC_PARTITION, generateKafkaKey(r.getUserUuid(), Report.class.getSimpleName()), (T) r, generateHeaders(Report.class.getSimpleName(), REPORT_TOPIC_PARTITION));
+                    new ProducerRecord<>(topic, REPORT_TOPIC_PARTITION, generateKafkaKey(Report.class.getSimpleName()), (T) r, generateHeaders(Report.class.getSimpleName(), REPORT_TOPIC_PARTITION));
             case DebugInfo d ->
-                    new ProducerRecord<>(topic, DEBUG_INFO_TOPIC_PARTITION, generateKafkaKey(d.getUuid(), DebugInfo.class.getSimpleName()), (T) d, generateHeaders(DebugInfo.class.getSimpleName(), DEBUG_INFO_TOPIC_PARTITION));
+                    new ProducerRecord<>(topic, DEBUG_INFO_TOPIC_PARTITION, generateKafkaKey(DebugInfo.class.getSimpleName()), (T) d, generateHeaders(DebugInfo.class.getSimpleName(), DEBUG_INFO_TOPIC_PARTITION));
             case null -> throw new NullProducerRecordException();
             default -> throw new UnsupportedProducerRecordException();
         };
     }
 
-    private static String generateKafkaKey(UUID uuid, String className) {
-        return StringUtils.lowerCase("kafka-" + className + "-key-" + uuid);
+    private static String generateKafkaKey(String className) {
+        return StringUtils.lowerCase("kafka-" + className + "-key");
     }
 
     private static List<Header> generateHeaders(String className, Integer partition) {

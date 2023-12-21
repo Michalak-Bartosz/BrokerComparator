@@ -38,9 +38,17 @@ public class ComparatorApplication {
                     .password("admin1Dashboard2Password3!")
                     .role(ADMIN)
                     .build();
-            final String accessToken = service.register(admin).getAccessToken();
+            final String adminAccessToken = service.register(admin).getAccessToken();
 
-            log.info("Admin token: {}", accessToken);
+            var test = RegisterRequestDto.builder()
+                    .username("Test")
+                    .password("123")
+                    .role(ADMIN)
+                    .build();
+            final String testAccessToken = service.register(test).getAccessToken();
+
+            log.info("Admin token: {}", adminAccessToken);
+            log.info("Test token: {}", testAccessToken);
         };
     }
 }

@@ -4,7 +4,6 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import AuthPage from "./pages/AuthPage";
 import { useSelector } from "react-redux";
-import { CookiesProvider } from "react-cookie";
 
 function App() {
   const accessToken = useSelector((state) => state.token.accessToken);
@@ -19,21 +18,25 @@ function App() {
   return (
     <div
       id="body-wrapper"
-      className="m-auto min-h-full min-w-full bg-gradient-to-t from-slate-300 to-white font-openSans"
+      className="absolute m-auto min-h-full min-w-full 
+      bg-slate-700  
+      font-openSans
+      text-white"
     >
       <Navbar />
-      <div id="page-content-wrapper" className="h-full mt-32 p-8">
-        <CookiesProvider>
-          <Routes>
-            <Route element={<PrivateRoute />}>
-              <Route path="/" element={<MainDashboardPage />} />
-            </Route>
+      <div
+        id="page-content-wrapper"
+        className="min-h-full min-w-full mt-32 mb-16 p-8"
+      >
+        <Routes>
+          <Route element={<PrivateRoute />}>
+            <Route path="/" element={<MainDashboardPage />} />
+          </Route>
 
-            <Route element={<AnonymousRoute />}>
-              <Route path="/auth" element={<AuthPage />} />
-            </Route>
-          </Routes>
-        </CookiesProvider>
+          <Route element={<AnonymousRoute />}>
+            <Route path="/auth" element={<AuthPage />} />
+          </Route>
+        </Routes>
       </div>
       <Footer />
     </div>
