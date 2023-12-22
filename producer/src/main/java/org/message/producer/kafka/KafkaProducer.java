@@ -6,17 +6,15 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.message.model.DebugInfo;
 import org.message.model.Report;
 import org.message.model.User;
-import org.message.producer.exception.DelayBetweenTestException;
 import org.message.producer.util.StreamMessageUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.message.producer.kafka.util.KafkaMessageUtil.getKafkaProducerRecord;
-import static org.message.producer.service.TestService.getTestStatusPercentage;
+import static org.message.producer.service.TestService.*;
 import static org.message.producer.util.DebugInfoUtil.generateDebugInfo;
 import static org.message.producer.util.MetricUtil.*;
 
@@ -39,9 +37,7 @@ public class KafkaProducer {
     private static final String BROKER_TYPE = "KAFKA";
 
     public void sendRecord(UUID testUUID,
-                           int messagesObtainedInTest,
-                           int totalMessagesObtained,
-                           int totalMessagesToSend,
+                           int messagesObtainedInAttempt,
                            User user) {
         final double systemCpuBefore = getSystemCpuUsagePercentage();
         final double appCpuBefore = getAppCpuUsagePercentage();
@@ -72,8 +68,8 @@ public class KafkaProducer {
 
         DebugInfo debugInfo = generateDebugInfo(testUUID,
                 BROKER_TYPE,
-                getTestStatusPercentage(totalMessagesObtained, totalMessagesToSend),
-                messagesObtainedInTest,
+                getTestStatusPercentage(),
+                messagesObtainedInAttempt,
                 systemAverageCpu,
                 appAverageCpu);
         ProducerRecord<String, DebugInfo> debugInfoKafkaRecord = getKafkaProducerRecord(debugInfoDataTopic, debugInfo);

@@ -36,6 +36,7 @@ function ProducerDataVisualizationTEST(props) {
     let commitedMemoArray = [];
     let systemCpuArray = [];
     let appCpuArray = [];
+    let chartDataArrayValue = [];
 
     const updateTestStatus = (debugInfo) => {
       setTestStatus(debugInfo.testStatusPercentage);
@@ -130,12 +131,13 @@ function ProducerDataVisualizationTEST(props) {
     };
 
     const updateChartDataArray = (brokerType) => {
+      chartDataArrayValue.push(getNewChartDataArrayValue(brokerType));
       if (chartDataArray.length === 0) {
-        setChartDataArray([getNewChartDataArrayValue(brokerType)]);
+        setChartDataArray([...chartDataArrayValue]);
       } else {
-        setChartDataArray((prevValue) => [
-          ...prevValue,
-          getNewChartDataArrayValue(brokerType),
+        setChartDataArray((prevArray) => [
+          ...prevArray,
+          ...chartDataArrayValue,
         ]);
       }
     };
@@ -148,32 +150,58 @@ function ProducerDataVisualizationTEST(props) {
 
     const resetTestStates = () => {
       dispatch(clearProducerTestInfoArrayAction());
+      receivedMsgArray = [];
+      initMemoArray = [];
+      usedHeapMemoArray = [];
+      maxHeapMemoArray = [];
+      commitedMemoArray = [];
+      systemCpuArray = [];
+      appCpuArray = [];
     };
 
-    const startListenDebugInfoMessageStream = (brokerType) => {
-      let totalMessagesInTest =
-        props.numberOfMessagesToSend * props.numberOfAttempts;
+    const calculateTotalMessagesInTest = () => {
+      return (
+        props.numberOfMessagesToSend *
+        props.numberOfAttempts *
+        props.brokerTypes.length
+      );
+    };
+
+    const handleNewBrokerType = (currentBrokerType, newBrokerType) => {
+      if (currentBrokerType && currentBrokerType !== newBrokerType) {
+        updateChartDataArray(currentBrokerType);
+        resetTestStates();
+      }
+    };
+
+    const startListenDebugInfoMessageStream = () => {
+      let totalMessagesInTest = calculateTotalMessagesInTest();
       let receivedMsgCounter = 0;
+      let currentBrokerType;
       props.setIsInProgress(true);
-      setDatasetName(getDatasetName(brokerType));
       eventSource = new EventSource(
         BASE_URL.PRODUCER_STREAM_DATA_API_URL + "/debug-info"
       );
+
       eventSource.onopen = (event) => {
-        console.log(
-          "START PRODUCER LISTEN DEBUG INFO STREAM. Broker Type: " + brokerType
-        );
+        console.log("START PRODUCER LISTEN DEBUG INFO STREAM.");
       };
+
       eventSource.onmessage = (event) => {
         if (event.data) {
           const debugInfo = JSON.parse(event.data);
+          let newBrokerType = debugInfo.brokerType;
+          handleNewBrokerType(currentBrokerType, newBrokerType);
+          currentBrokerType = newBrokerType;
+          setDatasetName(getDatasetName(currentBrokerType));
           updateChartData(debugInfo);
           receivedMsgCounter++;
           if (receivedMsgCounter === totalMessagesInTest) {
-            endListenDebugInfoMessageStream(brokerType);
+            endListenDebugInfoMessageStream(currentBrokerType);
           }
         }
       };
+
       eventSource.onerror = (event) => {
         errorHandler(event);
       };
@@ -186,6 +214,7 @@ function ProducerDataVisualizationTEST(props) {
           "PRODUCER EVENTSOURCE CLOSED (" + event.target.readyState + ")"
         );
       }
+      props.setIsInProgress(false);
       eventSource.close();
     };
 
@@ -202,10 +231,8 @@ function ProducerDataVisualizationTEST(props) {
     }
 
     const handleStartTest = () => {
-      props.brokerTypes.forEach((brokerType) => {
-        resetTestStates();
-        startListenDebugInfoMessageStream(brokerType);
-      });
+      resetTestStates();
+      startListenDebugInfoMessageStream();
     };
 
     if (props.testUUID) {

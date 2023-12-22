@@ -18,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
-import static org.message.producer.service.TestService.getTestStatusPercentage;
+import static org.message.producer.service.TestService.*;
 import static org.message.producer.util.DebugInfoUtil.generateDebugInfo;
 import static org.message.producer.util.MetricUtil.*;
 
@@ -37,9 +37,7 @@ public class RabbitMqProducer {
     private static final String BROKER_TYPE = "RABBITMQ";
 
     public void sendRecord(UUID testUUID,
-                           int messagesObtainedInTest,
-                           int totalMessagesObtained,
-                           int totalMessagesToSend,
+                           int messagesObtainedInAttempt,
                            User user) {
         final double systemCpuBefore = getSystemCpuUsagePercentage();
         final double appCpuBefore = getAppCpuUsagePercentage();
@@ -64,8 +62,8 @@ public class RabbitMqProducer {
 
             DebugInfo debugInfo = generateDebugInfo(testUUID,
                     BROKER_TYPE,
-                    getTestStatusPercentage(totalMessagesObtained, totalMessagesToSend),
-                    messagesObtainedInTest,
+                    getTestStatusPercentage(),
+                    messagesObtainedInAttempt,
                     systemAverageCpu,
                     appAverageCpu);
             StreamMessageUtil.addMessage(debugInfo);

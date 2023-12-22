@@ -150,30 +150,49 @@ function ConsumerDataVisualization(props) {
       dispatch(clearConsumerTestInfoArrayAction());
     };
 
-    const startListenDebugInfoMessageStream = (brokerType) => {
-      let totalMessagesInTest =
-        props.numberOfMessagesToSend * props.numberOfAttempts;
+    const calculateTotalMessagesInTest = () => {
+      return (
+        props.numberOfMessagesToSend *
+        props.numberOfAttempts *
+        props.brokerTypes.length
+      );
+    };
+
+    const handleNewBrokerType = (currentBrokerType, newBrokerType) => {
+      if (currentBrokerType && currentBrokerType !== newBrokerType) {
+        updateChartDataArray(currentBrokerType);
+        resetTestStates();
+      }
+    };
+
+    const startListenDebugInfoMessageStream = () => {
+      let totalMessagesInTest = calculateTotalMessagesInTest();
       let receivedMsgCounter = 0;
+      let currentBrokerType;
       props.setIsInProgress(true);
-      setDatasetName(getDatasetName(brokerType));
       eventSource = new EventSource(
         BASE_URL.CONSUMER_STREAM_DATA_API_URL + "/debug-info"
       );
+
       eventSource.onopen = (event) => {
-        console.log(
-          "START CONSUMER LISTEN DEBUG INFO STREAM. Broker Type: " + brokerType
-        );
+        console.log("START CONSUMER LISTEN DEBUG INFO STREAM.");
       };
+
       eventSource.onmessage = (event) => {
         if (event.data) {
           const debugInfo = JSON.parse(event.data);
+          let newBrokerType = debugInfo.brokerType;
+          handleNewBrokerType(currentBrokerType, newBrokerType);
+          currentBrokerType = newBrokerType;
+          setDatasetName(getDatasetName(currentBrokerType));
           updateChartData(debugInfo);
           receivedMsgCounter++;
           if (receivedMsgCounter === totalMessagesInTest) {
-            endListenDebugInfoMessageStream(brokerType);
+            endListenDebugInfoMessageStream(currentBrokerType);
           }
         }
       };
+
       eventSource.onerror = (event) => {
         errorHandler(event);
       };
@@ -202,10 +221,8 @@ function ConsumerDataVisualization(props) {
     }
 
     const handleStartTest = () => {
-      props.brokerTypes.forEach((brokerType) => {
-        resetTestStates();
-        startListenDebugInfoMessageStream(brokerType);
-      });
+      resetTestStates();
+      startListenDebugInfoMessageStream();
     };
 
     if (props.testUUID) {

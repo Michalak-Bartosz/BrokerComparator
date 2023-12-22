@@ -14,13 +14,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @RequiredArgsConstructor
 public class TestService {
 
-    public static double getTestStatusPercentage(int messagesObtained, int messagesTotal) {
-        return (messagesObtained * 100.0) / messagesTotal;
+    public static final AtomicInteger TOTAL_MESSAGES_TO_SEND = new AtomicInteger();
+    public static final AtomicInteger TOTAL_MESSAGES_OBTAINED = new AtomicInteger();
+
+    public static double getTestStatusPercentage() {
+        return (TOTAL_MESSAGES_OBTAINED.get() * 100.0) / TOTAL_MESSAGES_TO_SEND.get();
     }
 
     private final KafkaProducer kafkaProducer;
@@ -36,51 +40,54 @@ public class TestService {
 
     @Transactional
     public synchronized void performTest(TestSettingsDto testSettingsDto) {
-        Integer totalMessagesToSend = testSettingsDto.getNumberOfMessagesToSend() * testSettingsDto.getNumberOfAttempts();
-        List<User> users = new ArrayList<>();
-        prepareData(testSettingsDto.getTestUUID(), totalMessagesToSend, users);
+        List<User> users = prepareData(testSettingsDto);
+        TOTAL_MESSAGES_TO_SEND.set(calculateTotalMessagesToSend(testSettingsDto));
+        TOTAL_MESSAGES_OBTAINED.set(1);
         testSettingsDto.getBrokerTypes().forEach(brokerType ->
                 sendRecords(brokerType,
-                        testSettingsDto.getTestUUID(),
-                        testSettingsDto.getNumberOfMessagesToSend(),
-                        testSettingsDto.getNumberOfAttempts(),
-                        testSettingsDto.getDelayInMilliseconds(),
+                        testSettingsDto,
                         users)
         );
     }
 
-    private static void prepareData(UUID testUUID, Integer numberOfMessagesToSend, List<User> users) {
+    private List<User> prepareData(TestSettingsDto testSettingsDto) {
+        List<User> users = new ArrayList<>();
+        int totalMessagesToSendInAttempt = testSettingsDto.getNumberOfMessagesToSend() * testSettingsDto.getNumberOfAttempts();
         int messagesObtained = 1;
-        while (messagesObtained <= numberOfMessagesToSend) {
-            User user = RandomUtil.generateUser(testUUID);
+        while (messagesObtained <= totalMessagesToSendInAttempt) {
+            User user = RandomUtil.generateUser(testSettingsDto.getTestUUID());
             users.add(user);
             messagesObtained++;
         }
+        return users;
     }
 
-    public void sendRecords(BrokerType brokerType,
-                            UUID testUUID,
-                            Integer numberOfMessagesToSend,
-                            Integer numberOfAttempts,
-                            Long delayInMilliseconds,
-                            List<User> users) {
+    private int calculateTotalMessagesToSend(TestSettingsDto testSettingsDto) {
+        return testSettingsDto.getNumberOfMessagesToSend() * testSettingsDto.getNumberOfAttempts() * testSettingsDto.getBrokerTypes().size();
+    }
+
+    private void sendRecords(BrokerType brokerType,
+                             TestSettingsDto testSettingsDto,
+                             List<User> users) {
         TestRunnerFunction testRunnerFunction = Optional.ofNullable(testRunnerMap.get(brokerType))
                 .orElseThrow(() -> new UnsupportedBrokerTypeException(brokerType));
-        int totalMessagesToSend = numberOfMessagesToSend * numberOfAttempts;
-        int totalMessagesObtained = 1;
+        int messagesObtainedInTest = 0;
         int attemptCounter = 0;
+        int numberOfAttempts = testSettingsDto.getNumberOfAttempts();
+        int numberOfMessagesToSend = testSettingsDto.getNumberOfMessagesToSend();
+        long delayInMilliseconds = testSettingsDto.getDelayInMilliseconds();
+        UUID testUUID = testSettingsDto.getTestUUID();
 
         while (attemptCounter < numberOfAttempts) {
-            int messagesObtainedInTest = 1;
-            while (messagesObtainedInTest <= numberOfMessagesToSend) {
-                User user = users.get(totalMessagesObtained - 1);
+            int messagesObtainedInAttempt = 1;
+            while (messagesObtainedInAttempt <= numberOfMessagesToSend) {
+                User user = users.get(messagesObtainedInTest);
                 testRunnerFunction.apply(testUUID,
-                        messagesObtainedInTest,
-                        totalMessagesObtained,
-                        totalMessagesToSend,
+                        messagesObtainedInAttempt,
                         user);
+                messagesObtainedInAttempt++;
                 messagesObtainedInTest++;
-                totalMessagesObtained++;
+                TOTAL_MESSAGES_OBTAINED.incrementAndGet();
             }
             attemptCounter++;
             waitBetweenNextTest(numberOfAttempts, delayInMilliseconds);
@@ -101,6 +108,6 @@ public class TestService {
 
     @FunctionalInterface
     private interface TestRunnerFunction {
-        void apply(UUID testUUID, int messagesObtainedInTest, int totalMessagesObtained, int totalMessagesToSend, User user);
+        void apply(UUID testUUID, int messagesObtainedInTest, User user);
     }
 }
