@@ -58,8 +58,6 @@ const useApi = () => {
   async function generateTestReport(testUUID) {
     try {
       const response = await httpApi.get(`/test/${testUUID}/generate-report`);
-      console.log("GENERATED REPORT:");
-      console.log(response);
       return response;
     } catch (error) {
       throw error;

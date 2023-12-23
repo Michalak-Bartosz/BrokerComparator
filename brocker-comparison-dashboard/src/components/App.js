@@ -18,7 +18,7 @@ function App() {
   return (
     <div
       id="body-wrapper"
-      className="absolute m-auto min-h-full min-w-full 
+      className="absolute m-auto min-h-full w-full 
       bg-slate-700  
       font-openSans
       text-white"

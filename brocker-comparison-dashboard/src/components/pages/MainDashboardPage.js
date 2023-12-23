@@ -4,7 +4,7 @@ import ConsumerDataVisualization from "../compare/consumer/ConsumerDataVisualiza
 import ProducerDataVisualization from "../compare/producer/ProducerDataVisualization";
 import TestSettingsMenu from "../compare/TestSettingsMenu";
 import { KAFKA_BROKER } from "../compare/constants/brokerType";
-import DbOverview from "../compare/DbOverview";
+import TestReportOverview from "../compare/TestReportOverview";
 
 function MainDashboardPage() {
   const api = useApi();
@@ -15,6 +15,7 @@ function MainDashboardPage() {
   const [numberOfAttempts, setNumberOfAttempts] = useState(1);
   const [delayInMilliseconds, setDelayInMilliseconds] = useState(0);
   const [brokerTypes, setBrokerTypes] = useState(KAFKA_BROKER.value);
+  const [testReport, setTestReport] = useState(null);
 
   async function performTest() {
     try {
@@ -35,8 +36,7 @@ function MainDashboardPage() {
     console.log(testUUID);
     try {
       const response = await api.generateTestReport(testUUID);
-      console.log("RESPONSE:");
-      console.log(response);
+      setTestReport(response);
     } catch (e) {
       console.log(e);
     }
@@ -57,10 +57,15 @@ function MainDashboardPage() {
           testInProgressConsumer={testInProgressConsumer}
           testUUID={testUUID}
           performTest={performTest}
-          generateTestReport={generateTestReport}
         />
         <div className="col-span-2">
-          <DbOverview />
+          <TestReportOverview
+            testReport={testReport}
+            testInProgressProducer={testInProgressProducer}
+            testInProgressConsumer={testInProgressConsumer}
+            testUUID={testUUID}
+            generateTestReport={generateTestReport}
+          />
         </div>
       </div>
       <div className="flex text-center my-10">

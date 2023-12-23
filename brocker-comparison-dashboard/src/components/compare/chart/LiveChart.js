@@ -171,7 +171,7 @@ function LiveChart(props) {
   }, [props.chartData, isTimestampMode]);
 
   return (
-    <div className="block p-6 max-w-full min-w-fit">
+    <div className="block p-6 w-full">
       <HighchartsReact highcharts={Highcharts} options={chartOptions} />
       <SwitchChartMode
         isTimestampMode={isTimestampMode}

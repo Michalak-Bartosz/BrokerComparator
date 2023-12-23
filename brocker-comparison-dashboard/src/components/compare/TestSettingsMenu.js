@@ -44,7 +44,7 @@ function TestSettingsMenu(props) {
   return (
     <div
       id="test-settings-menu"
-      className="px-14 py-8 bg-slate-950 bg-opacity-40 rounded-lg shadow-lg"
+      className="px-14 py-8 bg-slate-950 bg-opacity-40 rounded-lg shadow-lg max-h-fit min-w-fit"
     >
       <div className="mb-6 border-y-4 border-slate-600 rounded-md py-4">
         <h1 className="text-4xl text-center text-blue-500 font-bold drop-shadow-[0_1.2px_1.2px_rgba(37,99,235,1)]">
@@ -178,38 +178,22 @@ function TestSettingsMenu(props) {
       {(!props.numberOfMessagesToSend || !props.numberOfAttempts) && (
         <Tooltip id="start-test-tooltip" className="text-2xl" />
       )}
-      <div className="grid grid-cols-2 gap-10">
-        <button
-          id="start-test-button"
-          data-tooltip-id="start-test-tooltip"
-          data-tooltip-html={startTestTooltip}
-          data-tooltip-place="bottom"
-          className="flex m-auto px-4 py-2 outline outline-offset-2 outline-green-700 rounded-md bg-green-800 hover:bg-green-600 disabled:bg-slate-400 disabled:outline-slate-500 text-white font-bold text-2xl"
-          disabled={
-            !props.numberOfMessagesToSend ||
-            !props.numberOfAttempts ||
-            props.testInProgressProducer ||
-            props.testInProgressConsumer
-          }
-          onClick={() => props.performTest()}
-        >
-          Start test
-        </button>
-        <button
-          id="generate-report-button"
-          className="flex m-auto px-4 py-2 outline outline-offset-2 outline-green-700 rounded-md bg-green-800 hover:bg-green-600 disabled:bg-slate-400 disabled:outline-slate-500 text-white font-bold text-2xl"
-          disabled={
-            !props.numberOfMessagesToSend ||
-            !props.numberOfAttempts ||
-            props.testInProgressProducer ||
-            props.testInProgressConsumer ||
-            !props.testUUID
-          }
-          onClick={() => props.generateTestReport()}
-        >
-          Generate Report
-        </button>
-      </div>
+      <button
+        id="start-test-button"
+        data-tooltip-id="start-test-tooltip"
+        data-tooltip-html={startTestTooltip}
+        data-tooltip-place="bottom"
+        className="flex m-auto px-4 py-2 outline outline-offset-2 outline-green-700 rounded-md bg-green-800 hover:bg-green-600 disabled:bg-slate-400 disabled:outline-slate-500 text-white font-bold text-2xl"
+        disabled={
+          !props.numberOfMessagesToSend ||
+          !props.numberOfAttempts ||
+          props.testInProgressProducer ||
+          props.testInProgressConsumer
+        }
+        onClick={() => props.performTest()}
+      >
+        Start test
+      </button>
     </div>
   );
 }
