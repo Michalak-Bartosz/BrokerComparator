@@ -1,4 +1,4 @@
-package org.message.comparator.entity;
+package org.message.comparator.entity.auth;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.message.comparator.entity.Permission.*;
+import static org.message.comparator.entity.auth.Permission.*;
 
 @Getter
 @RequiredArgsConstructor

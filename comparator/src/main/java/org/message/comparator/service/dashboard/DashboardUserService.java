@@ -1,9 +1,9 @@
-package org.message.comparator.service.dashboarduser;
+package org.message.comparator.service.dashboard;
 
 import lombok.RequiredArgsConstructor;
 import org.message.comparator.dto.dashboarduser.ChangePasswordRequestDto;
-import org.message.comparator.entity.DashboardUser;
-import org.message.comparator.repository.DashboardUserRepository;
+import org.message.comparator.entity.auth.DashboardUser;
+import org.message.comparator.repository.dashboard.DashboardUserRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

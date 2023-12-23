@@ -1,6 +1,9 @@
 package org.message.consumer.kafka;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.message.consumer.service.DebugInfoService;
+import org.message.consumer.service.UserService;
 import org.message.consumer.util.DebugInfoUtil;
 import org.message.consumer.util.StreamMessageUtil;
 import org.message.model.DebugInfo;
@@ -13,11 +16,15 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import static org.message.consumer.util.MetricUtil.*;
+import static org.message.consumer.util.metric.MetricUtil.*;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class KafkaConsumer {
+
+    private final UserService userService;
+    private final DebugInfoService debugInfoService;
 
     @KafkaListener(topicPartitions = @TopicPartition(topic = "${spring.kafka.topic.user-data-topic}",
             partitions = "0"),
@@ -26,6 +33,7 @@ public class KafkaConsumer {
                              @Header(KafkaHeaders.PARTITION) String partition,
                              @Header("event_produced_time") String producedTime,
                              @Header("record_type") String recordType) {
+        userService.saveUserModel(user);
         StreamMessageUtil.addMessage(user);
         log.debug("User record from partition [ {} ] produced time [ {} ] record type [ {} ] received -> {}", partition, producedTime, recordType, user.getUuid());
     }
@@ -51,8 +59,6 @@ public class KafkaConsumer {
         final double systemCpuBefore = getSystemCpuUsagePercentage();
         final double appCpuBefore = getAppCpuUsagePercentage();
 
-        //TODO Save in db logic
-
         final double systemCpuAfter = getSystemCpuUsagePercentage();
         final double appCpuAfter = getAppCpuUsagePercentage();
 
@@ -63,6 +69,7 @@ public class KafkaConsumer {
                 systemAverageCpu,
                 appAverageCpu);
 
+        debugInfoService.saveDebugInfoModel(debugInfo);
         StreamMessageUtil.addMessage(debugInfo);
         log.debug("DebugInfo record from partition [ {} ] produced time [ {} ] record type [ {} ] received -> {} test status percentage [ {}% ]", partition, producedTime, recordType, debugInfo.getUuid(), debugInfo.getTestStatusPercentage());
 

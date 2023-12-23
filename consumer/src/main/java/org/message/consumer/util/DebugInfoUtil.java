@@ -1,6 +1,7 @@
 package org.message.consumer.util;
 
 import lombok.experimental.UtilityClass;
+import org.message.consumer.util.metric.MetricUtil;
 import org.message.model.DebugInfo;
 import org.message.model.metric.CPUMetric;
 import org.message.model.metric.MemoryMetric;
@@ -16,7 +17,7 @@ public class DebugInfoUtil {
             double systemAverageCpu,
             double appAverageCpu) {
         Instant consumedTimestamp = Instant.now();
-        Duration deltaTimestamp = Duration.between(consumedTimestamp, debugInfo.getProducedTimestamp());
+        Duration deltaTimestamp = Duration.between(debugInfo.getProducedTimestamp(), consumedTimestamp);
         final MemoryMetric consumerMemoryMetric = MetricUtil.getMemoryMetrics();
         final CPUMetric consumerCPUMetric = MetricUtil.getCpuMetrics(systemAverageCpu, appAverageCpu);
 

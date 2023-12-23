@@ -2,8 +2,8 @@ package org.message.comparator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.message.comparator.dto.security.RegisterRequestDto;
-import org.message.comparator.entity.DashboardUser;
-import org.message.comparator.repository.DashboardUserRepository;
+import org.message.comparator.entity.auth.DashboardUser;
+import org.message.comparator.repository.dashboard.DashboardUserRepository;
 import org.message.comparator.service.security.AuthenticationService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
-import static org.message.comparator.entity.Role.ADMIN;
+import static org.message.comparator.entity.auth.Role.ADMIN;
 
 @Slf4j
 @SpringBootApplication

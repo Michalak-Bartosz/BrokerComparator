@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.message.comparator.entity.Role;
+import org.message.comparator.entity.auth.Role;
 
 @Data
 @Builder

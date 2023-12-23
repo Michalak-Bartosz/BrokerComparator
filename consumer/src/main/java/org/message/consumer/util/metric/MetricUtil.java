@@ -1,4 +1,4 @@
-package org.message.consumer.util;
+package org.message.consumer.util.metric;
 
 
 import com.sun.management.OperatingSystemMXBean;

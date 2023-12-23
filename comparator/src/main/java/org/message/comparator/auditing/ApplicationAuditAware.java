@@ -1,6 +1,6 @@
 package org.message.comparator.auditing;
 
-import org.message.comparator.entity.DashboardUser;
+import org.message.comparator.entity.auth.DashboardUser;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;

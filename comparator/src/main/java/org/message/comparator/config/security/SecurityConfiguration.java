@@ -19,8 +19,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 import static org.message.comparator.config.ApiConstants.REQUEST_MAPPING_NAME_PREFIX;
-import static org.message.comparator.entity.Permission.*;
-import static org.message.comparator.entity.Role.ADMIN;
+import static org.message.comparator.entity.auth.Permission.*;
+import static org.message.comparator.entity.auth.Role.ADMIN;
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 

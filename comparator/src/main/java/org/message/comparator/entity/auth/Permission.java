@@ -1,4 +1,4 @@
-package org.message.comparator.entity;
+package org.message.comparator.entity.auth;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

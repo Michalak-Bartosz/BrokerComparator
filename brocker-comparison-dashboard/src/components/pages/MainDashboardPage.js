@@ -31,6 +31,17 @@ function MainDashboardPage() {
     }
   }
 
+  async function generateTestReport() {
+    console.log(testUUID);
+    try {
+      const response = await api.generateTestReport(testUUID);
+      console.log("RESPONSE:");
+      console.log(response);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   return (
     <div className="block m-8">
       <div className="grid grid-cols-3 gap-6">
@@ -42,15 +53,16 @@ function MainDashboardPage() {
           delayInMilliseconds={delayInMilliseconds}
           setDelayInMilliseconds={setDelayInMilliseconds}
           setBrokerTypes={setBrokerTypes}
-          performTest={performTest}
           testInProgressProducer={testInProgressProducer}
           testInProgressConsumer={testInProgressConsumer}
+          testUUID={testUUID}
+          performTest={performTest}
+          generateTestReport={generateTestReport}
         />
         <div className="col-span-2">
           <DbOverview />
         </div>
       </div>
-
       <div className="flex text-center my-10">
         <div id="content-wrapper" className="w-full">
           <ProducerDataVisualization

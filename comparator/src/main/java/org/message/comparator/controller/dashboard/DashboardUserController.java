@@ -1,8 +1,8 @@
-package org.message.comparator.controller.dashboarduser;
+package org.message.comparator.controller.dashboard;
 
 import lombok.RequiredArgsConstructor;
 import org.message.comparator.dto.dashboarduser.ChangePasswordRequestDto;
-import org.message.comparator.service.dashboarduser.DashboardUserService;
+import org.message.comparator.service.dashboard.DashboardUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;

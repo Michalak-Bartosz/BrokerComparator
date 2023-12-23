@@ -3,7 +3,7 @@ package org.message.comparator.config;
 
 import lombok.RequiredArgsConstructor;
 import org.message.comparator.auditing.ApplicationAuditAware;
-import org.message.comparator.repository.DashboardUserRepository;
+import org.message.comparator.repository.dashboard.DashboardUserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;

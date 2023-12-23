@@ -1,6 +1,6 @@
 package org.message.comparator.repository.security;
 
-import org.message.comparator.entity.Token;
+import org.message.comparator.entity.auth.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

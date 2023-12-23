@@ -178,22 +178,38 @@ function TestSettingsMenu(props) {
       {(!props.numberOfMessagesToSend || !props.numberOfAttempts) && (
         <Tooltip id="start-test-tooltip" className="text-2xl" />
       )}
-      <button
-        id="start-test-button"
-        data-tooltip-id="start-test-tooltip"
-        data-tooltip-html={startTestTooltip}
-        data-tooltip-place="bottom"
-        className="flex m-auto px-4 py-2 outline outline-offset-2 outline-green-700 rounded-md bg-green-800 hover:bg-green-600 disabled:bg-slate-400 disabled:outline-slate-500 text-white font-bold text-2xl"
-        disabled={
-          !props.numberOfMessagesToSend ||
-          !props.numberOfAttempts ||
-          props.testInProgressProducer ||
-          props.testInProgressConsumer
-        }
-        onClick={() => props.performTest()}
-      >
-        Start test
-      </button>
+      <div className="grid grid-cols-2 gap-10">
+        <button
+          id="start-test-button"
+          data-tooltip-id="start-test-tooltip"
+          data-tooltip-html={startTestTooltip}
+          data-tooltip-place="bottom"
+          className="flex m-auto px-4 py-2 outline outline-offset-2 outline-green-700 rounded-md bg-green-800 hover:bg-green-600 disabled:bg-slate-400 disabled:outline-slate-500 text-white font-bold text-2xl"
+          disabled={
+            !props.numberOfMessagesToSend ||
+            !props.numberOfAttempts ||
+            props.testInProgressProducer ||
+            props.testInProgressConsumer
+          }
+          onClick={() => props.performTest()}
+        >
+          Start test
+        </button>
+        <button
+          id="generate-report-button"
+          className="flex m-auto px-4 py-2 outline outline-offset-2 outline-green-700 rounded-md bg-green-800 hover:bg-green-600 disabled:bg-slate-400 disabled:outline-slate-500 text-white font-bold text-2xl"
+          disabled={
+            !props.numberOfMessagesToSend ||
+            !props.numberOfAttempts ||
+            props.testInProgressProducer ||
+            props.testInProgressConsumer ||
+            !props.testUUID
+          }
+          onClick={() => props.generateTestReport()}
+        >
+          Generate Report
+        </button>
+      </div>
     </div>
   );
 }

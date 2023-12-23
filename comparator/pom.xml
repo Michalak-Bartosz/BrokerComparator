@@ -15,7 +15,6 @@
     <description>Broker comparator tool</description>
     <properties>
         <java.version>21</java.version>
-        <mapstruct.version>1.5.3.Final</mapstruct.version>
         <io.jsonwebtoken.version>0.12.3</io.jsonwebtoken.version>
     </properties>
     <dependencies>
@@ -75,16 +74,6 @@
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
             <version>${io.jsonwebtoken.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>${mapstruct.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct-processor</artifactId>
-            <version>${mapstruct.version}</version>
         </dependency>
     </dependencies>
 

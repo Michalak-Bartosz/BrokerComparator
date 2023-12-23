@@ -1,6 +1,6 @@
-package org.message.comparator.repository;
+package org.message.comparator.repository.dashboard;
 
-import org.message.comparator.entity.DashboardUser;
+import org.message.comparator.entity.auth.DashboardUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
