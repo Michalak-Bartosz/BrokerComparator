@@ -5,6 +5,7 @@ import org.message.model.DebugInfo;
 import org.message.model.metric.CPUMetric;
 import org.message.model.metric.MemoryMetric;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -16,17 +17,19 @@ public class DebugInfoUtil {
 
     public static DebugInfo generateDebugInfo(
             UUID testUUID,
+            Integer numberOfAttempt,
             String brokerType,
-            double testStatusPercent,
+            BigDecimal testStatusPercent,
             Integer messagesObtained,
-            double systemAverageCpu,
-            double appAverageCpu) {
+            BigDecimal systemAverageCpu,
+            BigDecimal appAverageCpu) {
         final UUID debugInfoUUID = UUID.randomUUID();
         final MemoryMetric producerMemoryMetric = getMemoryMetrics();
         final CPUMetric producerCPUMetric = getCpuMetrics(systemAverageCpu, appAverageCpu);
         return DebugInfo.builder()
                 .uuid(debugInfoUUID)
                 .testUUID(testUUID)
+                .numberOfAttempt(numberOfAttempt)
                 .brokerType(brokerType)
                 .testStatusPercentage(testStatusPercent)
                 .producedTimestamp(Instant.now())

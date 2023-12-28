@@ -21,7 +21,7 @@ function SwitchChartMode(props) {
           <span
             className={`flex w-full items-center justify-center ${
               !props.isTimestampMode
-                ? "bg-lime-600 bg-opacity-70"
+                ? "bg-green-950 bg-opacity-70"
                 : "bg-slate-400 bg-opacity-60 text-slate-500"
             }`}
           >
@@ -33,7 +33,7 @@ function SwitchChartMode(props) {
           <span
             className={`flex w-full items-center justify-center rounded-br-md ${
               props.isTimestampMode
-                ? "bg-lime-600 bg-opacity-70"
+                ? "bg-green-950 bg-opacity-70"
                 : "bg-slate-400 bg-opacity-60 text-slate-500"
             }`}
           >

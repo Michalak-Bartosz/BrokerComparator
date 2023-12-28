@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useApi from "../../connections/api/useApi";
 import ConsumerDataVisualization from "../compare/consumer/ConsumerDataVisualization";
 import ProducerDataVisualization from "../compare/producer/ProducerDataVisualization";
 import TestSettingsMenu from "../compare/TestSettingsMenu";
 import { KAFKA_BROKER } from "../compare/constants/brokerType";
-import TestReportOverview from "../compare/TestReportOverview";
+import DataOverview from "../compare/DataOverview";
 
 function MainDashboardPage() {
   const api = useApi();
@@ -16,6 +16,7 @@ function MainDashboardPage() {
   const [delayInMilliseconds, setDelayInMilliseconds] = useState(0);
   const [brokerTypes, setBrokerTypes] = useState(KAFKA_BROKER.value);
   const [testReport, setTestReport] = useState(null);
+  const [testReportArray, setTestReportArray] = useState([]);
 
   async function performTest() {
     try {
@@ -27,20 +28,54 @@ function MainDashboardPage() {
       };
       const response = await api.performTest(testSettings);
       setTestUUID(response.testUUID);
+      setTestInProgressProducer(true);
+      setTestInProgressConsumer(true);
     } catch (e) {
       console.log(e);
     }
   }
 
-  async function generateTestReport() {
-    console.log(testUUID);
+  async function finishTest() {
     try {
-      const response = await api.generateTestReport(testUUID);
-      setTestReport(response);
+      let finishTest = {
+        testUUID: testUUID,
+        numberOfReceivedMessagesProducer: numberOfMessagesToSend,
+        numberOfReceivedMessagesConsumer: numberOfMessagesToSend,
+      };
+      const response = await api.finishTest(finishTest);
+      if (response?.producerFinishTest && response?.consumerFinishTest) {
+        getTestReportArrayAndSetCurrentReport();
+      }
     } catch (e) {
       console.log(e);
     }
   }
+
+  async function getTestReportArrayAndSetCurrentReport() {
+    try {
+      const response = await api.getTestReports();
+      if (response) {
+        setTestReportArray([...response]);
+        if (testUUID) {
+          setTestReport(
+            response.find((report) => report.testUUID === testUUID)
+          );
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  useEffect(() => {
+    getTestReportArrayAndSetCurrentReport();
+  }, []);
+
+  useEffect(() => {
+    if (!testInProgressProducer && !testInProgressConsumer && testUUID) {
+      finishTest();
+    }
+  }, [testInProgressProducer, testInProgressConsumer]);
 
   return (
     <div className="block m-8">
@@ -59,12 +94,10 @@ function MainDashboardPage() {
           performTest={performTest}
         />
         <div className="col-span-2">
-          <TestReportOverview
+          <DataOverview
             testReport={testReport}
-            testInProgressProducer={testInProgressProducer}
-            testInProgressConsumer={testInProgressConsumer}
-            testUUID={testUUID}
-            generateTestReport={generateTestReport}
+            testReportArray={testReportArray}
+            setTestReport={setTestReport}
           />
         </div>
       </div>

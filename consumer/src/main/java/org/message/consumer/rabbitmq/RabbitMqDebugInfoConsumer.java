@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 
+import static org.message.consumer.service.TestService.TOTAL_MESSAGES_OBTAINED;
+
 @Component
 @Slf4j
 public class RabbitMqDebugInfoConsumer {
@@ -32,6 +34,7 @@ public class RabbitMqDebugInfoConsumer {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
                 log.info("Received '" + message + "'");
+                TOTAL_MESSAGES_OBTAINED.incrementAndGet();
             };
             channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
             });

@@ -1,4 +1,4 @@
-package org.message.comparator.dto;
+package org.message.comparator.dto.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

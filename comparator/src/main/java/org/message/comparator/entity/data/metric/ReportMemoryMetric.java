@@ -1,5 +1,6 @@
 package org.message.comparator.entity.data.metric;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.message.comparator.util.metric.ReportMemoMetricUtil;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @NoArgsConstructor
@@ -20,14 +22,22 @@ public class ReportMemoryMetric {
     @Id
     @GeneratedValue
     private Long id;
-    private double initialMemoryGB;
-    private double maxHeapMemoryGB;
-    private double maxUsedHeapMemoryGB;
-    private double minUsedHeapMemoryGB;
-    private double averageUsedHeapMemoryGB;
-    private double maxCommittedMemoryGB;
-    private double minCommittedMemoryGB;
-    private double averageCommittedMemoryGB;
+    @Column(scale = 3)
+    private BigDecimal initialMemoryGB;
+    @Column(scale = 3)
+    private BigDecimal maxHeapMemoryGB;
+    @Column(scale = 3)
+    private BigDecimal maxUsedHeapMemoryGB;
+    @Column(scale = 3)
+    private BigDecimal minUsedHeapMemoryGB;
+    @Column(scale = 3)
+    private BigDecimal averageUsedHeapMemoryGB;
+    @Column(scale = 3)
+    private BigDecimal maxCommittedMemoryGB;
+    @Column(scale = 3)
+    private BigDecimal minCommittedMemoryGB;
+    @Column(scale = 3)
+    private BigDecimal averageCommittedMemoryGB;
 
     public ReportMemoryMetric(List<MemoryMetric> memoryMetricList) {
         this.initialMemoryGB = ReportMemoMetricUtil.getInitialMemoryGB(memoryMetricList);

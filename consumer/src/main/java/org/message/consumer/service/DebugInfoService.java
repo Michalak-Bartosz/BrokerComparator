@@ -24,6 +24,7 @@ public class DebugInfoService {
         DebugInfo debugInfo = DebugInfo.builder()
                 .uuid(debugInfoModel.getUuid())
                 .testUUID(debugInfoModel.getTestUUID())
+                .numberOfAttempt(debugInfoModel.getNumberOfAttempt())
                 .brokerType(debugInfoModel.getBrokerType())
                 .testStatusPercentage(debugInfoModel.getTestStatusPercentage())
                 .producedTimestamp(debugInfoModel.getProducedTimestamp())

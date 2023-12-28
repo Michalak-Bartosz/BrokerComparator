@@ -7,6 +7,25 @@ import UserTable from "./table/user/UserTable";
 import DebugInfoTable from "./table/debugInfo/DebugInfoTable";
 
 function TestDataModal(props) {
+  const tabsCustomTheme = {
+    tablist: {
+      styles: {
+        default: "w-full divide-x divide-gray-200 shadow grid grid-flow-col",
+      },
+      tabitem: {
+        base: "flex items-center justify-center p-4",
+        styles: {
+          default: {
+            active: {
+              on: "text-xl bg-white text-black p-4 active rounded-none",
+              off: "text-xl bg-slate-200 text-slate-500 rounded-none",
+            },
+          },
+        },
+      },
+    },
+  };
+
   return (
     <div id="test-data-modal-wrapper">
       <Modal
@@ -17,8 +36,8 @@ function TestDataModal(props) {
         <Modal.Header>Test Data</Modal.Header>
         <Modal.Body>
           <div className="space-y-6">
-            <div className="overflow-x-auto">
-              <Tabs aria-label="Full width tabs" style="fullWidth">
+            <div className="overflow-x-auto rounded-t-md">
+              <Tabs aria-label="Full width tabs" theme={tabsCustomTheme}>
                 <Tabs.Item active title="Users" icon={FaUsersLine}>
                   <UserTable userList={props.userList} />
                 </Tabs.Item>

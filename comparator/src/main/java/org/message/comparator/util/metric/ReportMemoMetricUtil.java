@@ -4,54 +4,62 @@ import lombok.experimental.UtilityClass;
 import org.message.comparator.entity.data.metric.MemoryMetric;
 import org.message.comparator.exception.ReportMetricCalculateException;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @UtilityClass
 public class ReportMemoMetricUtil {
 
-    public static double getInitialMemoryGB(List<MemoryMetric> memoryMetricList) {
+    public static BigDecimal getInitialMemoryGB(List<MemoryMetric> memoryMetricList) {
         return memoryMetricList.stream().map(MemoryMetric::getInitialMemoryGB)
                 .findAny()
-                .orElseThrow(() -> new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get initial memory [GB] exception!"));
+                .orElseThrow(() -> new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get initial memory [GB] exception!"))
+                .setScale(3, RoundingMode.UP);
     }
 
-    public static double getMaxHeapMemoryGB(List<MemoryMetric> memoryMetricList) {
+    public static BigDecimal getMaxHeapMemoryGB(List<MemoryMetric> memoryMetricList) {
         return memoryMetricList.stream().map(MemoryMetric::getMaxHeapMemoryGB)
                 .findAny()
-                .orElseThrow(() -> new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get max heap memory [GB] exception!"));
+                .orElseThrow(() -> new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get max heap memory [GB] exception!"))
+                .setScale(3, RoundingMode.UP);
     }
 
-    public static double getMaxUsedHeapMemoryGB(List<MemoryMetric> memoryMetricList) {
+    public static BigDecimal getMaxUsedHeapMemoryGB(List<MemoryMetric> memoryMetricList) {
         return memoryMetricList.stream().map(MemoryMetric::getUsedHeapMemoryGB)
-                .max(Double::compareTo)
-                .orElseThrow(() -> new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get max used heap memory [GB] exception!"));
+                .max(BigDecimal::compareTo)
+                .orElseThrow(() -> new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get max used heap memory [GB] exception!"))
+                .setScale(3, RoundingMode.UP);
     }
 
-    public static double getMaxCommittedMemoryGB(List<MemoryMetric> memoryMetricList) {
+    public static BigDecimal getMaxCommittedMemoryGB(List<MemoryMetric> memoryMetricList) {
         return memoryMetricList.stream().map(MemoryMetric::getCommittedMemoryGB)
-                .max(Double::compareTo)
-                .orElseThrow(() -> new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get max committed memory [GB] exception!"));
+                .max(BigDecimal::compareTo)
+                .orElseThrow(() -> new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get max committed memory [GB] exception!"))
+                .setScale(3, RoundingMode.UP);
     }
 
-    public static double getMinUsedHeapMemoryGB(List<MemoryMetric> memoryMetricList) {
+    public static BigDecimal getMinUsedHeapMemoryGB(List<MemoryMetric> memoryMetricList) {
         return memoryMetricList.stream().map(MemoryMetric::getUsedHeapMemoryGB)
-                .min(Double::compareTo)
-                .orElseThrow(() -> new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get min used heap memory [GB] exception!"));
+                .min(BigDecimal::compareTo)
+                .orElseThrow(() -> new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get min used heap memory [GB] exception!"))
+                .setScale(3, RoundingMode.UP);
     }
 
-    public static double getMinCommittedMemoryGB(List<MemoryMetric> memoryMetricList) {
+    public static BigDecimal getMinCommittedMemoryGB(List<MemoryMetric> memoryMetricList) {
         return memoryMetricList.stream().map(MemoryMetric::getCommittedMemoryGB)
-                .min(Double::compareTo)
-                .orElseThrow(() -> new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get min committed memory [GB] exception!"));
+                .min(BigDecimal::compareTo)
+                .orElseThrow(() -> new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get min committed memory [GB] exception!"))
+                .setScale(3, RoundingMode.UP);
     }
 
-    public static double getAverageUsedHeapMemoryGB(List<MemoryMetric> memoryMetricList) {
-        double sum = memoryMetricList.stream().map(MemoryMetric::getUsedHeapMemoryGB).mapToDouble(Double::doubleValue).sum();
-        return sum / memoryMetricList.size();
+    public static BigDecimal getAverageUsedHeapMemoryGB(List<MemoryMetric> memoryMetricList) {
+        BigDecimal sum = memoryMetricList.stream().map(MemoryMetric::getUsedHeapMemoryGB).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return sum.divide(BigDecimal.valueOf(memoryMetricList.size()), 3, RoundingMode.UP);
     }
 
-    public static double getAverageCommittedMemoryGB(List<MemoryMetric> memoryMetricList) {
-        double sum = memoryMetricList.stream().map(MemoryMetric::getCommittedMemoryGB).mapToDouble(Double::doubleValue).sum();
-        return sum / memoryMetricList.size();
+    public static BigDecimal getAverageCommittedMemoryGB(List<MemoryMetric> memoryMetricList) {
+        BigDecimal sum = memoryMetricList.stream().map(MemoryMetric::getCommittedMemoryGB).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return sum.divide(BigDecimal.valueOf(memoryMetricList.size()), 2, RoundingMode.UP);
     }
 }

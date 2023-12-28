@@ -1,4 +1,4 @@
-package org.message.comparator.dto;
+package org.message.producer.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,8 +11,11 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RedirectResponse {
+public class RedirectFinishTestResponseDto {
     private String compareApiResponse;
     private String producerApiResponse;
+    private String consumerApiResponse;
+    private boolean isProducerFinishTest;
+    private boolean isConsumerFinishTest;
     private UUID testUUID;
 }

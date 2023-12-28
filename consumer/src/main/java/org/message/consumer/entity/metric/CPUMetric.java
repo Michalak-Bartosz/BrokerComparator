@@ -1,9 +1,12 @@
 package org.message.consumer.entity.metric;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.*;
+
+import java.math.BigDecimal;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,6 +18,8 @@ public class CPUMetric {
     @Id
     @GeneratedValue
     private Long id;
-    private double systemCpuUsagePercentage;
-    private double appCpuUsagePercentage;
+    @Column(precision=5, scale=2)
+    private BigDecimal systemCpuUsagePercentage;
+    @Column(precision=5, scale=2)
+    private BigDecimal appCpuUsagePercentage;
 }

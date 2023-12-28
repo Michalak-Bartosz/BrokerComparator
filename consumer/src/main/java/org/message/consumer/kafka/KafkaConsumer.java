@@ -16,6 +16,9 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
+import static org.message.consumer.service.TestService.TOTAL_MESSAGES_OBTAINED;
 import static org.message.consumer.util.metric.MetricUtil.*;
 
 @Component
@@ -56,14 +59,16 @@ public class KafkaConsumer {
                                  @Header(KafkaHeaders.PARTITION) String partition,
                                  @Header("event_produced_time") String producedTime,
                                  @Header("record_type") String recordType) {
-        final double systemCpuBefore = getSystemCpuUsagePercentage();
-        final double appCpuBefore = getAppCpuUsagePercentage();
+        final BigDecimal systemCpuBefore = getSystemCpuUsagePercentage();
+        final BigDecimal appCpuBefore = getAppCpuUsagePercentage();
 
-        final double systemCpuAfter = getSystemCpuUsagePercentage();
-        final double appCpuAfter = getAppCpuUsagePercentage();
+        TOTAL_MESSAGES_OBTAINED.incrementAndGet();
 
-        final double systemAverageCpu = getAverageCpuPercentage(systemCpuBefore, systemCpuAfter);
-        final double appAverageCpu = getAverageCpuPercentage(appCpuBefore, appCpuAfter);
+        final BigDecimal systemCpuAfter = getSystemCpuUsagePercentage();
+        final BigDecimal appCpuAfter = getAppCpuUsagePercentage();
+
+        final BigDecimal systemAverageCpu = getAverageCpuPercentage(systemCpuBefore, systemCpuAfter);
+        final BigDecimal appAverageCpu = getAverageCpuPercentage(appCpuBefore, appCpuAfter);
 
         DebugInfoUtil.updateDebugInfo(debugInfo,
                 systemAverageCpu,

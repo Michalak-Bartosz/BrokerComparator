@@ -5,12 +5,13 @@ import {
   clearConsumerTestInfoArrayAction,
 } from "../../../redux/actions/testInfoArrayActions";
 import BASE_URL from "../../../connections/constants/BASE_URL";
-import ProgressBar from "../ProgressBar";
-import Counter from "../Counter";
+import ProgressBar from "../progress/ProgressBar";
+import Counter from "../progress/Counter";
 import LiveChart from "../chart/LiveChart";
 import { randomDatasetColor } from "../../util/ColorUtil";
 import { getDateFromTimestampString } from "../../util/DateUtil";
-import TestStatus from "../TestStatus";
+import TestStatus from "../progress/TestStatus";
+import moment from "moment";
 
 function ConsumerDataVisualization(props) {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ function ConsumerDataVisualization(props) {
   const [testStatus, setTestStatus] = useState(0);
 
   const [receivedMsgData, setReceivedMsgData] = useState([]);
+  const [deltaTimeData, setDeltaTimeData] = useState([]);
   const [initialMemoryData, setInitialMemoryData] = useState([]);
   const [usedHeapMemoryData, setUsedHeapMemoryData] = useState([]);
   const [maxHeapMemoryData, setMaxHeapMemoryData] = useState([]);
@@ -30,12 +32,17 @@ function ConsumerDataVisualization(props) {
   useEffect(() => {
     let eventSource;
     let receivedMsgArray = [];
+    let deltaTimeDataArray = [];
     let initMemoArray = [];
     let usedHeapMemoArray = [];
     let maxHeapMemoArray = [];
     let commitedMemoArray = [];
     let systemCpuArray = [];
     let appCpuArray = [];
+
+    const getDurationInMilliseconds = (value) => {
+      return parseFloat(moment.duration(value).as("milliseconds").toFixed(3));
+    };
 
     const updateTestStatus = (debugInfo) => {
       setTestStatus(debugInfo.testStatusPercentage);
@@ -48,6 +55,15 @@ function ConsumerDataVisualization(props) {
       };
       receivedMsgArray.push(consumedMsgData);
       setReceivedMsgData([...receivedMsgArray]);
+    };
+
+    const updateDeltaTimeDataArray = (debugInfo) => {
+      let deltaTimeData = {
+        xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
+        yVal: getDurationInMilliseconds(debugInfo.deltaTimestamp),
+      };
+      deltaTimeDataArray.push(deltaTimeData);
+      setDeltaTimeData([...deltaTimeDataArray]);
     };
 
     const updateSystemCpuDataArray = (debugInfo) => {
@@ -107,6 +123,7 @@ function ConsumerDataVisualization(props) {
     const updateChartData = (debugInfo) => {
       updateTestStatus(debugInfo);
       updateConsumedMsgDataArray(debugInfo);
+      updateDeltaTimeDataArray(debugInfo);
       updateSystemCpuDataArray(debugInfo);
       updateAppCpuData(debugInfo);
       updateInitialMemoryData(debugInfo);
@@ -120,6 +137,7 @@ function ConsumerDataVisualization(props) {
         datasetName: getDatasetName(brokerType),
         datasetColor: randomDatasetColor(),
         receivedMsgData: receivedMsgArray,
+        deltaTimeData: deltaTimeDataArray,
         initialMemoryData: initMemoArray,
         usedHeapMemoryData: usedHeapMemoArray,
         maxHeapMemoryData: maxHeapMemoArray,
@@ -169,7 +187,6 @@ function ConsumerDataVisualization(props) {
       let totalMessagesInTest = calculateTotalMessagesInTest();
       let receivedMsgCounter = 0;
       let currentBrokerType;
-      props.setIsInProgress(true);
       eventSource = new EventSource(
         BASE_URL.CONSUMER_STREAM_DATA_API_URL + "/debug-info"
       );
@@ -225,11 +242,11 @@ function ConsumerDataVisualization(props) {
       startListenDebugInfoMessageStream();
     };
 
-    if (props.testUUID) {
+    if (props.isInProgress) {
       handleStartTest();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.testUUID]);
+  }, [props.isInProgress]);
 
   const getTestProgressStatus = () => {
     return testStatus;
@@ -255,6 +272,21 @@ function ConsumerDataVisualization(props) {
       ...chartDataArray.map((chartData) =>
         createChartDataElement(
           chartData.receivedMsgData,
+          chartData.datasetName,
+          chartData.datasetColor
+        )
+      ),
+    ];
+  };
+
+  const getDeltaTimeChartData = () => {
+    if (props.isInProgress) {
+      return [createChartDataElement(deltaTimeData, datasetName)];
+    }
+    return [
+      ...chartDataArray.map((chartData) =>
+        createChartDataElement(
+          chartData.deltaTimeData,
           chartData.datasetName,
           chartData.datasetColor
         )
@@ -370,6 +402,14 @@ function ConsumerDataVisualization(props) {
           chartData={getConsumedMessagesChartData()}
           chartName={"Consumed messages in time"}
           yAxisName={"Consumed messages"}
+          heightPercentage={"25%"}
+        />
+        <LiveChart
+          chartData={getDeltaTimeChartData()}
+          chartName={
+            "Delta time [ms] between produced and consumed messages in time"
+          }
+          yAxisName={"Delta Time [ms]"}
           heightPercentage={"25%"}
         />
         <div>

@@ -5,12 +5,12 @@ import {
   clearProducerTestInfoArrayAction,
 } from "../../../redux/actions/testInfoArrayActions";
 import BASE_URL from "../../../connections/constants/BASE_URL";
-import ProgressBar from "../ProgressBar";
-import Counter from "../Counter";
+import ProgressBar from "../progress/ProgressBar";
+import Counter from "../progress/Counter";
 import LiveChart from "../chart/LiveChart";
 import { randomDatasetColor } from "../../util/ColorUtil";
 import { getDateFromTimestampString } from "../../util/DateUtil";
-import TestStatus from "../TestStatus";
+import TestStatus from "../progress/TestStatus";
 
 function ProducerDataVisualizationTEST(props) {
   const dispatch = useDispatch();
@@ -178,7 +178,6 @@ function ProducerDataVisualizationTEST(props) {
       let totalMessagesInTest = calculateTotalMessagesInTest();
       let receivedMsgCounter = 0;
       let currentBrokerType;
-      props.setIsInProgress(true);
       eventSource = new EventSource(
         BASE_URL.PRODUCER_STREAM_DATA_API_URL + "/debug-info"
       );
@@ -235,11 +234,11 @@ function ProducerDataVisualizationTEST(props) {
       startListenDebugInfoMessageStream();
     };
 
-    if (props.testUUID) {
+    if (props.isInProgress) {
       handleStartTest();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.testUUID]);
+  }, [props.isInProgress]);
 
   const getTestProgressStatus = () => {
     return testStatus;
@@ -363,9 +362,9 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   return (
-    <div className="bg-lime-200 bg-opacity-40 rounded-lg p-4 mb-8 shadow-lg">
+    <div className="bg-violet-200 bg-opacity-40 rounded-lg p-4 mb-8 shadow-lg">
       <div className="block p-8">
-        <h1 className="text-3xl font-bold text-lime-800 rounded-md border-y-4 border-slate-600 py-4 m-auto">
+        <h1 className="text-3xl font-bold text-violet-900 rounded-md border-y-4 border-slate-600 py-4 m-auto">
           Producer App
         </h1>
         <ProgressBar testStatus={getTestProgressStatus()} />
@@ -383,7 +382,7 @@ function ProducerDataVisualizationTEST(props) {
           heightPercentage={"25%"}
         />
         <div>
-          <h1 className="font-bold text-2xl text-lime-800 rounded-md border-y-2 border-slate-600 py-4 m-auto">
+          <h1 className="font-bold text-2xl text-violet-900 rounded-md border-y-2 border-slate-600 py-4 m-auto">
             Memory Metrics
           </h1>
           <div className="grid grid-cols-2 py-4">
@@ -414,7 +413,7 @@ function ProducerDataVisualizationTEST(props) {
           </div>
         </div>
         <div>
-          <h1 className="font-bold text-2xl text-lime-800 rounded-md border-y-2 border-slate-600 py-4 m-auto">
+          <h1 className="font-bold text-2xl text-violet-900 rounded-md border-y-2 border-slate-600 py-4 m-auto">
             CPU metrics
           </h1>
           <div className="grid grid-cols-2 py-4">

@@ -55,9 +55,27 @@ const useApi = () => {
     }
   }
 
-  async function generateTestReport(testUUID) {
+  async function finishTest(testSettings) {
     try {
-      const response = await httpApi.get(`/test/${testUUID}/generate-report`);
+      const response = await httpApi.post("/test/finish", testSettings);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function getTestReport(testUUID) {
+    try {
+      const response = await httpApi.get(`/test/${testUUID}/report`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function getTestReports() {
+    try {
+      const response = await httpApi.get(`/test/report`);
       return response;
     } catch (error) {
       throw error;
@@ -157,7 +175,9 @@ const useApi = () => {
     logInUser,
     logOutUser,
     performTest,
-    generateTestReport,
+    finishTest,
+    getTestReport,
+    getTestReports
   };
 };
 

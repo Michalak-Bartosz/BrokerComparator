@@ -5,7 +5,7 @@ function MemoryMetric({ memoryMetric }) {
   return (
     <div id="memory-metric-wrapper" className="block text-center">
       <div className="py-4">
-        <h1 className="flex ml-auto mr-0 text-2xl border-y-2 border-white rounded-md pl-6 py-2">
+        <h1 className="flex ml-auto mr-0 text-2xl border-y-2 border-slate-600 rounded-md pl-6 py-2">
           Memory Metrics
         </h1>
       </div>
@@ -15,13 +15,13 @@ function MemoryMetric({ memoryMetric }) {
       <div className="grid grid-cols-2 gap-6">
         <div className="flex items-center">
           <FaDotCircle className="text-sm mr-2" />
-          <label className="font-bold">{"Initial Memory [GB]:"}&nbsp;</label>
-          <span>{memoryMetric.initialMemoryGB}</span>
+          <label className="font-bold">{"Initial Memory:"}&nbsp;</label>
+          <span>{memoryMetric.initialMemoryGB + "GB"}</span>
         </div>
         <div className="flex items-center">
           <FaDotCircle className="text-sm mr-2" />
-          <label className="font-bold">{"Max Heap Memory [GB]:"}&nbsp;</label>
-          <span>{memoryMetric.maxHeapMemoryGB}</span>
+          <label className="font-bold">{"Max Heap Memory:"}&nbsp;</label>
+          <span>{memoryMetric.maxHeapMemoryGB + "GB"}</span>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-6">
@@ -31,24 +31,20 @@ function MemoryMetric({ memoryMetric }) {
           </h2>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
-            <label className="font-bold">
-              {"Max Used Heap Memory[GB]:"}&nbsp;
-            </label>
-            <span>{memoryMetric.maxUsedHeapMemoryGB}</span>
+            <label className="font-bold">{"Max Used Heap Memory:"}&nbsp;</label>
+            <span>{memoryMetric.maxUsedHeapMemoryGB + "GB"}</span>
+          </div>
+          <div className="flex items-center">
+            <FaDotCircle className="text-sm mr-2" />
+            <label className="font-bold">{"Min Used Heap Memory:"}&nbsp;</label>
+            <span>{memoryMetric.minUsedHeapMemoryGB + "GB"}</span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <label className="font-bold">
-              {"Min Used Heap Memory [GB]:"}&nbsp;
+              {"Average Used Heap Memory:"}&nbsp;
             </label>
-            <span>{memoryMetric.minUsedHeapMemoryGB}</span>
-          </div>
-          <div className="flex items-center">
-            <FaDotCircle className="text-sm mr-2" />
-            <label className="font-bold">
-              {"Average Used Heap Memory [GB]:"}&nbsp;
-            </label>
-            <span>{memoryMetric.averageUsedHeapMemoryGB}</span>
+            <span>{memoryMetric.averageUsedHeapMemoryGB + "GB"}</span>
           </div>
         </div>
         <div id="committed-memory-metrics">
@@ -57,24 +53,20 @@ function MemoryMetric({ memoryMetric }) {
           </h2>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
-            <label className="font-bold">
-              {"Max Committed Memory [GB]:"}&nbsp;
-            </label>
-            <span>{memoryMetric.maxCommittedMemoryGB}</span>
+            <label className="font-bold">{"Max Committed Memory:"}&nbsp;</label>
+            <span>{memoryMetric.maxCommittedMemoryGB + "GB"}</span>
+          </div>
+          <div className="flex items-center">
+            <FaDotCircle className="text-sm mr-2" />
+            <label className="font-bold">{"Min Committed Memory:"}&nbsp;</label>
+            <span>{memoryMetric.minCommittedMemoryGB + "GB"}</span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <label className="font-bold">
-              {"Min Committed Memory [GB]:"}&nbsp;
+              {"Average Committed Memory:"}&nbsp;
             </label>
-            <span>{memoryMetric.minCommittedMemoryGB}</span>
-          </div>
-          <div className="flex items-center">
-            <FaDotCircle className="text-sm mr-2" />
-            <label className="font-bold">
-              {"Average Committed Memory [GB]:"}&nbsp;
-            </label>
-            <span>{memoryMetric.averageCommittedMemoryGB}</span>
+            <span>{memoryMetric.averageCommittedMemoryGB + "GB"}</span>
           </div>
         </div>
       </div>

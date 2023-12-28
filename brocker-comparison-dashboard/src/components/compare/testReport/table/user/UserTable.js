@@ -37,6 +37,7 @@ function UserTable({ userList }) {
         </div>
         <div className="flex items-center m-auto mr-0">
           <Label
+            className="text-blue-500 text-xl font-bold"
             htmlFor="max-user-on-page-select"
             value="Max users on page:&nbsp;"
           />
@@ -57,40 +58,43 @@ function UserTable({ userList }) {
         </div>
       </div>
 
-      <div className="overflow-x-scroll">
+      <div className="overflow-auto">
         <Table striped>
           <Table.Head>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl">
+            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
+              Nr
+            </Table.HeadCell>
+            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
               UUID
             </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl">
+            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
               Test UUID
             </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl">
+            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
               ID Number
             </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl">
+            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
               Name
             </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl">
+            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
               Last Name
             </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl">
+            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
               Email
             </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl">
+            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
               Cell Phone
             </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl">
+            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
               Address
             </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl">
-              Show reports
+            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
+              Reports
             </Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
-            {calculateUsersOnPage().map((user) => {
-              return <User key={user.uuid} user={user} />;
+            {calculateUsersOnPage().map((user, index) => {
+              return <User key={user.uuid} user={user} index={index + 1} />;
             })}
           </Table.Body>
         </Table>

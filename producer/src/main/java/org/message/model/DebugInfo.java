@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.message.model.metric.CPUMetric;
 import org.message.model.metric.MemoryMetric;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
@@ -18,8 +19,9 @@ import java.util.UUID;
 public class DebugInfo {
     private UUID uuid;
     private UUID testUUID;
+    private Integer numberOfAttempt;
     private String brokerType;
-    private double testStatusPercentage;
+    private BigDecimal testStatusPercentage;
     private Instant producedTimestamp;
     private Instant consumedTimestamp;
     private Duration deltaTimestamp;

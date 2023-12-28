@@ -4,10 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.message.comparator.entity.data.DebugInfo;
 import org.message.comparator.entity.data.TestReport;
 import org.message.comparator.entity.data.User;
-import org.message.comparator.entity.data.metric.CPUMetric;
-import org.message.comparator.entity.data.metric.MemoryMetric;
-import org.message.comparator.entity.data.metric.ReportCPUMetric;
-import org.message.comparator.entity.data.metric.ReportMemoryMetric;
+import org.message.comparator.entity.data.metric.*;
+import org.message.comparator.exception.TestReportAlreadyExistException;
 import org.message.comparator.repository.data.TestReportRepository;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +22,17 @@ public class TestReportService {
     private final DebugInfoService debugInfoService;
     private final ReportCPUMetricService reportCPUMetricService;
     private final ReportMemoryMetricService reportMemoryMetricService;
+    private final ReportTimeMetricService reportTimeMetricService;
 
-    public TestReport getOrCreateTestReport(UUID testUUID) {
+    public List<TestReport> getTestReport() {
+        return testReportRepository.findAll();
+    }
+
+    public void createTestReport(UUID testUUID) {
         Optional<TestReport> testReportOptional = testReportRepository.findById(testUUID);
 
         if (testReportOptional.isPresent()) {
-            return testReportOptional.get();
+            throw new TestReportAlreadyExistException(testUUID);
         }
 
         List<User> userList = userService.getAllUsersByTestUUID(testUUID);
@@ -43,18 +46,21 @@ public class TestReportService {
         ReportMemoryMetric producerReportMemoryMetric = reportMemoryMetricService.saveReportMemoryMetric(producerMemoryMetric);
         ReportCPUMetric consumerReportCPUMetric = reportCPUMetricService.saveReportCPUMetric(consumerCpuMetricList);
         ReportMemoryMetric consumerReportMemoryMetric = reportMemoryMetricService.saveReportMemoryMetric(consumerMemoryMetric);
+        ReportTimeMetric reportTimeMetric = reportTimeMetricService.saveReportMemoryMetric(debugInfoList);
+        Integer numberOfAttempts = debugInfoList.stream().map(DebugInfo::getNumberOfAttempt).max(Integer::compareTo).orElse(0);
 
         TestReport testReport = TestReport.builder()
                 .testUUID(testUUID)
+                .numberOfAttempts(numberOfAttempts)
                 .userList(userList)
                 .debugInfoList(debugInfoList)
                 .producerReportCPUMetric(producerReportCPUMetric)
                 .producerReportMemoryMetric(producerReportMemoryMetric)
                 .consumerReportCPUMetric(consumerReportCPUMetric)
                 .consumerReportMemoryMetric(consumerReportMemoryMetric)
+                .reportTimeMetric(reportTimeMetric)
                 .build();
         testReportRepository.save(testReport);
         testReportRepository.flush();
-        return testReport;
     }
 }

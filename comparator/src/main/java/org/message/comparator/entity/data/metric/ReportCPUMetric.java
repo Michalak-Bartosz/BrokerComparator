@@ -1,5 +1,6 @@
 package org.message.comparator.entity.data.metric;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.message.comparator.util.metric.ReportCPUMetricUtil;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @NoArgsConstructor
@@ -20,12 +22,18 @@ public class ReportCPUMetric {
     @Id
     @GeneratedValue
     private Long id;
-    private double maxSystemCpuUsagePercentage;
-    private double maxAppCpuUsagePercentage;
-    private double minSystemCpuUsagePercentage;
-    private double minAppCpuUsagePercentage;
-    private double averageSystemCpuUsagePercentage;
-    private double averageAppCpuUsagePercentage;
+    @Column(precision=5, scale=2)
+    private BigDecimal maxSystemCpuUsagePercentage;
+    @Column(precision=5, scale=2)
+    private BigDecimal maxAppCpuUsagePercentage;
+    @Column(precision=5, scale=2)
+    private BigDecimal minSystemCpuUsagePercentage;
+    @Column(precision=5, scale=2)
+    private BigDecimal minAppCpuUsagePercentage;
+    @Column(precision=5, scale=2)
+    private BigDecimal averageSystemCpuUsagePercentage;
+    @Column(precision=5, scale=2)
+    private BigDecimal averageAppCpuUsagePercentage;
 
     public ReportCPUMetric(List<CPUMetric> cpuMetricList) {
         this.maxSystemCpuUsagePercentage = ReportCPUMetricUtil.getMaxSystemCpuUsagePercentage(cpuMetricList);

@@ -26,10 +26,10 @@ function SwitchLoginRegister() {
       />
       <div className="flex m-auto text-2xl h-max w-full items-center justify-center rounded-t-md">
         <span
-          className={`flex w-full items-center justify-center rounded-t-md ${
+          className={`flex w-full items-center justify-center rounded-tl-md ${
             !authMode.value
-              ? "bg-white text-slate-500"
-              : "bg-slate-800 bg-opacity-80"
+              ? "bg-gray-600 border-t-4 border-l-4 border-slate-800 text-slate-800"
+              : "bg-slate-800 bg-opacity-80 border-t-4 border-r-4 border-slate-800"
           }`}
         >
           <div className="flex p-2 items-center">
@@ -38,10 +38,10 @@ function SwitchLoginRegister() {
           </div>
         </span>
         <span
-          className={`flex w-full items-center justify-center rounded-t-md ${
+          className={`flex w-full items-center justify-center rounded-tr-md ${
             authMode.value
-              ? "bg-white text-slate-500"
-              : "bg-slate-800 bg-opacity-80"
+              ? "bg-gray-600 border-t-4 border-r-4 border-slate-800 text-slate-800"
+              : "bg-slate-800 bg-opacity-80 border-t-4 border-l-4 border-slate-800"
           }`}
         >
           <div className="flex p-2 items-center">

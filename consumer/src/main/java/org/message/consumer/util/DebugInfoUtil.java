@@ -6,6 +6,7 @@ import org.message.model.DebugInfo;
 import org.message.model.metric.CPUMetric;
 import org.message.model.metric.MemoryMetric;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -14,8 +15,8 @@ public class DebugInfoUtil {
 
     public static void updateDebugInfo(
             DebugInfo debugInfo,
-            double systemAverageCpu,
-            double appAverageCpu) {
+            BigDecimal systemAverageCpu,
+            BigDecimal appAverageCpu) {
         Instant consumedTimestamp = Instant.now();
         Duration deltaTimestamp = Duration.between(debugInfo.getProducedTimestamp(), consumedTimestamp);
         final MemoryMetric consumerMemoryMetric = MetricUtil.getMemoryMetrics();

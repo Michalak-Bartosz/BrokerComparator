@@ -14,11 +14,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
-import static org.message.producer.service.TestService.*;
+import static org.message.producer.service.TestService.getTestStatusPercentage;
 import static org.message.producer.util.DebugInfoUtil.generateDebugInfo;
 import static org.message.producer.util.MetricUtil.*;
 
@@ -37,10 +38,11 @@ public class RabbitMqProducer {
     private static final String BROKER_TYPE = "RABBITMQ";
 
     public void sendRecord(UUID testUUID,
+                           int numberOfAttempt,
                            int messagesObtainedInAttempt,
                            User user) {
-        final double systemCpuBefore = getSystemCpuUsagePercentage();
-        final double appCpuBefore = getAppCpuUsagePercentage();
+        final BigDecimal systemCpuBefore = getSystemCpuUsagePercentage();
+        final BigDecimal appCpuBefore = getAppCpuUsagePercentage();
 
         factory.setHost("localhost");
         try (Connection connection = factory.newConnection();
@@ -54,13 +56,14 @@ public class RabbitMqProducer {
 
             sendReports(user, channel);
 
-            final double systemCpuAfter = getSystemCpuUsagePercentage();
-            final double appCpuAfter = getAppCpuUsagePercentage();
+            final BigDecimal systemCpuAfter = getSystemCpuUsagePercentage();
+            final BigDecimal appCpuAfter = getAppCpuUsagePercentage();
 
-            final double systemAverageCpu = getAverageCpuPercentage(systemCpuBefore, systemCpuAfter);
-            final double appAverageCpu = getAverageCpuPercentage(appCpuBefore, appCpuAfter);
+            final BigDecimal systemAverageCpu = getAverageCpuPercentage(systemCpuBefore, systemCpuAfter);
+            final BigDecimal appAverageCpu = getAverageCpuPercentage(appCpuBefore, appCpuAfter);
 
             DebugInfo debugInfo = generateDebugInfo(testUUID,
+                    numberOfAttempt,
                     BROKER_TYPE,
                     getTestStatusPercentage(),
                     messagesObtainedInAttempt,

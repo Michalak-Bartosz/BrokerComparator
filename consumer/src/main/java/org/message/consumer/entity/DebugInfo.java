@@ -1,5 +1,6 @@
 package org.message.consumer.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
@@ -7,6 +8,7 @@ import lombok.*;
 import org.message.consumer.entity.metric.CPUMetric;
 import org.message.consumer.entity.metric.MemoryMetric;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
@@ -21,8 +23,10 @@ public class DebugInfo {
     @Id
     private UUID uuid;
     private UUID testUUID;
+    private Integer numberOfAttempt;
     private String brokerType;
-    private double testStatusPercentage;
+    @Column(precision=5, scale=2)
+    private BigDecimal testStatusPercentage;
     private Instant producedTimestamp;
     private Instant consumedTimestamp;
     private Duration deltaTimestamp;

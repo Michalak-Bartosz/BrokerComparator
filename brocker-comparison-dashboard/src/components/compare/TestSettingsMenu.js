@@ -44,7 +44,7 @@ function TestSettingsMenu(props) {
   return (
     <div
       id="test-settings-menu"
-      className="px-14 py-8 bg-slate-950 bg-opacity-40 rounded-lg shadow-lg max-h-fit min-w-fit"
+      className="px-10 py-8 bg-slate-950 bg-opacity-40 rounded-lg shadow-lg min-h-[500px] w-full"
     >
       <div className="mb-6 border-y-4 border-slate-600 rounded-md py-4">
         <h1 className="text-4xl text-center text-blue-500 font-bold drop-shadow-[0_1.2px_1.2px_rgba(37,99,235,1)]">
@@ -58,7 +58,7 @@ function TestSettingsMenu(props) {
             <Label
               htmlFor="number-messages-to-send-input"
               value="Number of messages to send in test:&nbsp;"
-              className="text-2xl text-white"
+              className="text-2xl text-white mr-4"
             />
           </div>
           <div className="flex m-auto mr-0">
@@ -91,7 +91,7 @@ function TestSettingsMenu(props) {
             <Label
               htmlFor="number-of-attempts-input"
               value="Number of attempts in test:&nbsp;"
-              className="text-2xl text-white"
+              className="text-2xl text-white mr-4"
             />
           </div>
           <div className="flex m-auto mr-0">
@@ -121,7 +121,7 @@ function TestSettingsMenu(props) {
             <Label
               htmlFor="delay-in-milliseconds-input"
               value="Delay between attempts [ms]:&nbsp;"
-              className="text-2xl text-white"
+              className="text-2xl text-white mr-4"
             />
           </div>
           <div className="flex m-auto mr-0">
@@ -151,7 +151,7 @@ function TestSettingsMenu(props) {
             <Label
               htmlFor="broker-select"
               value="Select in which broker perform test:&nbsp;"
-              className="text-2xl text-white"
+              className="text-2xl text-white mr-4"
             />
           </div>
           <div className="flex m-auto mr-0">

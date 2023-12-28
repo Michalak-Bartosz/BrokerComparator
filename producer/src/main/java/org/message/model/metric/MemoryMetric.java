@@ -5,13 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemoryMetric {
-    private double initialMemoryGB;
-    private double usedHeapMemoryGB;
-    private double maxHeapMemoryGB;
-    private double committedMemoryGB;
+    private BigDecimal initialMemoryGB;
+    private BigDecimal usedHeapMemoryGB;
+    private BigDecimal maxHeapMemoryGB;
+    private BigDecimal committedMemoryGB;
 }

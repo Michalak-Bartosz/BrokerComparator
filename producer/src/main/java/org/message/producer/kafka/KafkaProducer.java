@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.message.producer.kafka.util.KafkaMessageUtil.getKafkaProducerRecord;
@@ -37,10 +38,11 @@ public class KafkaProducer {
     private static final String BROKER_TYPE = "KAFKA";
 
     public void sendRecord(UUID testUUID,
+                           int numberOfAttempt,
                            int messagesObtainedInAttempt,
                            User user) {
-        final double systemCpuBefore = getSystemCpuUsagePercentage();
-        final double appCpuBefore = getAppCpuUsagePercentage();
+        final BigDecimal systemCpuBefore = getSystemCpuUsagePercentage();
+        final BigDecimal appCpuBefore = getAppCpuUsagePercentage();
 
         ProducerRecord<String, User> userKafkaRecord = getKafkaProducerRecord(userDataTopic, user);
 
@@ -60,13 +62,14 @@ public class KafkaProducer {
                 });
         kafkaTemplateReportEvent.flush();
 
-        final double systemCpuAfter = getSystemCpuUsagePercentage();
-        final double appCpuAfter = getAppCpuUsagePercentage();
+        final BigDecimal systemCpuAfter = getSystemCpuUsagePercentage();
+        final BigDecimal appCpuAfter = getAppCpuUsagePercentage();
 
-        final double systemAverageCpu = getAverageCpuPercentage(systemCpuBefore, systemCpuAfter);
-        final double appAverageCpu = getAverageCpuPercentage(appCpuBefore, appCpuAfter);
+        final BigDecimal systemAverageCpu = getAverageCpuPercentage(systemCpuBefore, systemCpuAfter);
+        final BigDecimal appAverageCpu = getAverageCpuPercentage(appCpuBefore, appCpuAfter);
 
         DebugInfo debugInfo = generateDebugInfo(testUUID,
+                numberOfAttempt,
                 BROKER_TYPE,
                 getTestStatusPercentage(),
                 messagesObtainedInAttempt,

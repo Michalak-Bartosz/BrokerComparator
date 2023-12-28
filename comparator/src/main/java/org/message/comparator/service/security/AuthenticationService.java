@@ -81,7 +81,7 @@ public class AuthenticationService {
     private void saveUserToken(DashboardUser dashboardUser, String jwtToken) {
         var token = Token.builder()
                 .dashboardUser(dashboardUser)
-                .token(jwtToken)
+                .jwtToken(jwtToken)
                 .tokenType(TokenType.BEARER)
                 .expired(false)
                 .revoked(false)

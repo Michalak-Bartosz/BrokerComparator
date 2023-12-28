@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class CPUMetric {
-    private double systemCpuUsagePercentage;
-    private double appCpuUsagePercentage;
+    private BigDecimal systemCpuUsagePercentage;
+    private BigDecimal appCpuUsagePercentage;
 }
