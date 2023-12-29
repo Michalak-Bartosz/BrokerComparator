@@ -50,7 +50,11 @@ function LiveChart(props) {
       tickInterval: 1,
       visible: true,
       title: {
-        text: props.xAxisName ? props.xAxisName : "Timestamp",
+        text: props.xAxisName
+          ? props.xAxisName
+          : isTimestampMode
+          ? "Timestamp"
+          : "Message Number",
         style: {
           fontSize: "18px",
         },
@@ -137,7 +141,7 @@ function LiveChart(props) {
           if (isTimestampMode) {
             categoryIndex = categoryIndex + maxIndex;
           }
-          return [categoryIndex, value.yVal];
+          return [categoryIndex + 1, value.yVal];
         });
       } else {
         seriesData = "";
@@ -160,6 +164,13 @@ function LiveChart(props) {
           categories: props.chartData
             .map((data) => getCategories(data))
             .flat(1),
+          title: {
+            text: props.xAxisName
+              ? props.xAxisName
+              : isTimestampMode
+              ? "Timestamp"
+              : "Message Number",
+          },
         },
         series: calculateSeriesData(),
       };

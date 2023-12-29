@@ -4,12 +4,12 @@ import DebugInfo from "./DebugInfo";
 
 function DebugInfoTable({ debugInfoList }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [maxDebugInfosOnPage, setMaxDebugInfosOnMage] = useState(25);
+  const [maxDebugInfosOnPage, setMaxDebugInfosOnMage] = useState(10);
   const [totalPages, setTotalPages] = useState(
     Math.ceil(debugInfoList.length / maxDebugInfosOnPage)
   );
 
-  const selectMaxUsersOnPage = [25, 50, 100, 200, 300, 400, 500];
+  const selectMaxDebugInfosOnPage = [10, 25, 50, 100, 200, 300, 400, 500];
 
   useEffect(() => {
     setTotalPages(Math.ceil(debugInfoList.length / maxDebugInfosOnPage));
@@ -19,7 +19,7 @@ function DebugInfoTable({ debugInfoList }) {
     setCurrentPage(page);
   };
 
-  const calculateUsersOnPage = () => {
+  const calculateDebugInfoOnPage = () => {
     return debugInfoList
       .sort(function (a, b) {
         return a.testStatusPercentage - b.testStatusPercentage;
@@ -35,15 +35,16 @@ function DebugInfoTable({ debugInfoList }) {
       <div className="flex py-6 px-4">
         <div className="flex items-center text-xl m-auto ml-0">
           <span className="flex text-blue-500 font-bold">
-            Users in table:&nbsp;
+            DebugInfos in table:&nbsp;
           </span>
           <span>{debugInfoList.length}</span>
         </div>
         <div className="flex items-center m-auto mr-0">
           <Label
+            id={(Math.random() + 1).toString(36).substring(7)}
             className="text-blue-500 text-xl font-bold"
             htmlFor="max-debug-infos-on-page-select"
-            value="Max users on page:&nbsp;"
+            value="Max Debug Infos on page:&nbsp;"
           />
           <Select
             id="max-debug-infos-on-page-select"
@@ -51,7 +52,7 @@ function DebugInfoTable({ debugInfoList }) {
             onChange={(e) => setMaxDebugInfosOnMage(e.target.value)}
             required
           >
-            {selectMaxUsersOnPage.map((value) => {
+            {selectMaxDebugInfosOnPage.map((value) => {
               return (
                 <option key={value} value={value}>
                   {value}
@@ -109,7 +110,7 @@ function DebugInfoTable({ debugInfoList }) {
             </Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
-            {calculateUsersOnPage().map((debugInfo, index) => {
+            {calculateDebugInfoOnPage().map((debugInfo, index) => {
               return (
                 <DebugInfo
                   key={debugInfo.uuid}

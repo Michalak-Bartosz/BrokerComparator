@@ -14,7 +14,7 @@ function SwitchLoginRegister() {
 
   return (
     <label
-      id="switch-button"
+      id={(Math.random() + 1).toString(36).substring(7)}
       className="flex m-auto cursor-pointer w-96 items-center rounded-t-md m-auto"
     >
       <input

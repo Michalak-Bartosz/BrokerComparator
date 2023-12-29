@@ -22,17 +22,27 @@ function LogInForm(props) {
         LogIn!
       </h1>
       <div id="login-user-form" className="grid w-min m-auto gap-6 text-3xl">
-        <label id="username">Username:</label>
+        <label
+          id={(Math.random() + 1).toString(36).substring(7)}
+          htmlFor="login-username-input"
+        >
+          Username:
+        </label>
         <input
-          id="username-input"
+          id="login-username-input"
           className="px-4 py-2 rounded-md w-64 text-black"
           type="text"
           placeholder="Provide username..."
           onChange={(e) => setUserName(e.target.value)}
         />
-        <label id="username">Password:</label>
+        <label
+          id={(Math.random() + 1).toString(36).substring(7)}
+          htmlFor="login-password-input"
+        >
+          Password:
+        </label>
         <input
-          id="password-input"
+          id="login-password-input"
           className="px-4 py-2 rounded-md w-64 text-black"
           type="password"
           placeholder="Provide password..."

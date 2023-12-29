@@ -5,18 +5,21 @@ import ProducerDataVisualization from "../compare/producer/ProducerDataVisualiza
 import TestSettingsMenu from "../compare/TestSettingsMenu";
 import { KAFKA_BROKER } from "../compare/constants/brokerType";
 import DataOverview from "../compare/DataOverview";
+import DataOverviewModal from "../compare/DataOverviewModal";
 
 function MainDashboardPage() {
   const api = useApi();
   const [testInProgressProducer, setTestInProgressProducer] = useState(false);
   const [testInProgressConsumer, setTestInProgressConsumer] = useState(false);
-  const [testUUID, setTestUUID] = useState(null);
+  const [lastTestUUID, setLastTestUUID] = useState(null);
   const [numberOfMessagesToSend, setNumberOfMessagesToSend] = useState(10);
   const [numberOfAttempts, setNumberOfAttempts] = useState(1);
   const [delayInMilliseconds, setDelayInMilliseconds] = useState(0);
   const [brokerTypes, setBrokerTypes] = useState(KAFKA_BROKER.value);
-  const [testReport, setTestReport] = useState(null);
+  const [focusedTestReportArray, setFocusedTestReportArray] = useState([]);
   const [testReportArray, setTestReportArray] = useState([]);
+  const [openFullscreenDataOverviewModal, setOpenFullscreenDataOverviewModal] =
+    useState(false);
 
   async function performTest() {
     try {
@@ -27,7 +30,7 @@ function MainDashboardPage() {
         delayInMilliseconds: delayInMilliseconds,
       };
       const response = await api.performTest(testSettings);
-      setTestUUID(response.testUUID);
+      setLastTestUUID(response.testUUID);
       setTestInProgressProducer(true);
       setTestInProgressConsumer(true);
     } catch (e) {
@@ -38,7 +41,7 @@ function MainDashboardPage() {
   async function finishTest() {
     try {
       let finishTest = {
-        testUUID: testUUID,
+        testUUID: lastTestUUID,
         numberOfReceivedMessagesProducer: numberOfMessagesToSend,
         numberOfReceivedMessagesConsumer: numberOfMessagesToSend,
       };
@@ -51,16 +54,44 @@ function MainDashboardPage() {
     }
   }
 
+  const addReportToFocusedTestReportArray = (report) => {
+    if (focusedTestReportArray.length === 0) {
+      setFocusedTestReportArray([report]);
+    } else {
+      setFocusedTestReportArray((prevArray) => [...prevArray, report]);
+    }
+  };
+
+  const removeReportFromFocusedTestReportArray = (reportToRemove) => {
+    setFocusedTestReportArray((prevArray) => [
+      ...prevArray.filter(
+        (report) => report.testUUID !== reportToRemove.testUUID
+      ),
+    ]);
+  };
+
+  const updateFocusedTestReportArray = (allReportsArray) => {
+    if (lastTestUUID) {
+      const lastTestReport = allReportsArray.find(
+        (report) => report.testUUID === lastTestUUID
+      );
+      if (focusedTestReportArray.length === 0) {
+        setFocusedTestReportArray([lastTestReport]);
+      } else {
+        setFocusedTestReportArray((prevArray) => [
+          ...prevArray,
+          lastTestReport,
+        ]);
+      }
+    }
+  };
+
   async function getTestReportArrayAndSetCurrentReport() {
     try {
       const response = await api.getTestReports();
       if (response) {
         setTestReportArray([...response]);
-        if (testUUID) {
-          setTestReport(
-            response.find((report) => report.testUUID === testUUID)
-          );
-        }
+        updateFocusedTestReportArray(response);
       }
     } catch (e) {
       console.log(e);
@@ -69,13 +100,15 @@ function MainDashboardPage() {
 
   useEffect(() => {
     getTestReportArrayAndSetCurrentReport();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (!testInProgressProducer && !testInProgressConsumer && testUUID) {
+    if (!testInProgressProducer && !testInProgressConsumer && lastTestUUID) {
       finishTest();
     }
-  }, [testInProgressProducer, testInProgressConsumer]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [testInProgressProducer, testInProgressConsumer, lastTestUUID]);
 
   return (
     <div className="block m-8">
@@ -90,34 +123,57 @@ function MainDashboardPage() {
           setBrokerTypes={setBrokerTypes}
           testInProgressProducer={testInProgressProducer}
           testInProgressConsumer={testInProgressConsumer}
-          testUUID={testUUID}
           performTest={performTest}
         />
         <div className="col-span-2">
           <DataOverview
-            testReport={testReport}
+            focusedTestReportArray={focusedTestReportArray}
+            addReportToFocusedTestReportArray={
+              addReportToFocusedTestReportArray
+            }
+            removeReportFromFocusedTestReportArray={
+              removeReportFromFocusedTestReportArray
+            }
             testReportArray={testReportArray}
-            setTestReport={setTestReport}
+            setOpenFullscreenDataOverviewModal={
+              setOpenFullscreenDataOverviewModal
+            }
+          />
+          <DataOverviewModal
+            focusedTestReportArray={focusedTestReportArray}
+            addReportToFocusedTestReportArray={
+              addReportToFocusedTestReportArray
+            }
+            removeReportFromFocusedTestReportArray={
+              removeReportFromFocusedTestReportArray
+            }
+            testReportArray={testReportArray}
+            openFullscreenDataOverviewModal={openFullscreenDataOverviewModal}
+            setOpenFullscreenDataOverviewModal={
+              setOpenFullscreenDataOverviewModal
+            }
           />
         </div>
       </div>
       <div className="flex text-center my-10">
         <div id="content-wrapper" className="w-full">
           <ProducerDataVisualization
-            testUUID={testUUID}
+            testUUID={lastTestUUID}
             brokerTypes={brokerTypes}
             numberOfMessagesToSend={numberOfMessagesToSend}
             numberOfAttempts={numberOfAttempts}
             isInProgress={testInProgressProducer}
             setIsInProgress={setTestInProgressProducer}
+            focusedTestReportArray={focusedTestReportArray}
           />
           <ConsumerDataVisualization
-            testUUID={testUUID}
+            testUUID={lastTestUUID}
             brokerTypes={brokerTypes}
             numberOfMessagesToSend={numberOfMessagesToSend}
             numberOfAttempts={numberOfAttempts}
             isInProgress={testInProgressConsumer}
             setIsInProgress={setTestInProgressConsumer}
+            focusedTestReportArray={focusedTestReportArray}
           />
         </div>
       </div>

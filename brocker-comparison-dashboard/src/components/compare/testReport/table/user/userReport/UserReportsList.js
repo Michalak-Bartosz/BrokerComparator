@@ -1,6 +1,6 @@
 import React from "react";
 
-function UserReportsList() {
+function UserReportsList({ userReports }) {
   return <></>;
 }
 

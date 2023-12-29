@@ -1,35 +1,55 @@
 import { Label, Pagination, Select, Table } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import Report from "./Report";
+import { getDateFromTimestampString } from "../../../../util/DateTimeUtil";
 
 function ReportTable({
   testReportArray,
-  tabsRef,
-  setTestReport,
-  testReportUUID,
+  focusedTestReportUUIDArray,
+  addReportToFocusedTestReportArray,
+  removeReportFromFocusedTestReportArray,
 }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [maxUsersOnPage, setMaxUsersOnMage] = useState(25);
+  const [maxReportsOnPage, setMaxReportsOnPage] = useState(10);
   const [totalPages, setTotalPages] = useState(
-    Math.ceil(testReportArray.length / maxUsersOnPage)
+    Math.ceil(testReportArray.length / maxReportsOnPage)
   );
 
-  const selectMaxUsersOnPage = [25, 50, 100, 200, 300, 400, 500];
+  const selectMaxReportsOnPage = [10, 25, 50, 100, 200, 300, 400, 500];
 
   useEffect(() => {
-    setTotalPages(Math.ceil(testReportArray.length / maxUsersOnPage));
-  }, [maxUsersOnPage, testReportArray.length]);
+    setTotalPages(Math.ceil(testReportArray.length / maxReportsOnPage));
+  }, [maxReportsOnPage, testReportArray.length]);
 
   const onPageChange = (page) => {
     setCurrentPage(page);
   };
 
-  const calculateReportsOnPage = () => {
-    return testReportArray.slice(
-      (currentPage - 1) * maxUsersOnPage,
-      currentPage * maxUsersOnPage
-    );
+  const sortTestReportArray = (reportsOnPage) => {
+    return reportsOnPage.sort(function (a, b) {
+      return (
+        getDateFromTimestampString(a.debugInfoList[0].producedTimestamp) -
+        getDateFromTimestampString(b.debugInfoList[0].producedTimestamp)
+      );
+    });
   };
+
+  const calculateReportsOnPage = () => {
+    const reportsOnPage = testReportArray.slice(
+      (currentPage - 1) * maxReportsOnPage,
+      currentPage * maxReportsOnPage
+    );
+    return sortTestReportArray(reportsOnPage);
+  };
+
+  const isFocusedReport = (reportTestUUID) => {
+    if (focusedTestReportUUIDArray.find((uuid) => uuid === reportTestUUID)) {
+      return true;
+    }
+    return false;
+  };
+
+  let selectId = "max-reports-on-page-select" + Math.random();
 
   return (
     <div>
@@ -42,17 +62,18 @@ function ReportTable({
         </div>
         <div className="flex items-center m-auto mr-0">
           <Label
+            id={(Math.random() + 1).toString(36).substring(7)}
             className="text-blue-500 text-xl font-bold"
-            htmlFor="max-reports-on-page-select"
-            value="Max users on page:&nbsp;"
+            htmlFor={selectId}
+            value="Max Reports on page:&nbsp;"
           />
           <Select
-            id="max-reports-on-page-select"
+            id={selectId}
             className="w-32"
-            onChange={(e) => setMaxUsersOnMage(e.target.value)}
+            onChange={(e) => setMaxReportsOnPage(e.target.value)}
             required
           >
-            {selectMaxUsersOnPage.map((value) => {
+            {selectMaxReportsOnPage.map((value) => {
               return (
                 <option key={value} value={value}>
                   {value}
@@ -73,13 +94,16 @@ function ReportTable({
               Test UUID
             </Table.HeadCell>
             <Table.HeadCell className="text-blue-500 font-bold text-xl text-center bg-slate-900">
-              Number of users in test
+              Broker Type
+            </Table.HeadCell>
+            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center bg-slate-900">
+              Number of users
             </Table.HeadCell>
             <Table.HeadCell className="text-blue-500 font-bold text-xl text-center bg-slate-900">
               Number of attempts
             </Table.HeadCell>
             <Table.HeadCell className="text-blue-500 font-bold text-xl text-center bg-slate-900">
-              Test report overview
+              Visible
             </Table.HeadCell>
           </Table.Head>
           <Table.Body>
@@ -89,11 +113,13 @@ function ReportTable({
                   key={report.testUUID}
                   report={report}
                   index={index + 1}
-                  tabsRef={tabsRef}
-                  setTestReport={setTestReport}
-                  isCurrentReport={
-                    testReportUUID === report.testUUID ? true : false
+                  addReportToFocusedTestReportArray={
+                    addReportToFocusedTestReportArray
                   }
+                  removeReportFromFocusedTestReportArray={
+                    removeReportFromFocusedTestReportArray
+                  }
+                  isFocusedReport={isFocusedReport(report.testUUID)}
                 />
               );
             })}

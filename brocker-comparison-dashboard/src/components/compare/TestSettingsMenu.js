@@ -56,6 +56,7 @@ function TestSettingsMenu(props) {
           <FaDotCircle className="text-blue-500 mr-2" />
           <div>
             <Label
+              id={(Math.random() + 1).toString(36).substring(7)}
               htmlFor="number-messages-to-send-input"
               value="Number of messages to send in test:&nbsp;"
               className="text-2xl text-white mr-4"
@@ -89,6 +90,7 @@ function TestSettingsMenu(props) {
           <FaDotCircle className="text-blue-500 mr-2" />
           <div>
             <Label
+              id={(Math.random() + 1).toString(36).substring(7)}
               htmlFor="number-of-attempts-input"
               value="Number of attempts in test:&nbsp;"
               className="text-2xl text-white mr-4"
@@ -119,6 +121,7 @@ function TestSettingsMenu(props) {
           <FaDotCircle className="text-blue-500 mr-2" />
           <div>
             <Label
+              id={(Math.random() + 1).toString(36).substring(7)}
               htmlFor="delay-in-milliseconds-input"
               value="Delay between attempts [ms]:&nbsp;"
               className="text-2xl text-white mr-4"
@@ -149,6 +152,7 @@ function TestSettingsMenu(props) {
           <FaDotCircle className="text-blue-500 mr-2" />
           <div>
             <Label
+              id={(Math.random() + 1).toString(36).substring(7)}
               htmlFor="broker-select"
               value="Select in which broker perform test:&nbsp;"
               className="text-2xl text-white mr-4"

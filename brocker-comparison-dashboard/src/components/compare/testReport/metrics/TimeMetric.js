@@ -1,11 +1,8 @@
-import moment from "moment";
 import React from "react";
 import { FaDotCircle } from "react-icons/fa";
+import { getDurationInMilliseconds } from "../../../util/DateTimeUtil";
 
 function TimeMetric({ timeMetric }) {
-  const getDurationInMilliseconds = (value) => {
-    return parseFloat(moment.duration(value).as("milliseconds").toFixed(3));
-  };
   return (
     <div id="memory-metric-wrapper" className="block text-center">
       <h2 className="mb-2 text-blue-500 text-2xl text-left font-bold pt-4">
@@ -14,14 +11,14 @@ function TimeMetric({ timeMetric }) {
       <div className="grid grid-cols-2 gap-6">
         <div className="flex items-center">
           <FaDotCircle className="text-sm mr-2" />
-          <label className="font-bold">{"All Produced Time:"}&nbsp;</label>
+          <span className="font-bold">{"All Produced Time:"}&nbsp;</span>
           <span>
             {getDurationInMilliseconds(timeMetric.producedTime) + "ms"}
           </span>
         </div>
         <div className="flex items-center">
           <FaDotCircle className="text-sm mr-2" />
-          <label className="font-bold">{"All Consumed Time:"}&nbsp;</label>
+          <span className="font-bold">{"All Consumed Time:"}&nbsp;</span>
           <span>
             {getDurationInMilliseconds(timeMetric.consumedTime) + "ms"}
           </span>
@@ -34,21 +31,21 @@ function TimeMetric({ timeMetric }) {
         <div className="block m-auto w-max">
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
-            <label className="font-bold">{"Min delta time:"}&nbsp;</label>
+            <span className="font-bold">{"Min delta time:"}&nbsp;</span>
             <span>
               {getDurationInMilliseconds(timeMetric.minDeltaTime) + "ms"}
             </span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
-            <label className="font-bold">{"Max delta time:"}&nbsp;</label>
+            <span className="font-bold">{"Max delta time:"}&nbsp;</span>
             <span>
               {getDurationInMilliseconds(timeMetric.maxDeltaTime) + "ms"}
             </span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
-            <label className="font-bold">{"Average delta time:"}&nbsp;</label>
+            <span className="font-bold">{"Average delta time:"}&nbsp;</span>
             <span>
               {getDurationInMilliseconds(timeMetric.averageDeltaTime) + "ms"}
             </span>

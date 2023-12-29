@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import {
-  addConsumerTestInfoArrayAction,
-  clearConsumerTestInfoArrayAction,
-} from "../../../redux/actions/testInfoArrayActions";
 import BASE_URL from "../../../connections/constants/BASE_URL";
 import ProgressBar from "../progress/ProgressBar";
 import Counter from "../progress/Counter";
 import LiveChart from "../chart/LiveChart";
 import { randomDatasetColor } from "../../util/ColorUtil";
-import { getDateFromTimestampString } from "../../util/DateUtil";
+import {
+  getDateFromTimestampString,
+  getDurationInMilliseconds,
+} from "../../util/DateTimeUtil";
 import TestStatus from "../progress/TestStatus";
-import moment from "moment";
 
 function ConsumerDataVisualization(props) {
-  const dispatch = useDispatch();
   const [datasetName, setDatasetName] = useState("");
   const [testStatus, setTestStatus] = useState(0);
 
@@ -29,143 +25,189 @@ function ConsumerDataVisualization(props) {
 
   const [chartDataArray, setChartDataArray] = useState([]);
 
+  let receivedMsgArray = [];
+  let deltaTimeDataArray = [];
+  let initMemoArray = [];
+  let usedHeapMemoArray = [];
+  let maxHeapMemoArray = [];
+  let commitedMemoArray = [];
+  let systemCpuArray = [];
+  let appCpuArray = [];
+  let chartDataArrayValue = [];
+
+  const resetTestStates = () => {
+    receivedMsgArray = [];
+    deltaTimeDataArray = [];
+    initMemoArray = [];
+    usedHeapMemoArray = [];
+    maxHeapMemoArray = [];
+    commitedMemoArray = [];
+    systemCpuArray = [];
+    appCpuArray = [];
+  };
+
+  const updateConsumedMsgDataArray = (debugInfo) => {
+    let consumedMsgData = {
+      xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
+      yVal: debugInfo.countOfConsumedMessages,
+    };
+    receivedMsgArray.push(consumedMsgData);
+    setReceivedMsgData([...receivedMsgArray]);
+  };
+
+  const updateDeltaTimeDataArray = (debugInfo) => {
+    let deltaTimeData = {
+      xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
+      yVal: getDurationInMilliseconds(debugInfo.deltaTimestamp),
+    };
+    deltaTimeDataArray.push(deltaTimeData);
+    setDeltaTimeData([...deltaTimeDataArray]);
+  };
+
+  const updateSystemCpuDataArray = (debugInfo) => {
+    let systemCpuData = {
+      xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
+      yVal: debugInfo.consumerCPUMetrics.systemCpuUsagePercentage,
+    };
+    systemCpuArray.push(systemCpuData);
+    setSystemCpuData([...systemCpuArray]);
+  };
+
+  const updateAppCpuData = (debugInfo) => {
+    let appCpuData = {
+      xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
+      yVal: debugInfo.consumerCPUMetrics.appCpuUsagePercentage,
+    };
+    appCpuArray.push(appCpuData);
+    setAppCpuData([...appCpuArray]);
+  };
+
+  const updateInitialMemoryData = (debugInfo) => {
+    let initMemoData = {
+      xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
+      yVal: debugInfo.consumerMemoryMetrics.initialMemoryGB,
+    };
+    initMemoArray.push(initMemoData);
+    setInitialMemoryData([...initMemoArray]);
+  };
+
+  const updateUsedHeapMemoryData = (debugInfo) => {
+    let usedHeapMemoData = {
+      xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
+      yVal: debugInfo.consumerMemoryMetrics.usedHeapMemoryGB,
+    };
+    usedHeapMemoArray.push(usedHeapMemoData);
+    setUsedHeapMemoryData([...usedHeapMemoArray]);
+  };
+
+  const updateMaxHeapMemoryData = (debugInfo) => {
+    let maxHeapMemoData = {
+      xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
+      yVal: debugInfo.consumerMemoryMetrics.maxHeapMemoryGB,
+    };
+    maxHeapMemoArray.push(maxHeapMemoData);
+    setMaxHeapMemoryData([...maxHeapMemoArray]);
+  };
+
+  const updateCommittedMemoryData = (debugInfo) => {
+    let committedMemoData = {
+      xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
+      yVal: debugInfo.consumerMemoryMetrics.committedMemoryGB,
+    };
+    commitedMemoArray.push(committedMemoData);
+    setCommittedMemoryData([...commitedMemoArray]);
+  };
+
+  const getDatasetName = (brokerType, testUUID) => {
+    let currentTestUUID = props.testUUID ? props.testUUID : testUUID;
+    return (
+      "Broker Type: '" + brokerType + "' Test UUID: '" + currentTestUUID + "'"
+    );
+  };
+
+  const getNewChartDataArrayValue = (brokerType, testUUID) => {
+    return {
+      datasetName: getDatasetName(brokerType, testUUID),
+      datasetColor: randomDatasetColor(),
+      receivedMsgData: receivedMsgArray,
+      deltaTimeData: deltaTimeDataArray,
+      initialMemoryData: initMemoArray,
+      usedHeapMemoryData: usedHeapMemoArray,
+      maxHeapMemoryData: maxHeapMemoArray,
+      committedMemoryData: commitedMemoArray,
+      systemCpuData: systemCpuArray,
+      appCpuData: appCpuArray,
+    };
+  };
+
+  const updateChartData = (debugInfo) => {
+    updateConsumedMsgDataArray(debugInfo);
+    updateDeltaTimeDataArray(debugInfo);
+    updateSystemCpuDataArray(debugInfo);
+    updateAppCpuData(debugInfo);
+    updateInitialMemoryData(debugInfo);
+    updateUsedHeapMemoryData(debugInfo);
+    updateMaxHeapMemoryData(debugInfo);
+    updateCommittedMemoryData(debugInfo);
+  };
+
+  useEffect(() => {
+    const fillOutChartDataByBrokerType = (brokerTypeList, debugInfoList) => {
+      brokerTypeList.forEach((brokerType) => {
+        const testUUID = debugInfoList[0].testUUID;
+        debugInfoList
+          .filter((debugInfo) => debugInfo.brokerType === brokerType)
+          .sort(function (a, b) {
+            return a.testStatusPercentage - b.testStatusPercentage;
+          })
+          .map((debugInfo) => updateChartData(debugInfo));
+        chartDataArrayValue.push(
+          getNewChartDataArrayValue(brokerType, testUUID)
+        );
+        resetTestStates();
+      });
+      setChartDataArray([...chartDataArrayValue]);
+    };
+
+    const sortFocusedTestReportArray = () => {
+      return props.focusedTestReportArray.sort(function (a, b) {
+        return (
+          getDateFromTimestampString(a.debugInfoList[0].producedTimestamp) -
+          getDateFromTimestampString(b.debugInfoList[0].producedTimestamp)
+        );
+      });
+    };
+
+    if (props.focusedTestReportArray.length > 0) {
+      sortFocusedTestReportArray().forEach((testReport) => {
+        fillOutChartDataByBrokerType(
+          testReport.brokerTypeList,
+          testReport.debugInfoList
+        );
+      });
+    } else {
+      setChartDataArray([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.focusedTestReportArray]);
+
   useEffect(() => {
     let eventSource;
-    let receivedMsgArray = [];
-    let deltaTimeDataArray = [];
-    let initMemoArray = [];
-    let usedHeapMemoArray = [];
-    let maxHeapMemoArray = [];
-    let commitedMemoArray = [];
-    let systemCpuArray = [];
-    let appCpuArray = [];
-
-    const getDurationInMilliseconds = (value) => {
-      return parseFloat(moment.duration(value).as("milliseconds").toFixed(3));
-    };
 
     const updateTestStatus = (debugInfo) => {
       setTestStatus(debugInfo.testStatusPercentage);
     };
 
-    const updateConsumedMsgDataArray = (debugInfo) => {
-      let consumedMsgData = {
-        xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
-        yVal: debugInfo.countOfConsumedMessages,
-      };
-      receivedMsgArray.push(consumedMsgData);
-      setReceivedMsgData([...receivedMsgArray]);
-    };
-
-    const updateDeltaTimeDataArray = (debugInfo) => {
-      let deltaTimeData = {
-        xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
-        yVal: getDurationInMilliseconds(debugInfo.deltaTimestamp),
-      };
-      deltaTimeDataArray.push(deltaTimeData);
-      setDeltaTimeData([...deltaTimeDataArray]);
-    };
-
-    const updateSystemCpuDataArray = (debugInfo) => {
-      let systemCpuData = {
-        xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
-        yVal: debugInfo.consumerCPUMetrics.systemCpuUsagePercentage,
-      };
-      systemCpuArray.push(systemCpuData);
-      setSystemCpuData([...systemCpuArray]);
-    };
-
-    const updateAppCpuData = (debugInfo) => {
-      let appCpuData = {
-        xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
-        yVal: debugInfo.consumerCPUMetrics.appCpuUsagePercentage,
-      };
-      appCpuArray.push(appCpuData);
-      setAppCpuData([...appCpuArray]);
-    };
-
-    const updateInitialMemoryData = (debugInfo) => {
-      let initMemoData = {
-        xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
-        yVal: debugInfo.consumerMemoryMetrics.initialMemoryGB,
-      };
-      initMemoArray.push(initMemoData);
-      setInitialMemoryData([...initMemoArray]);
-    };
-
-    const updateUsedHeapMemoryData = (debugInfo) => {
-      let usedHeapMemoData = {
-        xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
-        yVal: debugInfo.consumerMemoryMetrics.usedHeapMemoryGB,
-      };
-      usedHeapMemoArray.push(usedHeapMemoData);
-      setUsedHeapMemoryData([...usedHeapMemoArray]);
-    };
-
-    const updateMaxHeapMemoryData = (debugInfo) => {
-      let maxHeapMemoData = {
-        xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
-        yVal: debugInfo.consumerMemoryMetrics.maxHeapMemoryGB,
-      };
-      maxHeapMemoArray.push(maxHeapMemoData);
-      setMaxHeapMemoryData([...maxHeapMemoArray]);
-    };
-
-    const updateCommittedMemoryData = (debugInfo) => {
-      let committedMemoData = {
-        xVal: getDateFromTimestampString(debugInfo.consumedTimestamp),
-        yVal: debugInfo.consumerMemoryMetrics.committedMemoryGB,
-      };
-      commitedMemoArray.push(committedMemoData);
-      setCommittedMemoryData([...commitedMemoArray]);
-    };
-
-    const updateChartData = (debugInfo) => {
-      updateTestStatus(debugInfo);
-      updateConsumedMsgDataArray(debugInfo);
-      updateDeltaTimeDataArray(debugInfo);
-      updateSystemCpuDataArray(debugInfo);
-      updateAppCpuData(debugInfo);
-      updateInitialMemoryData(debugInfo);
-      updateUsedHeapMemoryData(debugInfo);
-      updateMaxHeapMemoryData(debugInfo);
-      updateCommittedMemoryData(debugInfo);
-    };
-
-    const getNewChartDataArrayValue = (brokerType) => {
-      return {
-        datasetName: getDatasetName(brokerType),
-        datasetColor: randomDatasetColor(),
-        receivedMsgData: receivedMsgArray,
-        deltaTimeData: deltaTimeDataArray,
-        initialMemoryData: initMemoArray,
-        usedHeapMemoryData: usedHeapMemoArray,
-        maxHeapMemoryData: maxHeapMemoArray,
-        committedMemoryData: commitedMemoArray,
-        systemCpuData: systemCpuArray,
-        appCpuData: appCpuArray,
-      };
-    };
-
     const updateChartDataArray = (brokerType) => {
+      chartDataArrayValue.push(getNewChartDataArrayValue(brokerType));
       if (chartDataArray.length === 0) {
-        setChartDataArray([getNewChartDataArrayValue(brokerType)]);
+        setChartDataArray([...chartDataArrayValue]);
       } else {
-        setChartDataArray((prevValue) => [
-          ...prevValue,
-          getNewChartDataArrayValue(brokerType),
+        setChartDataArray((prevArray) => [
+          ...prevArray,
+          ...chartDataArrayValue,
         ]);
       }
-    };
-
-    const getDatasetName = (brokerType) => {
-      return (
-        "Broker Type: '" + brokerType + "' Test UUID: '" + props.testUUID + "'"
-      );
-    };
-
-    const resetTestStates = () => {
-      dispatch(clearConsumerTestInfoArrayAction());
     };
 
     const calculateTotalMessagesInTest = () => {
@@ -202,6 +244,7 @@ function ConsumerDataVisualization(props) {
           handleNewBrokerType(currentBrokerType, newBrokerType);
           currentBrokerType = newBrokerType;
           setDatasetName(getDatasetName(currentBrokerType));
+          updateTestStatus(debugInfo);
           updateChartData(debugInfo);
           receivedMsgCounter++;
           if (receivedMsgCounter === totalMessagesInTest) {
@@ -230,12 +273,7 @@ function ConsumerDataVisualization(props) {
       updateChartDataArray(brokerType);
       props.setIsInProgress(false);
       eventSource.close();
-      saveData();
     };
-
-    async function saveData() {
-      // dispatch(addConsumerTestInfoArrayAction(testInfo)); TODO
-    }
 
     const handleStartTest = () => {
       resetTestStates();

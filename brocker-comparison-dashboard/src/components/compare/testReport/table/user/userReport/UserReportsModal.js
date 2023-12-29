@@ -1,13 +1,21 @@
 import { Modal } from "flowbite-react";
 import { FaWindowClose } from "react-icons/fa";
 import React from "react";
+import UserReportsList from "./UserReportsList";
 
 function UserReportsModal({ userReports, openModal, setOpenModal }) {
   return (
     <div id="address-modal-wrapper">
-      <Modal show={openModal} size="8xl" onClose={() => setOpenModal(false)}>
+      <Modal
+        show={openModal}
+        size="10xl"
+        className="p-32"
+        onClose={() => setOpenModal(false)}
+      >
         <Modal.Header>User reports</Modal.Header>
-        <Modal.Body></Modal.Body>
+        <Modal.Body>
+          <UserReportsList />
+        </Modal.Body>
         <Modal.Footer className="p-0">
           <button
             id="close-test-data-modal-button"

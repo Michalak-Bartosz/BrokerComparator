@@ -4,12 +4,12 @@ import User from "./User";
 
 function UserTable({ userList }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [maxUsersOnPage, setMaxUsersOnMage] = useState(25);
+  const [maxUsersOnPage, setMaxUsersOnMage] = useState(10);
   const [totalPages, setTotalPages] = useState(
     Math.ceil(userList.length / maxUsersOnPage)
   );
 
-  const selectMaxUsersOnPage = [25, 50, 100, 200, 300, 400, 500];
+  const selectMaxUsersOnPage = [10, 25, 50, 100, 200, 300, 400, 500];
 
   useEffect(() => {
     setTotalPages(Math.ceil(userList.length / maxUsersOnPage));
@@ -37,9 +37,10 @@ function UserTable({ userList }) {
         </div>
         <div className="flex items-center m-auto mr-0">
           <Label
+            id={(Math.random() + 1).toString(36).substring(7)}
             className="text-blue-500 text-xl font-bold"
             htmlFor="max-user-on-page-select"
-            value="Max users on page:&nbsp;"
+            value="Max Users on page:&nbsp;"
           />
           <Select
             id="max-user-on-page-select"

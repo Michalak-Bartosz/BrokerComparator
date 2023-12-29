@@ -17,19 +17,19 @@ function CPUMetric({ cpuMetric }) {
           </h2>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
-            <label className="font-bold">{"Max System Cpu Usage:"}&nbsp;</label>
+            <span className="font-bold">{"Max System Cpu Usage:"}&nbsp;</span>
             <span>{cpuMetric.maxSystemCpuUsagePercentage + "%"}</span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
-            <label className="font-bold">{"Min System Cpu Usage:"}&nbsp;</label>
+            <span className="font-bold">{"Min System Cpu Usage:"}&nbsp;</span>
             <span>{cpuMetric.minSystemCpuUsagePercentage + "%"}</span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
-            <label className="font-bold">
+            <span className="font-bold">
               {"Average System Cpu Usage:"}&nbsp;
-            </label>
+            </span>
             <span>{cpuMetric.averageSystemCpuUsagePercentage + "%"}</span>
           </div>
         </div>
@@ -39,19 +39,19 @@ function CPUMetric({ cpuMetric }) {
           </h2>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
-            <label className="font-bold">{"Max App Cpu Usage:"}&nbsp;</label>
+            <span className="font-bold">{"Max App Cpu Usage:"}&nbsp;</span>
             <span>{cpuMetric.maxAppCpuUsagePercentage + "%"}</span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
-            <label className="font-bold">{"Min App Cpu Usage:"}&nbsp;</label>
+            <span className="font-bold">{"Min App Cpu Usage:"}&nbsp;</span>
             <span>{cpuMetric.minAppCpuUsagePercentage + "%"}</span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
-            <label className="font-bold">
+            <span className="font-bold">
               {"Average App Cpu Usage:"}&nbsp;
-            </label>
+            </span>
             <span>{cpuMetric.averageAppCpuUsagePercentage + "%"}</span>
           </div>
         </div>

@@ -8,13 +8,17 @@ function DbReportsOverview(props) {
         {props.testReportArray.length !== 0 ? (
           <ReportTable
             testReportArray={props.testReportArray}
-            tabsRef={props.tabsRef}
-            testReportUUID={props.testReportUUID}
-            setTestReport={props.setTestReport}
+            focusedTestReportUUIDArray={props.focusedTestReportUUIDArray}
+            addReportToFocusedTestReportArray={
+              props.addReportToFocusedTestReportArray
+            }
+            removeReportFromFocusedTestReportArray={
+              props.removeReportFromFocusedTestReportArray
+            }
           />
         ) : (
-          <h1 className="font-bold text-center m-auto mt-10">
-            No reports. Start new one!
+          <h1 className="font-bold text-center text-blue-500 m-auto mt-12 text-2xl">
+            No reports. Start new test!
           </h1>
         )}
       </div>

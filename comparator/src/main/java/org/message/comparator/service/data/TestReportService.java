@@ -7,6 +7,7 @@ import org.message.comparator.entity.data.User;
 import org.message.comparator.entity.data.metric.*;
 import org.message.comparator.exception.TestReportAlreadyExistException;
 import org.message.comparator.repository.data.TestReportRepository;
+import org.message.comparator.util.BrokerType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,15 +43,18 @@ public class TestReportService {
         List<CPUMetric> consumerCpuMetricList = debugInfoList.stream().map(DebugInfo::getConsumerCPUMetrics).toList();
         List<MemoryMetric> consumerMemoryMetric = debugInfoList.stream().map(DebugInfo::getConsumerMemoryMetrics).toList();
 
+        List<String> brokerTypeList = debugInfoList.stream().map(DebugInfo::getBrokerType).distinct().toList();
+        Integer numberOfAttempts = debugInfoList.stream().map(DebugInfo::getNumberOfAttempt).max(Integer::compareTo).orElse(0);
+
         ReportCPUMetric producerReportCPUMetric = reportCPUMetricService.saveReportCPUMetric(producerCpuMetricList);
         ReportMemoryMetric producerReportMemoryMetric = reportMemoryMetricService.saveReportMemoryMetric(producerMemoryMetric);
         ReportCPUMetric consumerReportCPUMetric = reportCPUMetricService.saveReportCPUMetric(consumerCpuMetricList);
         ReportMemoryMetric consumerReportMemoryMetric = reportMemoryMetricService.saveReportMemoryMetric(consumerMemoryMetric);
         ReportTimeMetric reportTimeMetric = reportTimeMetricService.saveReportMemoryMetric(debugInfoList);
-        Integer numberOfAttempts = debugInfoList.stream().map(DebugInfo::getNumberOfAttempt).max(Integer::compareTo).orElse(0);
 
         TestReport testReport = TestReport.builder()
                 .testUUID(testUUID)
+                .brokerTypeList(brokerTypeList)
                 .numberOfAttempts(numberOfAttempts)
                 .userList(userList)
                 .debugInfoList(debugInfoList)

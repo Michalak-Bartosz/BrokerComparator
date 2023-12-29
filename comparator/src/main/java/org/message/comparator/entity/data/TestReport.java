@@ -19,6 +19,7 @@ public class TestReport {
     @Id
     private UUID testUUID;
     private Integer numberOfAttempts;
+    private List<String> brokerTypeList;
     @OneToMany(fetch = FetchType.EAGER)
     private List<User> userList;
     @OneToMany(fetch = FetchType.EAGER)

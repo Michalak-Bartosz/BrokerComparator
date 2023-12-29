@@ -31,6 +31,7 @@ function TestDataModal(props) {
       <Modal
         show={props.openModal}
         size="10xl"
+        className="p-24"
         onClose={() => props.setOpenModal(false)}
       >
         <Modal.Header>Test Data</Modal.Header>

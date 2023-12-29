@@ -64,16 +64,26 @@ function RegisterForm(props) {
         Register!
       </h1>
       <div id="login-user-form" className="grid w-min m-auto gap-6 text-3xl">
-        <label id="username">Username:</label>
+        <label
+          id={(Math.random() + 1).toString(36).substring(7)}
+          htmlFor="register-username-input"
+        >
+          Username:
+        </label>
         <input
-          id="username-input"
+          id="register-username-input"
           className="px-4 py-2 rounded-md w-64 text-black"
           type="text"
           placeholder="Provide username..."
           onChange={(e) => setUserName(e.target.value)}
         />
         <div className="flex m-0 p-0">
-          <label id="username">Password:</label>
+          <label
+            id={(Math.random() + 1).toString(36).substring(7)}
+            htmlFor="register-password-input"
+          >
+            Password:
+          </label>
           <Tooltip id="filter-tooltip" className="text-2xl" />
           {isPasswordValid === false ? (
             <IoMdInformationCircle
@@ -87,7 +97,7 @@ function RegisterForm(props) {
           )}
         </div>
         <input
-          id="password-input"
+          id="register-password-input"
           className={`px-4 py-2 rounded-md w-64 text-black ${
             isPasswordValid ? "" : "border-4 border-amber-600"
           }`}

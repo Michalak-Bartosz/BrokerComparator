@@ -1,19 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import {
-  addProducerTestInfoArrayAction,
-  clearProducerTestInfoArrayAction,
-} from "../../../redux/actions/testInfoArrayActions";
 import BASE_URL from "../../../connections/constants/BASE_URL";
 import ProgressBar from "../progress/ProgressBar";
 import Counter from "../progress/Counter";
 import LiveChart from "../chart/LiveChart";
 import { randomDatasetColor } from "../../util/ColorUtil";
-import { getDateFromTimestampString } from "../../util/DateUtil";
+import { getDateFromTimestampString } from "../../util/DateTimeUtil";
 import TestStatus from "../progress/TestStatus";
 
 function ProducerDataVisualizationTEST(props) {
-  const dispatch = useDispatch();
   const [datasetName, setDatasetName] = useState("");
   const [testStatus, setTestStatus] = useState(0);
 
@@ -27,107 +21,164 @@ function ProducerDataVisualizationTEST(props) {
 
   const [chartDataArray, setChartDataArray] = useState([]);
 
+  let receivedMsgArray = [];
+  let initMemoArray = [];
+  let usedHeapMemoArray = [];
+  let maxHeapMemoArray = [];
+  let commitedMemoArray = [];
+  let systemCpuArray = [];
+  let appCpuArray = [];
+  let chartDataArrayValue = [];
+
+  const resetTestStates = () => {
+    receivedMsgArray = [];
+    initMemoArray = [];
+    usedHeapMemoArray = [];
+    maxHeapMemoArray = [];
+    commitedMemoArray = [];
+    systemCpuArray = [];
+    appCpuArray = [];
+  };
+
+  const updateProducedMsgDataArray = (debugInfo) => {
+    let producedMsgData = {
+      xVal: getDateFromTimestampString(debugInfo.producedTimestamp),
+      yVal: debugInfo.countOfProducedMessages,
+    };
+    receivedMsgArray.push(producedMsgData);
+    setReceivedMsgData([...receivedMsgArray]);
+  };
+
+  const updateSystemCpuDataArray = (debugInfo) => {
+    let systemCpuData = {
+      xVal: getDateFromTimestampString(debugInfo.producedTimestamp),
+      yVal: debugInfo.producerCPUMetrics.systemCpuUsagePercentage,
+    };
+    systemCpuArray.push(systemCpuData);
+    setSystemCpuData([...systemCpuArray]);
+  };
+
+  const updateAppCpuData = (debugInfo) => {
+    let appCpuData = {
+      xVal: getDateFromTimestampString(debugInfo.producedTimestamp),
+      yVal: debugInfo.producerCPUMetrics.appCpuUsagePercentage,
+    };
+    appCpuArray.push(appCpuData);
+    setAppCpuData([...appCpuArray]);
+  };
+
+  const updateInitialMemoryData = (debugInfo) => {
+    let initMemoData = {
+      xVal: getDateFromTimestampString(debugInfo.producedTimestamp),
+      yVal: debugInfo.producerMemoryMetrics.initialMemoryGB,
+    };
+    initMemoArray.push(initMemoData);
+    setInitialMemoryData([...initMemoArray]);
+  };
+
+  const updateUsedHeapMemoryData = (debugInfo) => {
+    let usedHeapMemoData = {
+      xVal: getDateFromTimestampString(debugInfo.producedTimestamp),
+      yVal: debugInfo.producerMemoryMetrics.usedHeapMemoryGB,
+    };
+    usedHeapMemoArray.push(usedHeapMemoData);
+    setUsedHeapMemoryData([...usedHeapMemoArray]);
+  };
+
+  const updateMaxHeapMemoryData = (debugInfo) => {
+    let maxHeapMemoData = {
+      xVal: getDateFromTimestampString(debugInfo.producedTimestamp),
+      yVal: debugInfo.producerMemoryMetrics.maxHeapMemoryGB,
+    };
+    maxHeapMemoArray.push(maxHeapMemoData);
+    setMaxHeapMemoryData([...maxHeapMemoArray]);
+  };
+
+  const updateCommittedMemoryData = (debugInfo) => {
+    let committedMemoData = {
+      xVal: getDateFromTimestampString(debugInfo.producedTimestamp),
+      yVal: debugInfo.producerMemoryMetrics.committedMemoryGB,
+    };
+    commitedMemoArray.push(committedMemoData);
+    setCommittedMemoryData([...commitedMemoArray]);
+  };
+
+  const getDatasetName = (brokerType, testUUID) => {
+    let currentTestUUID = props.testUUID ? props.testUUID : testUUID;
+    return (
+      "Broker Type: '" + brokerType + "' Test UUID: '" + currentTestUUID + "'"
+    );
+  };
+
+  const getNewChartDataArrayValue = (brokerType, testUUID) => {
+    return {
+      datasetName: getDatasetName(brokerType, testUUID),
+      datasetColor: randomDatasetColor(),
+      receivedMsgData: receivedMsgArray,
+      initialMemoryData: initMemoArray,
+      usedHeapMemoryData: usedHeapMemoArray,
+      maxHeapMemoryData: maxHeapMemoArray,
+      committedMemoryData: commitedMemoArray,
+      systemCpuData: systemCpuArray,
+      appCpuData: appCpuArray,
+    };
+  };
+
+  const updateChartData = (debugInfo) => {
+    updateProducedMsgDataArray(debugInfo);
+    updateSystemCpuDataArray(debugInfo);
+    updateAppCpuData(debugInfo);
+    updateInitialMemoryData(debugInfo);
+    updateUsedHeapMemoryData(debugInfo);
+    updateMaxHeapMemoryData(debugInfo);
+    updateCommittedMemoryData(debugInfo);
+  };
+
+  useEffect(() => {
+    const fillOutChartDataByBrokerType = (brokerTypeList, debugInfoList) => {
+      brokerTypeList.forEach((brokerType) => {
+        const testUUID = debugInfoList[0].testUUID;
+        debugInfoList
+          .filter((debugInfo) => debugInfo.brokerType === brokerType)
+          .sort(function (a, b) {
+            return a.testStatusPercentage - b.testStatusPercentage;
+          })
+          .map((debugInfo) => updateChartData(debugInfo));
+        chartDataArrayValue.push(
+          getNewChartDataArrayValue(brokerType, testUUID)
+        );
+        resetTestStates();
+      });
+      setChartDataArray([...chartDataArrayValue]);
+    };
+
+    const sortFocusedTestReportArray = () => {
+      return props.focusedTestReportArray.sort(function (a, b) {
+        return (
+          getDateFromTimestampString(a.debugInfoList[0].producedTimestamp) -
+          getDateFromTimestampString(b.debugInfoList[0].producedTimestamp)
+        );
+      });
+    };
+
+    if (props.focusedTestReportArray.length > 0) {
+      sortFocusedTestReportArray().forEach((testReport) => {
+        fillOutChartDataByBrokerType(
+          testReport.brokerTypeList,
+          testReport.debugInfoList
+        );
+      });
+    } else {
+      setChartDataArray([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.focusedTestReportArray]);
+
   useEffect(() => {
     let eventSource;
-    let receivedMsgArray = [];
-    let initMemoArray = [];
-    let usedHeapMemoArray = [];
-    let maxHeapMemoArray = [];
-    let commitedMemoArray = [];
-    let systemCpuArray = [];
-    let appCpuArray = [];
-    let chartDataArrayValue = [];
 
     const updateTestStatus = (debugInfo) => {
       setTestStatus(debugInfo.testStatusPercentage);
-    };
-
-    const updateProducedMsgDataArray = (debugInfo) => {
-      let producedMsgData = {
-        xVal: getDateFromTimestampString(debugInfo.producedTimestamp),
-        yVal: debugInfo.countOfProducedMessages,
-      };
-      receivedMsgArray.push(producedMsgData);
-      setReceivedMsgData([...receivedMsgArray]);
-    };
-
-    const updateSystemCpuDataArray = (debugInfo) => {
-      let systemCpuData = {
-        xVal: getDateFromTimestampString(debugInfo.producedTimestamp),
-        yVal: debugInfo.producerCPUMetrics.systemCpuUsagePercentage,
-      };
-      systemCpuArray.push(systemCpuData);
-      setSystemCpuData([...systemCpuArray]);
-    };
-
-    const updateAppCpuData = (debugInfo) => {
-      let appCpuData = {
-        xVal: getDateFromTimestampString(debugInfo.producedTimestamp),
-        yVal: debugInfo.producerCPUMetrics.appCpuUsagePercentage,
-      };
-      appCpuArray.push(appCpuData);
-      setAppCpuData([...appCpuArray]);
-    };
-
-    const updateInitialMemoryData = (debugInfo) => {
-      let initMemoData = {
-        xVal: getDateFromTimestampString(debugInfo.producedTimestamp),
-        yVal: debugInfo.producerMemoryMetrics.initialMemoryGB,
-      };
-      initMemoArray.push(initMemoData);
-      setInitialMemoryData([...initMemoArray]);
-    };
-
-    const updateUsedHeapMemoryData = (debugInfo) => {
-      let usedHeapMemoData = {
-        xVal: getDateFromTimestampString(debugInfo.producedTimestamp),
-        yVal: debugInfo.producerMemoryMetrics.usedHeapMemoryGB,
-      };
-      usedHeapMemoArray.push(usedHeapMemoData);
-      setUsedHeapMemoryData([...usedHeapMemoArray]);
-    };
-
-    const updateMaxHeapMemoryData = (debugInfo) => {
-      let maxHeapMemoData = {
-        xVal: getDateFromTimestampString(debugInfo.producedTimestamp),
-        yVal: debugInfo.producerMemoryMetrics.maxHeapMemoryGB,
-      };
-      maxHeapMemoArray.push(maxHeapMemoData);
-      setMaxHeapMemoryData([...maxHeapMemoArray]);
-    };
-
-    const updateCommittedMemoryData = (debugInfo) => {
-      let committedMemoData = {
-        xVal: getDateFromTimestampString(debugInfo.producedTimestamp),
-        yVal: debugInfo.producerMemoryMetrics.committedMemoryGB,
-      };
-      commitedMemoArray.push(committedMemoData);
-      setCommittedMemoryData([...commitedMemoArray]);
-    };
-
-    const updateChartData = (debugInfo) => {
-      updateTestStatus(debugInfo);
-      updateProducedMsgDataArray(debugInfo);
-      updateSystemCpuDataArray(debugInfo);
-      updateAppCpuData(debugInfo);
-      updateInitialMemoryData(debugInfo);
-      updateUsedHeapMemoryData(debugInfo);
-      updateMaxHeapMemoryData(debugInfo);
-      updateCommittedMemoryData(debugInfo);
-    };
-
-    const getNewChartDataArrayValue = (brokerType) => {
-      return {
-        datasetName: getDatasetName(brokerType),
-        datasetColor: randomDatasetColor(),
-        receivedMsgData: receivedMsgArray,
-        initialMemoryData: initMemoArray,
-        usedHeapMemoryData: usedHeapMemoArray,
-        maxHeapMemoryData: maxHeapMemoArray,
-        committedMemoryData: commitedMemoArray,
-        systemCpuData: systemCpuArray,
-        appCpuData: appCpuArray,
-      };
     };
 
     const updateChartDataArray = (brokerType) => {
@@ -140,23 +191,6 @@ function ProducerDataVisualizationTEST(props) {
           ...chartDataArrayValue,
         ]);
       }
-    };
-
-    const getDatasetName = (brokerType) => {
-      return (
-        "Broker Type: '" + brokerType + "' Test UUID: '" + props.testUUID + "'"
-      );
-    };
-
-    const resetTestStates = () => {
-      dispatch(clearProducerTestInfoArrayAction());
-      receivedMsgArray = [];
-      initMemoArray = [];
-      usedHeapMemoArray = [];
-      maxHeapMemoArray = [];
-      commitedMemoArray = [];
-      systemCpuArray = [];
-      appCpuArray = [];
     };
 
     const calculateTotalMessagesInTest = () => {
@@ -193,6 +227,7 @@ function ProducerDataVisualizationTEST(props) {
           handleNewBrokerType(currentBrokerType, newBrokerType);
           currentBrokerType = newBrokerType;
           setDatasetName(getDatasetName(currentBrokerType));
+          updateTestStatus(debugInfo);
           updateChartData(debugInfo);
           receivedMsgCounter++;
           if (receivedMsgCounter === totalMessagesInTest) {
@@ -222,12 +257,7 @@ function ProducerDataVisualizationTEST(props) {
       updateChartDataArray(brokerType);
       props.setIsInProgress(false);
       eventSource.close();
-      saveData();
     };
-
-    async function saveData() {
-      // dispatch(addProducerTestInfoArrayAction(testInfo)); TODO
-    }
 
     const handleStartTest = () => {
       resetTestStates();
@@ -362,9 +392,9 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   return (
-    <div className="bg-violet-200 bg-opacity-40 rounded-lg p-4 mb-8 shadow-lg">
+    <div className="bg-indigo-500 bg-opacity-40 rounded-lg p-4 mb-8 shadow-lg">
       <div className="block p-8">
-        <h1 className="text-3xl font-bold text-violet-900 rounded-md border-y-4 border-slate-600 py-4 m-auto">
+        <h1 className="text-3xl font-bold text-indigo-950 rounded-md border-y-4 border-slate-600 py-4 m-auto">
           Producer App
         </h1>
         <ProgressBar testStatus={getTestProgressStatus()} />
@@ -382,7 +412,7 @@ function ProducerDataVisualizationTEST(props) {
           heightPercentage={"25%"}
         />
         <div>
-          <h1 className="font-bold text-2xl text-violet-900 rounded-md border-y-2 border-slate-600 py-4 m-auto">
+          <h1 className="font-bold text-2xl text-indigo-950 rounded-md border-y-2 border-slate-600 py-4 m-auto">
             Memory Metrics
           </h1>
           <div className="grid grid-cols-2 py-4">
@@ -413,7 +443,7 @@ function ProducerDataVisualizationTEST(props) {
           </div>
         </div>
         <div>
-          <h1 className="font-bold text-2xl text-violet-900 rounded-md border-y-2 border-slate-600 py-4 m-auto">
+          <h1 className="font-bold text-2xl text-indigo-950 rounded-md border-y-2 border-slate-600 py-4 m-auto">
             CPU metrics
           </h1>
           <div className="grid grid-cols-2 py-4">

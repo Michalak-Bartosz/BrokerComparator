@@ -1,6 +1,6 @@
 import { Table } from "flowbite-react";
 import React from "react";
-import { getDateFromTimestampString } from "../../../../util/DateUtil";
+import { getDateFromTimestampString } from "../../../../util/DateTimeUtil";
 import moment from "moment";
 
 function DebugInfo({ debugInfo, index }) {
