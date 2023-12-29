@@ -179,6 +179,7 @@ function LiveChart(props) {
     if (props.chartData) {
       setChartOption(updatePlotOptions());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.chartData, isTimestampMode]);
 
   return (
