@@ -50,6 +50,10 @@ public class CookieService {
 
     private String deleteCookieString(CookieName cookieName) {
         return ResponseCookie.from(cookieName.getName(), "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
                 .build()
                 .toString();
     }

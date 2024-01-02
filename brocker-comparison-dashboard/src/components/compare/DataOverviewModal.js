@@ -5,6 +5,13 @@ import { FaWindowClose } from "react-icons/fa";
 
 function DataOverviewModal(props) {
   const customModalTheme = {
+    root: {
+      base: "fixed top-0 right-0 left-0 z-50 h-modal h-screen overflow-y-auto overflow-x-hidden md:inset-0 md:h-full",
+      show: {
+        on: "flex bg-gray-900 bg-opacity-80 dark:bg-opacity-80",
+        off: "hidden",
+      },
+    },
     content: {
       base: "relative h-full w-full p-4",
       inner:
@@ -27,6 +34,7 @@ function DataOverviewModal(props) {
       <Modal.Body className="bg-slate-700 text-white">
         <DataOverview
           focusedTestReportArray={props.focusedTestReportArray}
+          clearFocusedTestReportArray={props.clearFocusedTestReportArray}
           addReportToFocusedTestReportArray={
             props.addReportToFocusedTestReportArray
           }

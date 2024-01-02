@@ -153,7 +153,7 @@ function ConsumerDataVisualization(props) {
 
   useEffect(() => {
     const fillOutChartDataByBrokerType = (brokerTypeList, debugInfoList) => {
-      brokerTypeList.forEach((brokerType) => {
+      brokerTypeList?.forEach((brokerType) => {
         const testUUID = debugInfoList[0].testUUID;
         debugInfoList
           .filter((debugInfo) => debugInfo.brokerType === brokerType)
@@ -172,8 +172,8 @@ function ConsumerDataVisualization(props) {
     const sortFocusedTestReportArray = () => {
       return props.focusedTestReportArray.sort(function (a, b) {
         return (
-          getDateFromTimestampString(a.debugInfoList[0].producedTimestamp) -
-          getDateFromTimestampString(b.debugInfoList[0].producedTimestamp)
+          getDateFromTimestampString(a.debugInfoList?.at(0).producedTimestamp) -
+          getDateFromTimestampString(b.debugInfoList?.at(0).producedTimestamp)
         );
       });
     };

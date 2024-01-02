@@ -1,20 +1,15 @@
 import { Modal } from "flowbite-react";
 import { FaWindowClose } from "react-icons/fa";
 import React from "react";
-import UserReportsTable from "./UserReportsTable";
+import Address from "./Address";
 
-function UserReportsModal({ userReports, openModal, setOpenModal }) {
+function AddressModal({ openModal, setOpenModal, address }) {
   return (
-    <div id="user-reports-modal-wrapper">
-      <Modal
-        show={openModal}
-        size="10xl"
-        className="p-32"
-        onClose={() => setOpenModal(false)}
-      >
-        <Modal.Header>User reports</Modal.Header>
+    <div id="address-modal-wrapper">
+      <Modal show={openModal} size="3xl" onClose={() => setOpenModal(false)}>
+        <Modal.Header>Address Info</Modal.Header>
         <Modal.Body>
-          <UserReportsTable userReports={userReports} />
+          <Address address={address} />
         </Modal.Body>
         <Modal.Footer className="p-0">
           <button
@@ -31,4 +26,4 @@ function UserReportsModal({ userReports, openModal, setOpenModal }) {
   );
 }
 
-export default UserReportsModal;
+export default AddressModal;

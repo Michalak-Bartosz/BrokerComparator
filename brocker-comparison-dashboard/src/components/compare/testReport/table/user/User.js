@@ -1,6 +1,6 @@
 import { Table } from "flowbite-react";
 import React, { useState } from "react";
-import AddressModal from "./AddressModal";
+import AddressModal from "./address/AddressModal";
 import UserReportsModal from "./userReport/UserReportsModal";
 
 function User({ user, index }) {

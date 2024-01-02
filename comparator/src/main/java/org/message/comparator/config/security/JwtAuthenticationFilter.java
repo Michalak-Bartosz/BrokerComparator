@@ -1,14 +1,14 @@
 package org.message.comparator.config.security;
 
-import com.google.common.net.HttpHeaders;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.message.comparator.repository.security.TokenRepository;
 import org.message.comparator.service.security.JwtService;
-import org.message.comparator.util.TokenType;
+import org.message.comparator.util.CookieName;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
 
 import static org.message.comparator.config.ApiConstants.REQUEST_MAPPING_NAME;
 
@@ -40,15 +42,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String jwt;
-        final String userEmail;
-        if (authHeader == null || !authHeader.startsWith(TokenType.BEARER.getName())) {
+
+        final Optional<Cookie> accessTokenCookie = Arrays.stream(request.getCookies())
+                .filter(cookie -> cookie.getName().equals(CookieName.ACCESS_TOKEN_COOKIE.getName()))
+                .findFirst();
+
+        if (accessTokenCookie.isEmpty()) {
             filterChain.doFilter(request, response);
             return;
         }
-        jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(jwt);
+
+        final String jwt = accessTokenCookie.get().getValue();
+        final String userEmail = jwtService.extractUsername(jwt);
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
             var isTokenValid = tokenRepository.findByJwtToken(jwt)

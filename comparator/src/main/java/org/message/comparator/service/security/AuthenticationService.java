@@ -1,5 +1,6 @@
 package org.message.comparator.service.security;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.message.comparator.dto.security.AuthenticationResponseDto;
@@ -7,19 +8,17 @@ import org.message.comparator.dto.security.LogInRequestDto;
 import org.message.comparator.dto.security.RegisterRequestDto;
 import org.message.comparator.entity.auth.DashboardUser;
 import org.message.comparator.entity.auth.Token;
-import org.message.comparator.exception.LogInRequestNullException;
-import org.message.comparator.exception.RefreshTokenException;
-import org.message.comparator.exception.RegisterRequestNullException;
-import org.message.comparator.exception.UserAlreadyExistException;
+import org.message.comparator.exception.*;
 import org.message.comparator.repository.dashboard.DashboardUserRepository;
 import org.message.comparator.repository.security.TokenRepository;
+import org.message.comparator.util.CookieName;
 import org.message.comparator.util.TokenType;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 @Service
@@ -86,7 +85,9 @@ public class AuthenticationService {
                 .expired(false)
                 .revoked(false)
                 .build();
-        tokenRepository.save(token);
+        if (tokenRepository.findByJwtToken(token.getJwtToken()).isEmpty()) {
+            tokenRepository.save(token);
+        }
     }
 
     private void revokeAllUserTokens(DashboardUser user) {
@@ -101,11 +102,11 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponseDto refreshToken(HttpServletRequest request) {
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeader == null || !authHeader.startsWith(TokenType.BEARER.getName())) {
+        final Optional<Cookie> optionalRefreshToken = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(CookieName.REFRESH_TOKEN_COOKIE.getName())).findFirst();
+        if (optionalRefreshToken.isEmpty()) {
             throw new RefreshTokenException();
         }
-        final String refreshToken = authHeader.substring(7);
+        final String refreshToken = optionalRefreshToken.get().getValue();
         final String username = jwtService.extractUsername(refreshToken);
         if (username != null) {
             var user = this.dashboardUserRepository.findByUsername(username)
@@ -124,16 +125,16 @@ public class AuthenticationService {
     }
 
     public void logout(HttpServletRequest request) {
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeader == null || !authHeader.startsWith(TokenType.BEARER.getName())) {
-            throw new RefreshTokenException();
+        final Optional<Cookie> optionalAccessToken = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(CookieName.ACCESS_TOKEN_COOKIE.getName())).findFirst();
+        if (optionalAccessToken.isEmpty()) {
+            throw new LogOutUserException();
         }
-        final String refreshToken = authHeader.substring(7);
-        final String username = jwtService.extractUsername(refreshToken);
+        final String accessToken = optionalAccessToken.get().getValue();
+        final String username = jwtService.extractUsername(accessToken);
         if (username != null) {
             var user = this.dashboardUserRepository.findByUsername(username)
                     .orElseThrow();
-            if (jwtService.isTokenValid(refreshToken, user)) {
+            if (jwtService.isTokenValid(accessToken, user)) {
                 revokeAllUserTokens(user);
             }
         }

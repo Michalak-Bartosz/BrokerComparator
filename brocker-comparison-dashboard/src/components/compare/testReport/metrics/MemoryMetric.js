@@ -16,12 +16,12 @@ function MemoryMetric({ memoryMetric }) {
         <div className="flex items-center">
           <FaDotCircle className="text-sm mr-2" />
           <span className="font-bold">{"Initial Memory:"}&nbsp;</span>
-          <span>{memoryMetric.initialMemoryGB + "GB"}</span>
+          <span>{memoryMetric?.initialMemoryGB + "GB"}</span>
         </div>
         <div className="flex items-center">
           <FaDotCircle className="text-sm mr-2" />
           <span className="font-bold">{"Max Heap Memory:"}&nbsp;</span>
-          <span>{memoryMetric.maxHeapMemoryGB + "GB"}</span>
+          <span>{memoryMetric?.maxHeapMemoryGB + "GB"}</span>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-6">
@@ -32,19 +32,19 @@ function MemoryMetric({ memoryMetric }) {
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">{"Max Used Heap Memory:"}&nbsp;</span>
-            <span>{memoryMetric.maxUsedHeapMemoryGB + "GB"}</span>
+            <span>{memoryMetric?.maxUsedHeapMemoryGB + "GB"}</span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">{"Min Used Heap Memory:"}&nbsp;</span>
-            <span>{memoryMetric.minUsedHeapMemoryGB + "GB"}</span>
+            <span>{memoryMetric?.minUsedHeapMemoryGB + "GB"}</span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">
               {"Average Used Heap Memory:"}&nbsp;
             </span>
-            <span>{memoryMetric.averageUsedHeapMemoryGB + "GB"}</span>
+            <span>{memoryMetric?.averageUsedHeapMemoryGB + "GB"}</span>
           </div>
         </div>
         <div id="committed-memory-metrics">
@@ -54,19 +54,19 @@ function MemoryMetric({ memoryMetric }) {
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">{"Max Committed Memory:"}&nbsp;</span>
-            <span>{memoryMetric.maxCommittedMemoryGB + "GB"}</span>
+            <span>{memoryMetric?.maxCommittedMemoryGB + "GB"}</span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">{"Min Committed Memory:"}&nbsp;</span>
-            <span>{memoryMetric.minCommittedMemoryGB + "GB"}</span>
+            <span>{memoryMetric?.minCommittedMemoryGB + "GB"}</span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">
               {"Average Committed Memory:"}&nbsp;
             </span>
-            <span>{memoryMetric.averageCommittedMemoryGB + "GB"}</span>
+            <span>{memoryMetric?.averageCommittedMemoryGB + "GB"}</span>
           </div>
         </div>
       </div>

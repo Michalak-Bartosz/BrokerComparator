@@ -1,58 +1,57 @@
 import { Label, Pagination, Select, Table } from "flowbite-react";
 import React, { useEffect, useState } from "react";
-import User from "./User";
+import Comment from "./Comment";
 
-function UserTable({ userList }) {
+function CommentTable({ comments }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [maxUsersOnPage, setMaxUsersOnMage] = useState(10);
+  const [maxCommentsOnPage, setMaxCommentsOnMage] = useState(10);
   const [totalPages, setTotalPages] = useState(
-    Math.ceil(userList.length / maxUsersOnPage)
+    Math.ceil(comments.length / maxCommentsOnPage)
   );
 
-  const selectMaxUsersOnPage = [10, 25, 50, 100, 200, 300, 400, 500];
+  const selectMaxCommentsOnPage = [10, 25, 50, 100, 200, 300, 400, 500];
 
   useEffect(() => {
-    setTotalPages(Math.ceil(userList.length / maxUsersOnPage));
-  }, [maxUsersOnPage, userList.length]);
+    setTotalPages(Math.ceil(comments.length / maxCommentsOnPage));
+  }, [maxCommentsOnPage, comments.length]);
 
   const onPageChange = (page) => {
     setCurrentPage(page);
   };
 
   const calculateItemIndex = (index) => {
-    return (currentPage - 1) * maxUsersOnPage + index + 1;
+    return (currentPage - 1) * maxCommentsOnPage + index + 1;
   };
 
-  const calculateUsersOnPage = () => {
-    return userList.slice(
-      (currentPage - 1) * maxUsersOnPage,
-      currentPage * maxUsersOnPage
+  const calculateCommmentsOnPage = () => {
+    return comments.slice(
+      (currentPage - 1) * maxCommentsOnPage,
+      currentPage * maxCommentsOnPage
     );
   };
-
   return (
     <div>
       <div className="flex py-6 px-4">
         <div className="flex items-center text-xl m-auto ml-0">
           <span className="flex text-blue-500 font-bold">
-            Users in table:&nbsp;
+            Comments in table:&nbsp;
           </span>
-          <span>{userList.length}</span>
+          <span>{comments.length}</span>
         </div>
         <div className="flex items-center m-auto mr-0">
           <Label
             id={(Math.random() + 1).toString(36).substring(7)}
             className="text-blue-500 text-xl font-bold"
-            htmlFor="max-user-on-page-select"
-            value="Max Users on page:&nbsp;"
+            htmlFor="max-comments-on-page-select"
+            value="Max Comments on page:&nbsp;"
           />
           <Select
-            id="max-user-on-page-select"
+            id="max-comments-on-page-select"
             className="w-32"
-            onChange={(e) => setMaxUsersOnMage(e.target.value)}
+            onChange={(e) => setMaxCommentsOnMage(e.target.value)}
             required
           >
-            {selectMaxUsersOnPage.map((value) => {
+            {selectMaxCommentsOnPage.map((value) => {
               return (
                 <option key={value} value={value}>
                   {value}
@@ -62,7 +61,6 @@ function UserTable({ userList }) {
           </Select>
         </div>
       </div>
-
       <div className="overflow-auto">
         <Table striped>
           <Table.Head>
@@ -73,36 +71,18 @@ function UserTable({ userList }) {
               UUID
             </Table.HeadCell>
             <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Test UUID
+              Report UUID
             </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              ID Number
-            </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Name
-            </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Last Name
-            </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Email
-            </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Cell Phone
-            </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Address
-            </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Reports
+            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center px-40">
+              description
             </Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
-            {calculateUsersOnPage().map((user, index) => {
+            {calculateCommmentsOnPage().map((comment, index) => {
               return (
-                <User
-                  key={user.uuid}
-                  user={user}
+                <Comment
+                  key={comment.uuid}
+                  comment={comment}
                   index={calculateItemIndex(index)}
                 />
               );
@@ -110,7 +90,6 @@ function UserTable({ userList }) {
           </Table.Body>
         </Table>
       </div>
-
       <div className="flex items-center m-auto">
         <div className="items-center m-auto">
           <Pagination
@@ -124,4 +103,4 @@ function UserTable({ userList }) {
   );
 }
 
-export default UserTable;
+export default CommentTable;

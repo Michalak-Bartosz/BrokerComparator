@@ -71,7 +71,7 @@ function TestReportSummary({
               <span className="text-blue-500 font-bold">
                 Users in test:&nbsp;
               </span>
-              <span className="mr-auto">{testReport.userList.length}</span>
+              <span className="mr-auto">{testReport.userList?.length}</span>
             </div>
             <div className="flex m-auto items-center text-2xl my-6">
               <FaDotCircle className="text-blue-500 ml-auto mr-2" />

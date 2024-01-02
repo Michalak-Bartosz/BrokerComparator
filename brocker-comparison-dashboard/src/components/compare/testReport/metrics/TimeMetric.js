@@ -13,14 +13,14 @@ function TimeMetric({ timeMetric }) {
           <FaDotCircle className="text-sm mr-2" />
           <span className="font-bold">{"All Produced Time:"}&nbsp;</span>
           <span>
-            {getDurationInMilliseconds(timeMetric.producedTime) + "ms"}
+            {getDurationInMilliseconds(timeMetric?.producedTime) + "ms"}
           </span>
         </div>
         <div className="flex items-center">
           <FaDotCircle className="text-sm mr-2" />
           <span className="font-bold">{"All Consumed Time:"}&nbsp;</span>
           <span>
-            {getDurationInMilliseconds(timeMetric.consumedTime) + "ms"}
+            {getDurationInMilliseconds(timeMetric?.consumedTime) + "ms"}
           </span>
         </div>
       </div>
@@ -33,21 +33,21 @@ function TimeMetric({ timeMetric }) {
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">{"Min delta time:"}&nbsp;</span>
             <span>
-              {getDurationInMilliseconds(timeMetric.minDeltaTime) + "ms"}
+              {getDurationInMilliseconds(timeMetric?.minDeltaTime) + "ms"}
             </span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">{"Max delta time:"}&nbsp;</span>
             <span>
-              {getDurationInMilliseconds(timeMetric.maxDeltaTime) + "ms"}
+              {getDurationInMilliseconds(timeMetric?.maxDeltaTime) + "ms"}
             </span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">{"Average delta time:"}&nbsp;</span>
             <span>
-              {getDurationInMilliseconds(timeMetric.averageDeltaTime) + "ms"}
+              {getDurationInMilliseconds(timeMetric?.averageDeltaTime) + "ms"}
             </span>
           </div>
         </div>

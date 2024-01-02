@@ -1,6 +1,7 @@
 package org.message.comparator.controller.security;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.message.comparator.dto.security.AuthenticationResponseDto;
 import org.message.comparator.dto.security.LogInRequestDto;
@@ -42,7 +43,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request) {
+    public ResponseEntity<HttpServletResponse> logout(HttpServletRequest request) {
         authenticationService.logout(request);
         return ResponseEntity.ok()
                 .headers(cookieService.deleteAuthorizationCookieHeaders())
@@ -50,10 +51,10 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<AuthenticationResponseDto> refreshToken(HttpServletRequest request) {
+    public ResponseEntity<HttpServletResponse> refreshToken(HttpServletRequest request) {
         AuthenticationResponseDto dto = authenticationService.refreshToken(request);
         return ResponseEntity.ok()
                 .headers(cookieService.getAuthorizationCookieHeaders(dto))
-                .body(dto);
+                .build();
     }
 }

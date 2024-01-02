@@ -6,9 +6,16 @@ import TestSettingsMenu from "../compare/TestSettingsMenu";
 import { KAFKA_BROKER } from "../compare/constants/brokerType";
 import DataOverview from "../compare/DataOverview";
 import DataOverviewModal from "../compare/DataOverviewModal";
+import { useDispatch } from "react-redux";
+import {
+  addTestReportToFocuedAction,
+  clearAllForcusedReportsAction,
+  removeTestReportFromFocusedAction,
+} from "../../redux/actions/testReportActions";
 
 function MainDashboardPage() {
   const api = useApi();
+  const dispatch = useDispatch();
   const [testInProgressProducer, setTestInProgressProducer] = useState(false);
   const [testInProgressConsumer, setTestInProgressConsumer] = useState(false);
   const [lastTestUUID, setLastTestUUID] = useState(null);
@@ -54,12 +61,18 @@ function MainDashboardPage() {
     }
   }
 
+  const clearFocusedTestReportArray = () => {
+    setFocusedTestReportArray([]);
+    dispatch(clearAllForcusedReportsAction());
+  };
+
   const addReportToFocusedTestReportArray = (report) => {
     if (focusedTestReportArray.length === 0) {
       setFocusedTestReportArray([report]);
     } else {
       setFocusedTestReportArray((prevArray) => [...prevArray, report]);
     }
+    dispatch(addTestReportToFocuedAction(report.testUUID));
   };
 
   const removeReportFromFocusedTestReportArray = (reportToRemove) => {
@@ -68,6 +81,7 @@ function MainDashboardPage() {
         (report) => report.testUUID !== reportToRemove.testUUID
       ),
     ]);
+    dispatch(removeTestReportFromFocusedAction(reportToRemove.testUUID));
   };
 
   const updateFocusedTestReportArray = (allReportsArray) => {
@@ -75,14 +89,7 @@ function MainDashboardPage() {
       const lastTestReport = allReportsArray.find(
         (report) => report.testUUID === lastTestUUID
       );
-      if (focusedTestReportArray.length === 0) {
-        setFocusedTestReportArray([lastTestReport]);
-      } else {
-        setFocusedTestReportArray((prevArray) => [
-          ...prevArray,
-          lastTestReport,
-        ]);
-      }
+      addReportToFocusedTestReportArray(lastTestReport);
     }
   };
 
@@ -100,6 +107,7 @@ function MainDashboardPage() {
 
   useEffect(() => {
     getTestReportArrayAndSetCurrentReport();
+    dispatch(clearAllForcusedReportsAction());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -128,6 +136,7 @@ function MainDashboardPage() {
         <div className="col-span-2">
           <DataOverview
             focusedTestReportArray={focusedTestReportArray}
+            clearFocusedTestReportArray={clearFocusedTestReportArray}
             addReportToFocusedTestReportArray={
               addReportToFocusedTestReportArray
             }
@@ -141,6 +150,7 @@ function MainDashboardPage() {
           />
           <DataOverviewModal
             focusedTestReportArray={focusedTestReportArray}
+            clearFocusedTestReportArray={clearFocusedTestReportArray}
             addReportToFocusedTestReportArray={
               addReportToFocusedTestReportArray
             }

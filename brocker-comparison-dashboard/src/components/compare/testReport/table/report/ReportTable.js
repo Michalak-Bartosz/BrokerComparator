@@ -6,6 +6,7 @@ import { getDateFromTimestampString } from "../../../../util/DateTimeUtil";
 function ReportTable({
   testReportArray,
   focusedTestReportUUIDArray,
+  clearFocusedTestReportArray,
   addReportToFocusedTestReportArray,
   removeReportFromFocusedTestReportArray,
 }) {
@@ -23,6 +24,10 @@ function ReportTable({
 
   const onPageChange = (page) => {
     setCurrentPage(page);
+  };
+
+  const calculateItemIndex = (index) => {
+    return (currentPage - 1) * maxReportsOnPage + index + 1;
   };
 
   const sortTestReportArray = (reportsOnPage) => {
@@ -60,6 +65,12 @@ function ReportTable({
           </span>
           <span>{testReportArray.length}</span>
         </div>
+        <button
+          className="flex px-2 mx-4 items-center text-white font-bold rounded-md outline outline-offset-2 bg-rose-900 outline-rose-800 hover:bg-rose-800"
+          onClick={() => clearFocusedTestReportArray()}
+        >
+          Clear Visiable
+        </button>
         <div className="flex items-center m-auto mr-0">
           <Label
             id={(Math.random() + 1).toString(36).substring(7)}
@@ -112,7 +123,7 @@ function ReportTable({
                 <Report
                   key={report.testUUID}
                   report={report}
-                  index={index + 1}
+                  index={calculateItemIndex(index)}
                   addReportToFocusedTestReportArray={
                     addReportToFocusedTestReportArray
                   }

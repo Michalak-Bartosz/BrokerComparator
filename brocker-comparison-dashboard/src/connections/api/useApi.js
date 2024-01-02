@@ -8,6 +8,7 @@ import {
   addUserAction,
   removeUserAction,
 } from "../../redux/actions/userActions";
+import { clearAllForcusedReportsAction } from "../../redux/actions/testReportActions";
 
 const useApi = () => {
   const httpApi = useHttpApi();
@@ -41,9 +42,15 @@ const useApi = () => {
   }
 
   async function logOutUser() {
-    dispatch(removeTokenAction());
-    dispatch(removeUserAction());
-    localStorage.clear();
+    try {
+      await httpApi.post("/auth/logout", null, false);
+      dispatch(removeTokenAction());
+      dispatch(removeUserAction());
+      dispatch(clearAllForcusedReportsAction());
+      localStorage.clear();
+    } catch (error) {
+      throw error;
+    }
   }
 
   async function performTest(testSettings) {
@@ -177,7 +184,7 @@ const useApi = () => {
     performTest,
     finishTest,
     getTestReport,
-    getTestReports
+    getTestReports,
   };
 };
 

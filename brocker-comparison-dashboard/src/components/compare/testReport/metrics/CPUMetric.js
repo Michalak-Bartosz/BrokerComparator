@@ -18,19 +18,19 @@ function CPUMetric({ cpuMetric }) {
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">{"Max System Cpu Usage:"}&nbsp;</span>
-            <span>{cpuMetric.maxSystemCpuUsagePercentage + "%"}</span>
+            <span>{cpuMetric?.maxSystemCpuUsagePercentage + "%"}</span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">{"Min System Cpu Usage:"}&nbsp;</span>
-            <span>{cpuMetric.minSystemCpuUsagePercentage + "%"}</span>
+            <span>{cpuMetric?.minSystemCpuUsagePercentage + "%"}</span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">
               {"Average System Cpu Usage:"}&nbsp;
             </span>
-            <span>{cpuMetric.averageSystemCpuUsagePercentage + "%"}</span>
+            <span>{cpuMetric?.averageSystemCpuUsagePercentage + "%"}</span>
           </div>
         </div>
         <div id="app-cpu-metrics">
@@ -40,19 +40,19 @@ function CPUMetric({ cpuMetric }) {
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">{"Max App Cpu Usage:"}&nbsp;</span>
-            <span>{cpuMetric.maxAppCpuUsagePercentage + "%"}</span>
+            <span>{cpuMetric?.maxAppCpuUsagePercentage + "%"}</span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">{"Min App Cpu Usage:"}&nbsp;</span>
-            <span>{cpuMetric.minAppCpuUsagePercentage + "%"}</span>
+            <span>{cpuMetric?.minAppCpuUsagePercentage + "%"}</span>
           </div>
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">
               {"Average App Cpu Usage:"}&nbsp;
             </span>
-            <span>{cpuMetric.averageAppCpuUsagePercentage + "%"}</span>
+            <span>{cpuMetric?.averageAppCpuUsagePercentage + "%"}</span>
           </div>
         </div>
       </div>

@@ -1,20 +1,20 @@
 import { Modal } from "flowbite-react";
 import { FaWindowClose } from "react-icons/fa";
 import React from "react";
-import UserReportsTable from "./UserReportsTable";
+import MemoryMetric from "./MemoryMetric";
 
-function UserReportsModal({ userReports, openModal, setOpenModal }) {
+function MemoryMetricModal({ memoryMetric, app, openModal, setOpenModal }) {
   return (
-    <div id="user-reports-modal-wrapper">
+    <div id="memory-metric-modal-wrapper">
       <Modal
         show={openModal}
-        size="10xl"
+        size="2xl"
         className="p-32"
         onClose={() => setOpenModal(false)}
       >
-        <Modal.Header>User reports</Modal.Header>
+        <Modal.Header>{app + " memory metric"}</Modal.Header>
         <Modal.Body>
-          <UserReportsTable userReports={userReports} />
+          <MemoryMetric memoryMetric={memoryMetric} app={app} />
         </Modal.Body>
         <Modal.Footer className="p-0">
           <button
@@ -31,4 +31,4 @@ function UserReportsModal({ userReports, openModal, setOpenModal }) {
   );
 }
 
-export default UserReportsModal;
+export default MemoryMetricModal;

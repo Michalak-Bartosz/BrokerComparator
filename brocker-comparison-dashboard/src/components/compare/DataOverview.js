@@ -64,6 +64,7 @@ function DataOverview(props) {
             focusedTestReportUUIDArray={props.focusedTestReportArray?.map(
               (testReport) => testReport.testUUID
             )}
+            clearFocusedTestReportArray={props.clearFocusedTestReportArray}
             addReportToFocusedTestReportArray={
               props.addReportToFocusedTestReportArray
             }

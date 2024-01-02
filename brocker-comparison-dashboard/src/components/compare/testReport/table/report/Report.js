@@ -62,7 +62,7 @@ function Report({
         <button
           className={`flex m-auto items-center text-white font-bold py-2 rounded-md outline outline-offset-2 ${
             isFocusedReport
-              ? "bg-rose-800 outline-rose-700 px-4 hover:bg-rose-700"
+              ? "bg-rose-900 outline-rose-800 px-4 hover:bg-rose-800"
               : "bg-blue-500 outline-blue-500 px-4 hover:bg-blue-400"
           }`}
           onClick={handleOnClick}

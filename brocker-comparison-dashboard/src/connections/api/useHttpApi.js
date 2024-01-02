@@ -5,22 +5,13 @@ import ConflictError from "./errors/ConflictError";
 import ForbiddenError from "./errors/ForbiddenError";
 import NotFoundError from "./errors/NotFoundError";
 import UnauthorizedError from "./errors/UnauthorizedError";
-import { updateAccessTokenAction } from "../../redux/actions/tokenActions";
-import { useDispatch, useSelector } from "react-redux";
 
 const useHttpApi = () => {
-  const accessToken = useSelector((state) => state.token.accessToken);
-  const refreshToken = useSelector((state) => state.token.refreshToken);
-  const dispatch = useDispatch();
-
   function getHeaders() {
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
     headers.append("Accept", "application/json");
     headers.append("Origin", "http://localhost:3000");
-    if (accessToken) {
-      headers.append("Authorization", "Bearer " + accessToken);
-    }
     return headers;
   }
 
@@ -29,7 +20,7 @@ const useHttpApi = () => {
       method: method,
       RequestMode: "cors",
       headers: getHeaders(),
-      withCridentials: true,
+      credentials: "include",
       body: body,
     };
   }
@@ -44,7 +35,7 @@ const useHttpApi = () => {
       return jsonOut;
     }
 
-    handleErrors(response);
+    handleErrors(url, request, response);
   }
 
   async function post(url, body, returnsOutput = true) {
@@ -60,7 +51,7 @@ const useHttpApi = () => {
         return;
       }
 
-      handleErrors(response);
+      handleErrors(url, request, response);
     } catch (error) {
       throw error;
     }
@@ -79,7 +70,7 @@ const useHttpApi = () => {
         return;
       }
 
-      handleErrors(response);
+      handleErrors(url, request, response);
     } catch (error) {
       throw error;
     }
@@ -95,18 +86,18 @@ const useHttpApi = () => {
       return jsonOut;
     }
 
-    handleErrors(response);
+    handleErrors(url, request, response);
   }
 
-  function handleErrors(response) {
+  function handleErrors(url, request, response) {
     switch (response.status) {
       case 400:
         throw new BadRequestError();
       case 401:
         throw new UnauthorizedError();
       case 403:
-        tryRefreashToken();
-        throw new ForbiddenError();
+        tryRefreashToken(url, request);
+        break;
       case 404:
         throw new NotFoundError();
       case 409:
@@ -116,22 +107,29 @@ const useHttpApi = () => {
     }
   }
 
-  async function tryRefreashToken() {
-    // if (refreshToken) {
-    //   const body = {
-    //     refreshToken: refreshToken,
-    //   };
-    //   const request = getRequest("POST", JSON.stringify(body));
-    //   const response = await fetch(
-    //     BASE_URL.API_URL + "/auth/refresh-token",
-    //     request
-    //   );
-    //   if (response.ok) {
-    //     const jsonOut = await response.json();
-    //     const { accessToken } = jsonOut.accessToken;
-    //     dispatch(updateAccessTokenAction(accessToken));
-    //   }
-    // }
+  async function tryRefreashToken(url, request) {
+    try {
+      const response = await fetch(
+        BASE_URL.API_URL + "/auth/refresh-token",
+        getRequest("POST")
+      );
+
+      if (response.ok) {
+        retryRequest(url, request);
+        return;
+      }
+
+      handleErrors(response);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function retryRequest(url, request) {
+    const response = await fetch(BASE_URL.API_URL + url, request);
+    if (response.ok) {
+      return;
+    }
   }
 
   return { get, post, put, remove };

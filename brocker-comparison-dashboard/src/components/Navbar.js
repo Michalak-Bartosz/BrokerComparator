@@ -9,6 +9,14 @@ function Navbar() {
   const username = useSelector((state) => state.user.username);
   const navigate = useNavigate();
   const api = useApi();
+
+  async function logOutUser() {
+    try {
+      await api.logOutUser();
+    } catch (e) {
+      console.log(e);
+    }
+  }
   return (
     <div
       id="navbar"
@@ -34,7 +42,7 @@ function Navbar() {
               className="m-4 px-4 py-2 bg-slate-200 text-slate-800 text-2xl font-bold rounded-md outline outline-offset-2 outline-blue-500 hover:bg-blue-300"
               to="/"
               onClick={() => {
-                api.logOutUser();
+                logOutUser();
                 navigate("/");
               }}
             >

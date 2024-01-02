@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import TestReportSummary from "./testReport/TestReportSummary";
 
-function TestReportOverview({ focusedTestReportArray, setOpenFullscreenDataOverviewModal }) {
+function TestReportOverview({
+  focusedTestReportArray,
+  setOpenFullscreenDataOverviewModal,
+}) {
   const [currentTestReportIndex, setCurrentTestReportIndex] = useState(0);
   const isReportFocused = (index) => {
     return index === currentTestReportIndex;
@@ -32,7 +35,7 @@ function TestReportOverview({ focusedTestReportArray, setOpenFullscreenDataOverv
   return (
     <div>
       {focusedTestReportArray.length === 0 && (
-        <h1 className="flex w-max font-bold text-center m-auto mt-12 text-blue-500 text-2xl">
+        <h1 className="flex w-fit font-bold text-center m-auto mt-12 text-blue-500 text-2xl text-ellipsis whitespace-pre-wrap">
           Choose report from "All Reports" tab or start new test to show test
           report summray!
         </h1>

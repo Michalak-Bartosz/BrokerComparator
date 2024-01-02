@@ -9,6 +9,7 @@ function DbReportsOverview(props) {
           <ReportTable
             testReportArray={props.testReportArray}
             focusedTestReportUUIDArray={props.focusedTestReportUUIDArray}
+            clearFocusedTestReportArray={props.clearFocusedTestReportArray}
             addReportToFocusedTestReportArray={
               props.addReportToFocusedTestReportArray
             }

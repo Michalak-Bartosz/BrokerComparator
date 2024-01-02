@@ -1,20 +1,20 @@
 import { Modal } from "flowbite-react";
-import { FaWindowClose } from "react-icons/fa";
 import React from "react";
-import UserReportsTable from "./UserReportsTable";
+import CommentTable from "./CommentTable";
+import { FaWindowClose } from "react-icons/fa";
 
-function UserReportsModal({ userReports, openModal, setOpenModal }) {
+function CommentModal({ comments, openModal, setOpenModal }) {
   return (
-    <div id="user-reports-modal-wrapper">
+    <div id="comments-modal-wrapper">
       <Modal
         show={openModal}
-        size="10xl"
+        size="7xl"
         className="p-32"
         onClose={() => setOpenModal(false)}
       >
-        <Modal.Header>User reports</Modal.Header>
+        <Modal.Header>Report Comments</Modal.Header>
         <Modal.Body>
-          <UserReportsTable userReports={userReports} />
+          <CommentTable comments={comments} />
         </Modal.Body>
         <Modal.Footer className="p-0">
           <button
@@ -31,4 +31,4 @@ function UserReportsModal({ userReports, openModal, setOpenModal }) {
   );
 }
 
-export default UserReportsModal;
+export default CommentModal;

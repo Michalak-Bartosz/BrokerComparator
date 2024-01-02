@@ -1,62 +1,57 @@
 import { Label, Pagination, Select, Table } from "flowbite-react";
 import React, { useEffect, useState } from "react";
-import DebugInfo from "./DebugInfo";
+import UserReport from "./UserReport";
 
-function DebugInfoTable({ debugInfoList }) {
+function UserReportsTable({ userReports }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [maxDebugInfosOnPage, setMaxDebugInfosOnMage] = useState(10);
+  const [maxUserReportsOnPage, setMaxUserReportsOnMage] = useState(10);
   const [totalPages, setTotalPages] = useState(
-    Math.ceil(debugInfoList.length / maxDebugInfosOnPage)
+    Math.ceil(userReports.length / maxUserReportsOnPage)
   );
 
-  const selectMaxDebugInfosOnPage = [10, 25, 50, 100, 200, 300, 400, 500];
+  const selectMaxUserReportsOnPage = [10, 25, 50, 100, 200, 300, 400, 500];
 
   useEffect(() => {
-    setTotalPages(Math.ceil(debugInfoList.length / maxDebugInfosOnPage));
-  }, [maxDebugInfosOnPage, debugInfoList.length]);
+    setTotalPages(Math.ceil(userReports.length / maxUserReportsOnPage));
+  }, [maxUserReportsOnPage, userReports.length]);
 
   const onPageChange = (page) => {
     setCurrentPage(page);
   };
 
   const calculateItemIndex = (index) => {
-    return (currentPage - 1) * maxDebugInfosOnPage + index + 1;
+    return (currentPage - 1) * maxUserReportsOnPage + index + 1;
   };
 
-  const calculateDebugInfoOnPage = () => {
-    return debugInfoList
-      .sort(function (a, b) {
-        return a.testStatusPercentage - b.testStatusPercentage;
-      })
-      .slice(
-        (currentPage - 1) * maxDebugInfosOnPage,
-        currentPage * maxDebugInfosOnPage
-      );
+  const calculateUserReportsOnPage = () => {
+    return userReports.slice(
+      (currentPage - 1) * maxUserReportsOnPage,
+      currentPage * maxUserReportsOnPage
+    );
   };
-
   return (
-    <div id="debug-info-table-wrapper">
+    <div>
       <div className="flex py-6 px-4">
         <div className="flex items-center text-xl m-auto ml-0">
           <span className="flex text-blue-500 font-bold">
-            DebugInfos in table:&nbsp;
+            Reports in table:&nbsp;
           </span>
-          <span>{debugInfoList.length}</span>
+          <span>{userReports.length}</span>
         </div>
         <div className="flex items-center m-auto mr-0">
           <Label
             id={(Math.random() + 1).toString(36).substring(7)}
             className="text-blue-500 text-xl font-bold"
-            htmlFor="max-debug-infos-on-page-select"
-            value="Max Debug Infos on page:&nbsp;"
+            htmlFor="max-user-reports-on-page-select"
+            value="Max Reports on page:&nbsp;"
           />
           <Select
-            id="max-debug-infos-on-page-select"
+            id="max-user-reports-on-page-select"
             className="w-32"
-            onChange={(e) => setMaxDebugInfosOnMage(e.target.value)}
+            onChange={(e) => setMaxUserReportsOnMage(e.target.value)}
             required
           >
-            {selectMaxDebugInfosOnPage.map((value) => {
+            {selectMaxUserReportsOnPage.map((value) => {
               return (
                 <option key={value} value={value}>
                   {value}
@@ -80,45 +75,27 @@ function DebugInfoTable({ debugInfoList }) {
               Test UUID
             </Table.HeadCell>
             <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Broker Type
+              User UUID
             </Table.HeadCell>
             <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Test Status Percentage
+              Summary
+            </Table.HeadCell>
+            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center px-40">
+              Description
             </Table.HeadCell>
             <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Produced Timestamp
+              Status
             </Table.HeadCell>
             <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Consumed Timestamp
-            </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Delta Timestamp [ms]
-            </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Count Of Produced Messages
-            </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Count Of Consumed Messages
-            </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Producer Memory Metrics
-            </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Consumer Memory Metrics
-            </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Producer CPU Metrics
-            </Table.HeadCell>
-            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center">
-              Consumer CPU Metrics
+              Comments
             </Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
-            {calculateDebugInfoOnPage().map((debugInfo, index) => {
+            {calculateUserReportsOnPage().map((userReport, index) => {
               return (
-                <DebugInfo
-                  key={debugInfo.uuid}
-                  debugInfo={debugInfo}
+                <UserReport
+                  key={userReport.uuid}
+                  userReport={userReport}
                   index={calculateItemIndex(index)}
                 />
               );
@@ -126,6 +103,7 @@ function DebugInfoTable({ debugInfoList }) {
           </Table.Body>
         </Table>
       </div>
+
       <div className="flex items-center m-auto">
         <div className="items-center m-auto">
           <Pagination
@@ -139,4 +117,4 @@ function DebugInfoTable({ debugInfoList }) {
   );
 }
 
-export default DebugInfoTable;
+export default UserReportsTable;
