@@ -1,13 +1,11 @@
 package org.message.comparator.entity.data.metric;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.message.comparator.entity.data.util.BrokerType;
 import org.message.comparator.util.metric.ReportMemoMetricUtil;
 
 import java.math.BigDecimal;
@@ -22,6 +20,8 @@ public class ReportMemoryMetric {
     @Id
     @GeneratedValue
     private Long id;
+    @Enumerated(EnumType.STRING)
+    private BrokerType brokerType;
     @Column(scale = 3)
     private BigDecimal initialMemoryGB;
     @Column(scale = 3)
@@ -39,7 +39,8 @@ public class ReportMemoryMetric {
     @Column(scale = 3)
     private BigDecimal averageCommittedMemoryGB;
 
-    public ReportMemoryMetric(List<MemoryMetric> memoryMetricList) {
+    public ReportMemoryMetric(List<MemoryMetric> memoryMetricList, BrokerType brokerType) {
+        this.brokerType = brokerType;
         this.initialMemoryGB = ReportMemoMetricUtil.getInitialMemoryGB(memoryMetricList);
         this.maxHeapMemoryGB = ReportMemoMetricUtil.getMaxHeapMemoryGB(memoryMetricList);
         this.maxUsedHeapMemoryGB = ReportMemoMetricUtil.getMaxUsedHeapMemoryGB(memoryMetricList);

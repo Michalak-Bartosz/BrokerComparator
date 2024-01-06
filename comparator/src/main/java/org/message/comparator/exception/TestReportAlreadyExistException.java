@@ -5,6 +5,6 @@ import java.util.UUID;
 public class TestReportAlreadyExistException extends RuntimeException {
 
     public TestReportAlreadyExistException(UUID testUUID) {
-        super("Test report with UUID: `" + testUUID + "` already exist!");
+        super(String.format("Test report with test UUID: [%s] already exist!", testUUID));
     }
 }

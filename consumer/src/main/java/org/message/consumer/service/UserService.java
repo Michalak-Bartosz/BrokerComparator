@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.message.consumer.entity.Address;
 import org.message.consumer.entity.Report;
 import org.message.consumer.entity.User;
+import org.message.consumer.mappers.UserMapper;
 import org.message.consumer.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,20 +21,9 @@ public class UserService {
     public void saveUserModel(org.message.model.User userModel) {
         org.message.model.Address addressModel = userModel.getAddress();
         List<org.message.model.Report> reportModelList = userModel.getReports();
-
         Address address = addressService.saveAddressModel(addressModel);
         List<Report> reportList = reportModelList.stream().map(reportService::saveReportModel).toList();
-        User user = User.builder()
-                .uuid(userModel.getUuid())
-                .testUUID(userModel.getTestUUID())
-                .idNumber(userModel.getIdNumber())
-                .name(userModel.getName())
-                .lastName(userModel.getLastName())
-                .email(userModel.getEmail())
-                .cellPhone(userModel.getCellPhone())
-                .address(address)
-                .reports(reportList)
-                .build();
+        User user = UserMapper.mapUserModelToEntity(userModel, address, reportList);
         userRepository.save(user);
         userRepository.flush();
     }

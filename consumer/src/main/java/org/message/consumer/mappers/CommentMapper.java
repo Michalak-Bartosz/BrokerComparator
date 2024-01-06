@@ -10,6 +10,7 @@ public class CommentMapper {
         return Comment.builder()
                 .uuid(commentModel.getUuid())
                 .reportUuid(commentModel.getReportUuid())
+                .brokerType(commentModel.getBrokerType())
                 .description(commentModel.getDescription())
                 .build();
     }

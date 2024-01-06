@@ -17,5 +17,7 @@ public class RedirectFinishTestResponseDto {
     private String consumerApiResponse;
     private boolean isProducerFinishTest;
     private boolean isConsumerFinishTest;
+    private String producedDataSize;
+    private String consumedDataSize;
     private UUID testUUID;
 }

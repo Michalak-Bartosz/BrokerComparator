@@ -6,13 +6,14 @@ import { FaDotCircle } from "react-icons/fa";
 import TimeMetric from "./metrics/TimeMetric";
 import { FaArrowAltCircleLeft } from "react-icons/fa";
 import { FaArrowAltCircleRight } from "react-icons/fa";
+import GeneralInfo from "./metrics/GeneralInfo";
+import DataSizeMetric from "./metrics/DataSizeMetric";
 
 function TestReportSummary({
   testReport,
   isReportFocused,
   increaseCurrentTestReportIndex,
   decreseCurrentTestReportIndex,
-  setOpenFullscreenDataOverviewModal,
 }) {
   const [openTestDataModal, setOpenTestDataModal] = useState(false);
   const navigationComponent = () => {
@@ -54,62 +55,83 @@ function TestReportSummary({
     isReportFocused && (
       <div id="test-report-wrapper" className="block text-xl">
         {navigationComponent()}
-        <div className="block mt-6 bg-slate-950 bg-opacity-20 p-6 rounded-lg">
+        <div className="block mt-6 bg-indigo-300 bg-opacity-40 p-6 rounded-lg">
           <h1 className="text-center text-3xl font-bold border-y-2 border-slate-600 rounded-md pl-6 py-2 w-full">
             General Info
           </h1>
-          <div className="flex flex-row">
-            <div className="flex m-auto items-center text-2xl my-6">
-              <FaDotCircle className="text-blue-500 ml-auto mr-2" />
-              <span className="text-blue-500 font-bold">
-                Broker Type:&nbsp;
-              </span>
-              <span className="mr-auto">{testReport.brokerTypeList}</span>
-            </div>
-            <div className="flex m-auto items-center text-2xl my-6">
-              <FaDotCircle className="text-blue-500 ml-auto mr-2" />
-              <span className="text-blue-500 font-bold">
-                Users in test:&nbsp;
-              </span>
-              <span className="mr-auto">{testReport.userList?.length}</span>
-            </div>
-            <div className="flex m-auto items-center text-2xl my-6">
-              <FaDotCircle className="text-blue-500 ml-auto mr-2" />
-              <span className="text-blue-500 font-bold">
-                Number Of attempts:&nbsp;
-              </span>
-              <span className="mr-auto">{testReport.numberOfAttempts}</span>
-            </div>
-          </div>
+          <GeneralInfo testReport={testReport} />
         </div>
-        <div className="bg-slate-950 bg-opacity-20 p-6 rounded-lg mt-6">
+        <div className="bg-indigo-300 bg-opacity-40 p-6 rounded-lg mt-6">
           <div className="flex items-center pb-2">
-            <FaDotCircle className="text-blue-500 mr-2" />
-            <span className="font-bold text-3xl text-blue-500">
+            <FaDotCircle className="text-blue-800 mr-2" />
+            <span className="font-bold text-3xl text-blue-800">
               Time Metrics
             </span>
           </div>
-          <TimeMetric timeMetric={testReport.reportTimeMetric} />
+          <TimeMetric
+            timeMetric={testReport.reportTimeMetric}
+            brokerInfoDataList={testReport.brokerInfoDataList}
+          />
         </div>
-        <div className="bg-slate-950 bg-opacity-20 p-6 rounded-lg mt-6">
+        <div className="bg-emerald-200 bg-opacity-40 p-6 rounded-lg mt-6">
           <div className="flex items-center pb-2">
-            <FaDotCircle className="text-blue-500 mr-2" />
-            <span className="font-bold text-3xl text-blue-500">
+            <FaDotCircle className="text-emerald-900 mr-2" />
+            <span className="font-bold text-3xl text-emerald-900">
+              Data Size Metrics
+            </span>
+          </div>
+          <DataSizeMetric
+            dataSizeMetric={testReport.reportDataSizeMetric}
+            brokerInfoDataList={testReport.brokerInfoDataList}
+          />
+        </div>
+        <div className="bg-stone-300 bg-opacity-40 p-6 rounded-lg mt-6">
+          <div className="flex items-center pb-2">
+            <FaDotCircle className="text-stone-800 mr-2" />
+            <span className="font-bold text-3xl text-stone-800">
               Producer Metrics
             </span>
           </div>
-          <CPUMetric cpuMetric={testReport.producerReportCPUMetric} />
-          <MemoryMetric memoryMetric={testReport.producerReportMemoryMetric} />
+          <CPUMetric
+            cpuMetric={testReport.producerReportCPUMetric}
+            brokerCpuMetric={[
+              ...testReport.brokerInfoDataList.map(
+                (brokerInfoData) => brokerInfoData.producerReportCPUMetric
+              ),
+            ]}
+          />
+          <MemoryMetric
+            memoryMetric={testReport.producerReportMemoryMetric}
+            brokerMemoryMetric={[
+              ...testReport.brokerInfoDataList.map(
+                (brokerInfoData) => brokerInfoData.producerReportMemoryMetric
+              ),
+            ]}
+          />
         </div>
-        <div className="bg-slate-950 bg-opacity-20 p-6 rounded-lg mt-6">
-          <div className="flex items-center pt-6 pb-2">
-            <FaDotCircle className="text-blue-500 mr-2" />
-            <span className="font-bold text-3xl text-blue-500">
+        <div className="bg-teal-200 bg-opacity-40 p-6 rounded-lg mt-6">
+          <div className="flex items-center pb-2">
+            <FaDotCircle className="text-teal-800 mr-2" />
+            <span className="font-bold text-3xl text-teal-800">
               Consumer Metrics
             </span>
           </div>
-          <CPUMetric cpuMetric={testReport.consumerReportCPUMetric} />
-          <MemoryMetric memoryMetric={testReport.consumerReportMemoryMetric} />
+          <CPUMetric
+            cpuMetric={testReport.consumerReportCPUMetric}
+            brokerCpuMetric={[
+              ...testReport.brokerInfoDataList.map(
+                (brokerInfoData) => brokerInfoData.consumerReportCPUMetric
+              ),
+            ]}
+          />
+          <MemoryMetric
+            memoryMetric={testReport.consumerReportMemoryMetric}
+            brokerMemoryMetric={[
+              ...testReport.brokerInfoDataList.map(
+                (brokerInfoData) => brokerInfoData.consumerReportMemoryMetric
+              ),
+            ]}
+          />
         </div>
         <button
           id="show-test-data-button"

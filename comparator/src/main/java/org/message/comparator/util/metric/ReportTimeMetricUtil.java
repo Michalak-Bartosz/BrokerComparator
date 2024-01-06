@@ -1,6 +1,7 @@
 package org.message.comparator.util.metric;
 
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.message.comparator.entity.data.DebugInfo;
 import org.message.comparator.exception.ReportMetricCalculateException;
 
@@ -26,7 +27,7 @@ public class ReportTimeMetricUtil {
         return Duration.ofMillis(sumDurationMilliseconds / debugInfoList.size());
     }
 
-    public static Duration producedTime(List<DebugInfo> debugInfoList) {
+    public static Duration getProducedTime(List<DebugInfo> debugInfoList) {
         Instant startProducedTimestamp = debugInfoList.stream().map(DebugInfo::getProducedTimestamp).min(Instant::compareTo)
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportTimeMetricUtil.class.getSimpleName(), "Get start produced time exception!"));
         Instant endProducedTimestamp = debugInfoList.stream().map(DebugInfo::getProducedTimestamp).max(Instant::compareTo)
@@ -34,11 +35,15 @@ public class ReportTimeMetricUtil {
         return Duration.between(startProducedTimestamp, endProducedTimestamp);
     }
 
-    public static Duration consumedTime(List<DebugInfo> debugInfoList) {
+    public static Duration getConsumedTime(List<DebugInfo> debugInfoList) {
         Instant startConsumedTimestamp = debugInfoList.stream().map(DebugInfo::getConsumedTimestamp).min(Instant::compareTo)
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportTimeMetricUtil.class.getSimpleName(), "Get start consumed time exception!"));
         Instant endConsumedTimestamp = debugInfoList.stream().map(DebugInfo::getConsumedTimestamp).max(Instant::compareTo)
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportTimeMetricUtil.class.getSimpleName(), "Get end consumed time exception!"));
         return Duration.between(startConsumedTimestamp, endConsumedTimestamp);
+    }
+
+    public static String humanReadableDuration(Duration duration) {
+        return DurationFormatUtils.formatDuration(duration.toMillis(), "HH'h' mm'min' ss's' SSS'ms'", false);
     }
 }

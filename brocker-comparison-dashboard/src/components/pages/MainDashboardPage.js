@@ -12,10 +12,12 @@ import {
   clearAllForcusedReportsAction,
   removeTestReportFromFocusedAction,
 } from "../../redux/actions/testReportActions";
+import GeneratingDataStatusToast from "../compare/progress/GeneratingDataStatusToast";
 
 function MainDashboardPage() {
   const api = useApi();
   const dispatch = useDispatch();
+  const [generatingData, setGeneratingData] = useState(false);
   const [testInProgressProducer, setTestInProgressProducer] = useState(false);
   const [testInProgressConsumer, setTestInProgressConsumer] = useState(false);
   const [lastTestUUID, setLastTestUUID] = useState(null);
@@ -40,6 +42,7 @@ function MainDashboardPage() {
       setLastTestUUID(response.testUUID);
       setTestInProgressProducer(true);
       setTestInProgressConsumer(true);
+      setGeneratingData(true);
     } catch (e) {
       console.log(e);
     }
@@ -49,8 +52,10 @@ function MainDashboardPage() {
     try {
       let finishTest = {
         testUUID: lastTestUUID,
-        numberOfReceivedMessagesProducer: numberOfMessagesToSend,
-        numberOfReceivedMessagesConsumer: numberOfMessagesToSend,
+        numberOfReceivedMessagesProducer:
+          numberOfMessagesToSend * numberOfAttempts * brokerTypes.length,
+        numberOfReceivedMessagesConsumer:
+          numberOfMessagesToSend * numberOfAttempts * brokerTypes.length,
       };
       const response = await api.finishTest(finishTest);
       if (response?.producerFinishTest && response?.consumerFinishTest) {
@@ -66,13 +71,18 @@ function MainDashboardPage() {
     dispatch(clearAllForcusedReportsAction());
   };
 
-  const addReportToFocusedTestReportArray = (report) => {
-    if (focusedTestReportArray.length === 0) {
-      setFocusedTestReportArray([report]);
-    } else {
-      setFocusedTestReportArray((prevArray) => [...prevArray, report]);
+  const addReportToFocusedTestReportArray = (newReport) => {
+    const isExist = focusedTestReportArray.find(
+      (report) => report.testUUID === newReport.testUUID
+    );
+    if (!isExist) {
+      if (focusedTestReportArray.length === 0) {
+        setFocusedTestReportArray([newReport]);
+      } else {
+        setFocusedTestReportArray((prevArray) => [...prevArray, newReport]);
+      }
+      dispatch(addTestReportToFocuedAction(newReport.testUUID));
     }
-    dispatch(addTestReportToFocuedAction(report.testUUID));
   };
 
   const removeReportFromFocusedTestReportArray = (reportToRemove) => {
@@ -89,7 +99,12 @@ function MainDashboardPage() {
       const lastTestReport = allReportsArray.find(
         (report) => report.testUUID === lastTestUUID
       );
-      addReportToFocusedTestReportArray(lastTestReport);
+      const isExist = focusedTestReportArray.find(
+        (report) => report.testUUID === lastTestReport.testUUID
+      );
+      if (!isExist) {
+        addReportToFocusedTestReportArray(lastTestReport);
+      }
     }
   };
 
@@ -173,6 +188,8 @@ function MainDashboardPage() {
             numberOfMessagesToSend={numberOfMessagesToSend}
             numberOfAttempts={numberOfAttempts}
             isInProgress={testInProgressProducer}
+            generatingData={generatingData}
+            setGeneratingData={setGeneratingData}
             setIsInProgress={setTestInProgressProducer}
             focusedTestReportArray={focusedTestReportArray}
           />
@@ -187,6 +204,10 @@ function MainDashboardPage() {
           />
         </div>
       </div>
+      <GeneratingDataStatusToast
+        showToast={generatingData}
+        setShowToast={setGeneratingData}
+      />
     </div>
   );
 }

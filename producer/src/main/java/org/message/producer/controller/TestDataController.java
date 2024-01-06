@@ -7,6 +7,7 @@ import org.message.producer.dto.RedirectStartTestResponseDto;
 import org.message.producer.dto.TestSettingsDto;
 import org.message.producer.exception.HttpStreamRedirectException;
 import org.message.producer.service.TestService;
+import org.message.producer.util.DataSizeUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,7 +28,7 @@ public class TestDataController {
 
     private static final String PRODUCER_START_TEST_RESPONSE = "Request received. Test has been started. Test UUID: %s";
     private static final String PRODUCER_FINISH_TEST_RESPONSE = "Request received. Test has been finished. Test UUID: %s";
-    private static final String PRODUCER_EXCEPTION_FINISH_TEST_RESPONSE = "Request received. Test has been finished with failure. Test UUID: %s. Number ob obtained messages: %s";
+    private static final String PRODUCER_EXCEPTION_FINISH_TEST_RESPONSE = "Request received. Test has been finished with failure. Test UUID: %s. Number of obtained messages: %s";
     private final RestClient restClient = RestClient.create();
     private final TestService testService;
 

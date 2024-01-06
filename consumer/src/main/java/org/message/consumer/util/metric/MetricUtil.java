@@ -39,14 +39,14 @@ public class MetricUtil {
     }
 
     public static BigDecimal getAverageCpuPercentage(BigDecimal valBefore, BigDecimal valAfter) {
-        return (valBefore.max(valAfter).subtract(valBefore.min(valAfter))).divide(BigDecimal.valueOf(2).multiply(BigDecimal.valueOf(100)), 2, RoundingMode.UP);
+        return valBefore.add(valAfter).divide(BigDecimal.valueOf(2), 2, RoundingMode.UP);
     }
 
     public static BigDecimal getSystemCpuUsagePercentage() {
-        return BigDecimal.valueOf(osBean.getCpuLoad()).setScale(2, RoundingMode.UP);
+        return BigDecimal.valueOf(osBean.getCpuLoad()).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.UP);
     }
 
     public static BigDecimal getAppCpuUsagePercentage() {
-        return BigDecimal.valueOf(osBean.getProcessCpuLoad()).setScale(2, RoundingMode.UP);
+        return BigDecimal.valueOf(osBean.getProcessCpuLoad()).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.UP);
     }
 }

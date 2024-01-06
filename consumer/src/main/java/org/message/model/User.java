@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.message.model.util.BrokerType;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,6 +16,7 @@ import java.util.UUID;
 public class User {
     private UUID uuid;
     private UUID testUUID;
+    private BrokerType brokerType;
     private String idNumber;
     private String name;
     private String lastName;

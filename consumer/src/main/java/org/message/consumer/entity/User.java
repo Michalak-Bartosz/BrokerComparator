@@ -1,10 +1,9 @@
 package org.message.consumer.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.*;
+import org.message.consumer.entity.id.UserIdKey;
+import org.message.model.util.BrokerType;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,10 +14,16 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
+@IdClass(UserIdKey.class)
 public class User {
     @Id
     private UUID uuid;
+    @Id
     private UUID testUUID;
+    @Id
+    @Enumerated(EnumType.STRING)
+    private BrokerType brokerType;
+
     private String idNumber;
     private String name;
     private String lastName;

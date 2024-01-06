@@ -20,10 +20,15 @@ spring:
       report-data-topic: "report-data-events-topic"
       debug-info-data-topic: "debug-info-data-events-topic"
   rabbitmq:
-    exchange:
-      user-name: "user-data-exchange"
-      report-name: "report-data-exchange"
-      debug-info-name: "debug-info-exchange"
+    username: brokerComparatorUser
+    password: 5L5@jpm@&27CxUTj2Y@WgkN@6Y
+    virtual-host: /brokerComparator
+    host: 127.0.0.1
+    port: 5672
+    queue:
+      user: "user-data-queue"
+      report: "report-data-queue"
+      debug-info: "debug-info-queue"
   datasource:
     url: jdbc:mysql://localhost:3306/broker_comparison?encrypt=true&trustServerCertificate=true
     driverClassName: com.mysql.cj.jdbc.Driver

@@ -1,7 +1,6 @@
 import { Table } from "flowbite-react";
 import React, { useState } from "react";
 import { getDateFromTimestampString } from "../../../../util/DateTimeUtil";
-import moment from "moment";
 import MemoryMetricModal from "./metrics/memoryMetric/MemoryMetricModal";
 import CpuMetricModal from "./metrics/cpuMetric/CpuMetricModal";
 
@@ -33,12 +32,7 @@ function DebugInfo({ debugInfo, index }) {
       <Table.Cell className="whitespace-nowrap">
         {getDateFromTimestampString(debugInfo.consumedTimestamp).toISOString()}
       </Table.Cell>
-      <Table.Cell>
-        {moment
-          .duration(debugInfo.deltaTimestamp)
-          .as("milliseconds")
-          .toFixed(3)}
-      </Table.Cell>
+      <Table.Cell>{debugInfo.formattedDeltaTimestamp}</Table.Cell>
       <Table.Cell>{debugInfo.countOfProducedMessages}</Table.Cell>
       <Table.Cell>{debugInfo.countOfConsumedMessages}</Table.Cell>
       <Table.Cell>

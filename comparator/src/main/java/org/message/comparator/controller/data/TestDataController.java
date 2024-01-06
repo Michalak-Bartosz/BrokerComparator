@@ -7,6 +7,7 @@ import org.message.comparator.dto.data.RedirectStartTestResponseDto;
 import org.message.comparator.dto.data.TestSettingsDto;
 import org.message.comparator.entity.data.TestReport;
 import org.message.comparator.exception.HttpStreamRedirectException;
+import org.message.comparator.exception.TestReportAlreadyExistException;
 import org.message.comparator.service.data.TestReportService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
@@ -26,7 +27,8 @@ import static org.message.comparator.config.ApiConstants.REQUEST_MAPPING_NAME;
 public class TestDataController {
     private static final String COMPARE_API_START_TEST_RESPONSE = "Successful redirected message. Test UUID: %s";
     private static final String COMPARE_API_FINISH_TEST_RESPONSE = "Successful redirected message and create test report. Test UUID: %s";
-    private static final String COMPARE_API_EXCEPTION_FINISH_TEST_RESPONSE = "Fail redirected message. Test UUID is null!";
+    private static final String COMPARE_API_REDIRECT_EXCEPTION_FINISH_TEST_RESPONSE = "Fail redirected message. Test UUID is null!";
+    private static final String COMPARE_API_CREATE_TEST_REPORT_EXCEPTION_FINISH_TEST_RESPONSE = "Fail creating test report. Test report already exist for test UUID: %s";
     private final RestClient restClient = RestClient.create();
     private final TestReportService reportService;
 
@@ -49,14 +51,19 @@ public class TestDataController {
         if (ObjectUtils.isEmpty(finishTestDto.getTestUUID())) {
             return ResponseEntity.badRequest()
                     .body(RedirectFinishTestResponseDto.builder()
-                            .compareApiResponse(COMPARE_API_EXCEPTION_FINISH_TEST_RESPONSE)
+                            .compareApiResponse(COMPARE_API_REDIRECT_EXCEPTION_FINISH_TEST_RESPONSE)
                             .build());
         }
         UUID testUUID = finishTestDto.getTestUUID();
         RedirectFinishTestResponseDto redirectFinishTestResponseDto = redirectRequestToFinishTest(finishTestDto);
-        reportService.createTestReport(testUUID);
+        String compareApiResponse = String.format(COMPARE_API_FINISH_TEST_RESPONSE, testUUID);
+        try {
+            reportService.createTestReport(testUUID);
+        } catch (TestReportAlreadyExistException e) {
+            compareApiResponse = String.format(COMPARE_API_CREATE_TEST_REPORT_EXCEPTION_FINISH_TEST_RESPONSE, testUUID);
+        }
         redirectFinishTestResponseDto.setTestUUID(testUUID);
-        redirectFinishTestResponseDto.setCompareApiResponse(String.format(COMPARE_API_FINISH_TEST_RESPONSE, testUUID));
+        redirectFinishTestResponseDto.setCompareApiResponse(compareApiResponse);
         return ResponseEntity.ok(redirectFinishTestResponseDto);
     }
 

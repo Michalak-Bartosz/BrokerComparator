@@ -15,6 +15,7 @@ public class ReportMapper {
         return Report.builder()
                 .uuid(reportModel.getUuid())
                 .testUUID(reportModel.getTestUUID())
+                .brokerType(reportModel.getBrokerType())
                 .userUuid(reportModel.getUserUuid())
                 .summary(reportModel.getSummary())
                 .description(reportModel.getDescription())

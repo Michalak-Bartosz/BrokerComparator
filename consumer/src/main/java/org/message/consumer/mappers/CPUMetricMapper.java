@@ -8,6 +8,7 @@ public class CPUMetricMapper {
 
     public static CPUMetric mapCPUMetricModelToEntity(org.message.model.metric.CPUMetric cpuMetricModel) {
         return CPUMetric.builder()
+                .brokerType(cpuMetricModel.getBrokerType())
                 .systemCpuUsagePercentage(cpuMetricModel.getSystemCpuUsagePercentage())
                 .appCpuUsagePercentage(cpuMetricModel.getAppCpuUsagePercentage())
                 .build();

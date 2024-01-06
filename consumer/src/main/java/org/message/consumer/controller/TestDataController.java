@@ -19,7 +19,7 @@ import static org.message.consumer.config.ApiConstants.REQUEST_MAPPING_NAME;
 @RequiredArgsConstructor
 public class TestDataController {
     private static final String CONSUMER_FINISH_TEST_RESPONSE = "Request received. Test has been finished. Test UUID: %s";
-    private static final String CONSUMER_EXCEPTION_FINISH_TEST_RESPONSE = "Request received. Test has been finished with failure. Test UUID: %s. Number ob obtained messages: %s";
+    private static final String CONSUMER_EXCEPTION_FINISH_TEST_RESPONSE = "Request received. Test has been finished with failure. Test UUID: %s. Number of obtained messages: %s";
     private final TestService testService;
 
     @PostMapping("/finish")

@@ -104,7 +104,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getDatasetName = (brokerType, testUUID) => {
-    let currentTestUUID = props.testUUID ? props.testUUID : testUUID;
+    let currentTestUUID = testUUID ? testUUID : props.testUUID;
     return (
       "Broker Type: '" + brokerType + "' Test UUID: '" + currentTestUUID + "'"
     );
@@ -149,7 +149,7 @@ function ProducerDataVisualizationTEST(props) {
         );
         resetTestStates();
       });
-      setChartDataArray([...chartDataArrayValue]);
+      setChartDataArray([...new Set(chartDataArrayValue)]);
     };
 
     const sortFocusedTestReportArray = () => {
@@ -162,6 +162,7 @@ function ProducerDataVisualizationTEST(props) {
     };
 
     if (props.focusedTestReportArray.length > 0) {
+      resetTestStates();
       sortFocusedTestReportArray().forEach((testReport) => {
         fillOutChartDataByBrokerType(
           testReport.brokerTypeList,
@@ -184,11 +185,10 @@ function ProducerDataVisualizationTEST(props) {
     const updateChartDataArray = (brokerType) => {
       chartDataArrayValue.push(getNewChartDataArrayValue(brokerType));
       if (chartDataArray.length === 0) {
-        setChartDataArray([...chartDataArrayValue]);
+        setChartDataArray([...new Set(chartDataArrayValue)]);
       } else {
         setChartDataArray((prevArray) => [
-          ...prevArray,
-          ...chartDataArrayValue,
+          ...new Set([...prevArray, ...chartDataArrayValue]),
         ]);
       }
     };
@@ -222,6 +222,9 @@ function ProducerDataVisualizationTEST(props) {
 
       eventSource.onmessage = (event) => {
         if (event.data) {
+          if (props.generatingData) {
+            props.setGeneratingData(false);
+          }
           const debugInfo = JSON.parse(event.data);
           let newBrokerType = debugInfo.brokerType;
           handleNewBrokerType(currentBrokerType, newBrokerType);
@@ -392,9 +395,9 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   return (
-    <div className="bg-indigo-500 bg-opacity-40 rounded-lg p-4 mb-8 shadow-lg">
+    <div className="bg-stone-300 bg-opacity-40 rounded-lg p-4 mb-8 shadow-lg">
       <div className="block p-8">
-        <h1 className="text-3xl font-bold text-indigo-950 rounded-md border-y-4 border-slate-600 py-4 m-auto">
+        <h1 className="text-3xl font-bold text-stone-800 rounded-md border-y-4 border-slate-600 py-4 m-auto">
           Producer App
         </h1>
         <ProgressBar testStatus={getTestProgressStatus()} />
@@ -412,7 +415,7 @@ function ProducerDataVisualizationTEST(props) {
           heightPercentage={"25%"}
         />
         <div>
-          <h1 className="font-bold text-2xl text-indigo-950 rounded-md border-y-2 border-slate-600 py-4 m-auto">
+          <h1 className="font-bold text-2xl text-stone-800 rounded-md border-y-2 border-slate-600 py-4 m-auto">
             Memory Metrics
           </h1>
           <div className="grid grid-cols-2 py-4">
@@ -443,7 +446,7 @@ function ProducerDataVisualizationTEST(props) {
           </div>
         </div>
         <div>
-          <h1 className="font-bold text-2xl text-indigo-950 rounded-md border-y-2 border-slate-600 py-4 m-auto">
+          <h1 className="font-bold text-2xl text-stone-800 rounded-md border-y-2 border-slate-600 py-4 m-auto">
             CPU metrics
           </h1>
           <div className="grid grid-cols-2 py-4">
@@ -455,7 +458,7 @@ function ProducerDataVisualizationTEST(props) {
             />
             <LiveChart
               chartData={getAppCpuChartData()}
-              chartName={"Consumer App CPU usage [%] in time"}
+              chartName={"Producer App CPU usage [%] in time"}
               yAxisName={"CPU usage [%]"}
               heightPercentage={"45%"}
             />

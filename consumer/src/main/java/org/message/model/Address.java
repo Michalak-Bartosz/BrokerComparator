@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.message.model.util.BrokerType;
 
 import java.util.UUID;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 public class Address {
     private UUID uuid;
     private UUID userUuid;
+    private BrokerType brokerType;
     private String streetName;
     private String number;
     private String city;

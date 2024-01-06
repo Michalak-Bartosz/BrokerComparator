@@ -40,11 +40,11 @@ function ReportTable({
   };
 
   const calculateReportsOnPage = () => {
-    const reportsOnPage = testReportArray.slice(
+    const reportsOnPage = sortTestReportArray(testReportArray).slice(
       (currentPage - 1) * maxReportsOnPage,
       currentPage * maxReportsOnPage
     );
-    return sortTestReportArray(reportsOnPage);
+    return reportsOnPage;
   };
 
   const isFocusedReport = (reportTestUUID) => {

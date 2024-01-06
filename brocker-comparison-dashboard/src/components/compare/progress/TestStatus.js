@@ -14,7 +14,7 @@ function TestStatus(props) {
         </div>
       ) : props.testStatus === 100 ? (
         <span className="text-2xl text-white bg-green-800 p-4 rounded-r-md bg-opacity-90">
-          Complitted
+          Complete
         </span>
       ) : (
         <span className="text-2xl text-white bg-slate-500 p-4 rounded-r-md bg-opacity-80">

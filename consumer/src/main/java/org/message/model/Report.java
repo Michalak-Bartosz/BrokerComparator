@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.message.model.util.BrokerType;
 import org.message.model.util.ReportStatus;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class Report {
     private UUID uuid;
     private UUID testUUID;
     private UUID userUuid;
+    private BrokerType brokerType;
     private String summary;
     private String description;
     private ReportStatus status;

@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.message.model.DebugInfo;
 import org.message.producer.exception.HttpStreamWaitException;
 import org.message.producer.exception.SseSendMessageException;
-import org.message.producer.util.MessageType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,9 +52,9 @@ public class HttpStreamController {
             startHttpStream();
             DebugInfo debugInfo;
             do {
-                debugInfo = (DebugInfo) consumeMessage(MessageType.DEBUG_INFO);
+                debugInfo = (DebugInfo) consumeMessage();
                 while (debugInfo == null) {
-                    debugInfo = (DebugInfo) consumeMessage(MessageType.DEBUG_INFO);
+                    debugInfo = (DebugInfo) consumeMessage();
                 }
                 try {
                     sseEmitter.send(debugInfo);

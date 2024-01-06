@@ -3,8 +3,10 @@ package org.message.comparator.entity.data;
 import jakarta.persistence.*;
 import lombok.*;
 import org.message.comparator.entity.data.metric.ReportCPUMetric;
+import org.message.comparator.entity.data.metric.ReportDataSizeMetric;
 import org.message.comparator.entity.data.metric.ReportMemoryMetric;
 import org.message.comparator.entity.data.metric.ReportTimeMetric;
+import org.message.comparator.entity.data.util.BrokerType;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +21,8 @@ public class TestReport {
     @Id
     private UUID testUUID;
     private Integer numberOfAttempts;
-    private List<String> brokerTypeList;
+    private List<BrokerType> brokerTypeList;
+
     @OneToMany(fetch = FetchType.EAGER)
     private List<User> userList;
     @OneToMany(fetch = FetchType.EAGER)
@@ -34,4 +37,9 @@ public class TestReport {
     private ReportMemoryMetric consumerReportMemoryMetric;
     @OneToOne
     private ReportTimeMetric reportTimeMetric;
+    @OneToOne
+    private ReportDataSizeMetric reportDataSizeMetric;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<BrokerInfoData> brokerInfoDataList;
 }

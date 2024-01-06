@@ -2,6 +2,7 @@ package org.message.producer.service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.message.model.User;
 import org.message.producer.controller.HttpStreamController;
 import org.message.producer.dto.FinishTestDto;
@@ -18,13 +19,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
+import static org.message.producer.util.DataSizeUtil.getObjectSizeInBytes;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TestService {
 
-    public static final AtomicInteger TOTAL_MESSAGES_TO_SEND = new AtomicInteger();
+    public static final AtomicInteger TOTAL_MESSAGES_TO_SEND = new AtomicInteger(0);
     public static final AtomicInteger TOTAL_MESSAGES_OBTAINED = new AtomicInteger(0);
+    public static final AtomicInteger TOTAL_PRODUCED_DATA_SIZE_IN_BYTES = new AtomicInteger(0);
 
     public static BigDecimal getTestStatusPercentage() {
         return BigDecimal.valueOf((TOTAL_MESSAGES_OBTAINED.get() * 100.0) / TOTAL_MESSAGES_TO_SEND.get());
@@ -46,6 +52,7 @@ public class TestService {
         List<User> users = prepareData(testSettingsDto);
         TOTAL_MESSAGES_TO_SEND.set(calculateTotalMessagesToSend(testSettingsDto));
         TOTAL_MESSAGES_OBTAINED.set(0);
+        TOTAL_PRODUCED_DATA_SIZE_IN_BYTES.set(0);
         testSettingsDto.getBrokerTypes().forEach(brokerType ->
                 sendRecords(brokerType,
                         testSettingsDto,
@@ -58,18 +65,21 @@ public class TestService {
         HttpStreamController.finishHttpStream();
         boolean isFinishSuccessful = finishTestDto.getNumberOfReceivedMessagesProducer() == TOTAL_MESSAGES_OBTAINED.get();
         TOTAL_MESSAGES_OBTAINED.set(0);
+        TOTAL_PRODUCED_DATA_SIZE_IN_BYTES.set(0);
         return isFinishSuccessful;
     }
 
     private List<User> prepareData(TestSettingsDto testSettingsDto) {
         List<User> users = new ArrayList<>();
         int totalMessagesToSendInAttempt = testSettingsDto.getNumberOfMessagesToSend() * testSettingsDto.getNumberOfAttempts();
-        int messagesObtained = 1;
-        while (messagesObtained <= totalMessagesToSendInAttempt) {
-            User user = RandomUtil.generateUser(testSettingsDto.getTestUUID());
-            users.add(user);
-            messagesObtained++;
-        }
+        IntStream.range(0, totalMessagesToSendInAttempt)
+                .parallel()
+                .forEach(i -> {
+                    User user = RandomUtil.generateUser(testSettingsDto.getTestUUID());
+                    synchronized (users) {
+                        users.add(user);
+                    }
+                });
         return users;
     }
 
@@ -83,6 +93,7 @@ public class TestService {
         TestRunnerFunction testRunnerFunction = Optional.ofNullable(testRunnerMap.get(brokerType))
                 .orElseThrow(() -> new UnsupportedBrokerTypeException(brokerType));
         int messagesObtainedInTest = 0;
+        int producedDataInTestInBytes = 0;
         int attemptCounter = 1;
         int numberOfAttempts = testSettingsDto.getNumberOfAttempts();
         int numberOfMessagesToSend = testSettingsDto.getNumberOfMessagesToSend();
@@ -94,10 +105,15 @@ public class TestService {
             while (messagesObtainedInAttempt <= numberOfMessagesToSend) {
                 TOTAL_MESSAGES_OBTAINED.incrementAndGet();
                 User user = users.get(messagesObtainedInTest);
+                int payloadSizeInBytes = getObjectSizeInBytes(user);
+                TOTAL_PRODUCED_DATA_SIZE_IN_BYTES.addAndGet(payloadSizeInBytes);
+                producedDataInTestInBytes += payloadSizeInBytes;
                 testRunnerFunction.apply(testUUID,
                         attemptCounter,
                         messagesObtainedInAttempt,
-                        user);
+                        user,
+                        payloadSizeInBytes,
+                        producedDataInTestInBytes);
                 messagesObtainedInAttempt++;
                 messagesObtainedInTest++;
             }
@@ -120,6 +136,6 @@ public class TestService {
 
     @FunctionalInterface
     private interface TestRunnerFunction {
-        void apply(UUID testUUID, int numberOfAttempt, int messagesObtainedInTest, User user);
+        void apply(UUID testUUID, int numberOfAttempt, int messagesObtainedInTest, User user, Integer payloadSizeInBytes, Integer producedDataInTestInBytes);
     }
 }

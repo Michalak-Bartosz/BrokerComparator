@@ -8,6 +8,7 @@ public class MemoryMetricMapper {
 
     public static MemoryMetric mapMemoryMetricsModelToEntity(org.message.model.metric.MemoryMetric memoryMetricModel) {
         return MemoryMetric.builder()
+                .brokerType(memoryMetricModel.getBrokerType())
                 .initialMemoryGB(memoryMetricModel.getInitialMemoryGB())
                 .usedHeapMemoryGB(memoryMetricModel.getUsedHeapMemoryGB())
                 .maxHeapMemoryGB(memoryMetricModel.getMaxHeapMemoryGB())

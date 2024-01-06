@@ -10,6 +10,7 @@ public class AddressMapper {
         return Address.builder()
                 .uuid(addressModel.getUuid())
                 .userUuid(addressModel.getUserUuid())
+                .brokerType(addressModel.getBrokerType())
                 .streetName(addressModel.getStreetName())
                 .number(addressModel.getNumber())
                 .city(addressModel.getCity())

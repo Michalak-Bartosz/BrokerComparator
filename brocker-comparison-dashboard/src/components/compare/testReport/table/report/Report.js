@@ -38,7 +38,11 @@ function Report({
           isFocusedReport ? "bg-blue-300" : ""
         }`}
       >
-        {report.brokerTypeList}
+        {report.brokerTypeList.sort().map((brokerType) => (
+          <span key={brokerType} className="mr-2">
+            {brokerType}
+          </span>
+        ))}
       </Table.Cell>
       <Table.Cell
         className={`whitespace-nowrap font-medium text-gray-900 ${

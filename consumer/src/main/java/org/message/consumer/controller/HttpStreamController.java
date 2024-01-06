@@ -4,7 +4,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.message.consumer.exception.HttpStreamWaitException;
 import org.message.consumer.exception.SseSendMessageException;
-import org.message.consumer.util.MessageType;
 import org.message.model.DebugInfo;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,9 +52,9 @@ public class HttpStreamController {
             startHttpStream();
             DebugInfo debugInfo;
             do {
-                debugInfo = (DebugInfo) consumeMessage(MessageType.DEBUG_INFO);
+                debugInfo = (DebugInfo) consumeMessage();
                 while (debugInfo == null) {
-                    debugInfo = (DebugInfo) consumeMessage(MessageType.DEBUG_INFO);
+                    debugInfo = (DebugInfo) consumeMessage();
                 }
                 try {
                     sseEmitter.send(debugInfo);

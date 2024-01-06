@@ -3,6 +3,7 @@ package org.message.comparator.service.data;
 import lombok.RequiredArgsConstructor;
 import org.message.comparator.entity.data.DebugInfo;
 import org.message.comparator.entity.data.metric.ReportTimeMetric;
+import org.message.comparator.entity.data.util.BrokerType;
 import org.message.comparator.repository.data.ReportTimeMetricRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +15,8 @@ public class ReportTimeMetricService {
 
     private final ReportTimeMetricRepository reportTimeMetricRepository;
 
-    public ReportTimeMetric saveReportMemoryMetric(List<DebugInfo> debugInfoList) {
-        ReportTimeMetric reportTimeMetric = new ReportTimeMetric(debugInfoList);
+    public ReportTimeMetric saveReportMemoryMetric(List<DebugInfo> debugInfoList, BrokerType brokerType) {
+        ReportTimeMetric reportTimeMetric = new ReportTimeMetric(debugInfoList, brokerType);
         reportTimeMetricRepository.save(reportTimeMetric);
         reportTimeMetricRepository.flush();
         return reportTimeMetric;

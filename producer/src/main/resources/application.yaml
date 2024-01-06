@@ -14,7 +14,19 @@ spring:
       report-data-topic: "report-data-events-topic"
       debug-info-data-topic: "debug-info-data-events-topic"
   rabbitmq:
+    username: brokerComparatorUser
+    password: 5L5@jpm@&27CxUTj2Y@WgkN@6Y
+    virtual-host: /brokerComparator
+    host: 127.0.0.1
+    port: 5672
     exchange:
-      user-name: "user-data-exchange"
-      report-name: "report-data-exchange"
-      debug-info-name: "debug-info-exchange"
+      name: identificationDataExchange
+    queue:
+      user: "user-data-queue"
+      report: "report-data-queue"
+      debug-info: "debug-info-queue"
+    routing:
+      key:
+        user: "user-data-routing-key"
+        report: "report-data-routing-key"
+        debug-info: "debug-info-routing-key"

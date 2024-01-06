@@ -119,7 +119,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getDatasetName = (brokerType, testUUID) => {
-    let currentTestUUID = props.testUUID ? props.testUUID : testUUID;
+    let currentTestUUID = testUUID ? testUUID : props.testUUID;
     return (
       "Broker Type: '" + brokerType + "' Test UUID: '" + currentTestUUID + "'"
     );
@@ -166,7 +166,7 @@ function ConsumerDataVisualization(props) {
         );
         resetTestStates();
       });
-      setChartDataArray([...chartDataArrayValue]);
+      setChartDataArray([...new Set(chartDataArrayValue)]);
     };
 
     const sortFocusedTestReportArray = () => {
@@ -179,6 +179,7 @@ function ConsumerDataVisualization(props) {
     };
 
     if (props.focusedTestReportArray.length > 0) {
+      resetTestStates();
       sortFocusedTestReportArray().forEach((testReport) => {
         fillOutChartDataByBrokerType(
           testReport.brokerTypeList,
@@ -201,11 +202,10 @@ function ConsumerDataVisualization(props) {
     const updateChartDataArray = (brokerType) => {
       chartDataArrayValue.push(getNewChartDataArrayValue(brokerType));
       if (chartDataArray.length === 0) {
-        setChartDataArray([...chartDataArrayValue]);
+        setChartDataArray([...new Set(chartDataArrayValue)]);
       } else {
         setChartDataArray((prevArray) => [
-          ...prevArray,
-          ...chartDataArrayValue,
+          ...new Set([...prevArray, ...chartDataArrayValue]),
         ]);
       }
     };
@@ -265,6 +265,7 @@ function ConsumerDataVisualization(props) {
           "CONSUMER EVENTSOURCE CLOSED (" + event.target.readyState + ")"
         );
       }
+      props.setIsInProgress(false);
       eventSource.close();
     };
 

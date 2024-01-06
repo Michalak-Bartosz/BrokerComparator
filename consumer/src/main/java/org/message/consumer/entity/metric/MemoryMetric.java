@@ -1,10 +1,8 @@
 package org.message.consumer.entity.metric;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+import org.message.model.util.BrokerType;
 
 import java.math.BigDecimal;
 
@@ -18,6 +16,8 @@ public class MemoryMetric {
     @Id
     @GeneratedValue
     private Long id;
+    @Enumerated(EnumType.STRING)
+    private BrokerType brokerType;
     @Column(scale=3)
     private BigDecimal initialMemoryGB;
     @Column(scale=3)

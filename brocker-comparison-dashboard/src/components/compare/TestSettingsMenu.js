@@ -69,7 +69,7 @@ function TestSettingsMenu(props) {
               type="number"
               step="1"
               min="1"
-              max="2000"
+              max="10000"
               onWheel={numberInputOnWheelPreventChange}
               defaultValue={props.numberOfMessagesToSend}
               onChange={(e) => props.setNumberOfMessagesToSend(e.target.value)}

@@ -27,5 +27,6 @@ public class DebugInfoUtil {
         debugInfo.setDeltaTimestamp(deltaTimestamp);
         debugInfo.setConsumerMemoryMetrics(consumerMemoryMetric);
         debugInfo.setConsumerCPUMetrics(consumerCPUMetric);
+        debugInfo.getDataSizeMetric().setConsumedDataSizeInBytes(debugInfo.getDataSizeMetric().getProducedDataSizeInBytes());
     }
 }

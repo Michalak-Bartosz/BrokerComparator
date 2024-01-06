@@ -2,6 +2,8 @@ package org.message.comparator.entity.data;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.message.comparator.entity.data.id.ReportIdKey;
+import org.message.comparator.entity.data.util.BrokerType;
 import org.message.comparator.entity.data.util.ReportStatus;
 
 import java.util.List;
@@ -13,11 +15,18 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
+@IdClass(ReportIdKey.class)
 public class Report {
     @Id
     private UUID uuid;
+    @Id
     private UUID testUUID;
+    @Id
     private UUID userUuid;
+    @Id
+    @Enumerated(EnumType.STRING)
+    private BrokerType brokerType;
+
     private String summary;
     @Lob
     @Column(columnDefinition = "TEXT")
