@@ -29,7 +29,7 @@ public class TestReportService {
     private final ReportDataSizeMetricService reportDataSizeMetricService;
     private final BrokerInfoDataService brokerInfoDataService;
 
-    public List<TestReport> getTestReport() {
+    public List<TestReport> getTestReports() {
         return testReportRepository.findAll();
     }
 

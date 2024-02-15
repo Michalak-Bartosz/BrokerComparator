@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.message.producer.kafka.util.KafkaMessageUtil.getKafkaProducerRecord;
-import static org.message.producer.service.TestService.getTestStatusPercentage;
 import static org.message.producer.util.MetricUtil.*;
 
 @Component
@@ -50,7 +49,6 @@ public class KafkaProducer {
         ProducerRecord<String, User> userKafkaRecord = getKafkaProducerRecord(userDataTopic, user);
 
         kafkaTemplateUserEvent.send(userKafkaRecord);
-        kafkaTemplateUserEvent.flush();
         log.debug("User sent -> {}", userKafkaRecord);
 
         user.getReports().stream()
@@ -59,7 +57,6 @@ public class KafkaProducer {
                     kafkaTemplateReportEvent.send(reportProducerRecord);
                     log.debug("Report sent -> {}", reportProducerRecord);
                 });
-        kafkaTemplateReportEvent.flush();
 
         final BigDecimal systemCpuAfter = getSystemCpuUsagePercentage();
         final BigDecimal appCpuAfter = getAppCpuUsagePercentage();
@@ -71,7 +68,6 @@ public class KafkaProducer {
                 user.getUuid(),
                 numberOfAttempt,
                 BROKER_TYPE,
-                getTestStatusPercentage(),
                 messagesObtainedInAttempt,
                 payloadSizeInBytes,
                 producedDataInTestInBytes,
@@ -80,7 +76,6 @@ public class KafkaProducer {
         ProducerRecord<String, DebugInfo> debugInfoKafkaRecord = getKafkaProducerRecord(debugInfoDataTopic, debugInfo);
         StreamMessageUtil.addMessage(debugInfo);
         kafkaTemplateDebugInfoEvent.send(debugInfoKafkaRecord);
-        kafkaTemplateDebugInfoEvent.flush();
         log.debug("DebugInfo sent -> {}", debugInfoKafkaRecord);
     }
 

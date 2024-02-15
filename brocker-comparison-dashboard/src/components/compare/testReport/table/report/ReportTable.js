@@ -33,8 +33,8 @@ function ReportTable({
   const sortTestReportArray = (reportsOnPage) => {
     return reportsOnPage.sort(function (a, b) {
       return (
-        getDateFromTimestampString(a.debugInfoList[0].producedTimestamp) -
-        getDateFromTimestampString(b.debugInfoList[0].producedTimestamp)
+        getDateFromTimestampString(a.debugInfoList ? a.debugInfoList[0].producedTimestamp : "") -
+        getDateFromTimestampString(b.debugInfoList ? b.debugInfoList[0].producedTimestamp: "")
       );
     });
   };

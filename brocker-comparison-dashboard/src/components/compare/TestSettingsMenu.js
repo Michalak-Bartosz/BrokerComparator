@@ -12,7 +12,7 @@ import { Tooltip } from "react-tooltip";
 function TestSettingsMenu(props) {
   const selectBrokerOptions = [KAFKA_BROKER, RABBITMQ_BROKER, ALL_BROKERS];
   const numberOfMessagesToSendTooltip =
-    "You can send from 1 do 2000 messages in one test.";
+    "You can send from 1 do 5000 messages in one test.";
   const numberOfAttemptsTooltip =
     "You can set from 1 do 50 attempts in one test.";
   const delayInMillisecondsTooltip =
@@ -69,14 +69,14 @@ function TestSettingsMenu(props) {
               type="number"
               step="1"
               min="1"
-              max="10000"
+              max="5000"
               onWheel={numberInputOnWheelPreventChange}
               defaultValue={props.numberOfMessagesToSend}
               onChange={(e) => props.setNumberOfMessagesToSend(e.target.value)}
             />
             <Tooltip
               id="number-of-messages-to-send-tooltip"
-              className="text-2xl"
+              className="text-2xl z-50"
             />
             <IoMdInformationCircle
               className="m-auto ml-3 text-4xl text-blue-500"
@@ -108,7 +108,10 @@ function TestSettingsMenu(props) {
               defaultValue={props.numberOfAttempts}
               onChange={(e) => props.setNumberOfAttempts(e.target.value)}
             />
-            <Tooltip id="number-of-attempts-tooltip" className="text-2xl" />
+            <Tooltip
+              id="number-of-attempts-tooltip"
+              className="text-2xl z-50"
+            />
             <IoMdInformationCircle
               className="m-auto ml-3 text-4xl text-blue-500"
               data-tooltip-id="number-of-attempts-tooltip"
@@ -139,7 +142,10 @@ function TestSettingsMenu(props) {
               defaultValue={props.delayInMilliseconds}
               onChange={(e) => props.setDelayInMilliseconds(e.target.value)}
             />
-            <Tooltip id="delay-in-milliseconds-tooltip" className="text-2xl" />
+            <Tooltip
+              id="delay-in-milliseconds-tooltip"
+              className="text-2xl z-50"
+            />
             <IoMdInformationCircle
               className="m-auto ml-3 text-4xl text-blue-500"
               data-tooltip-id="delay-in-milliseconds-tooltip"

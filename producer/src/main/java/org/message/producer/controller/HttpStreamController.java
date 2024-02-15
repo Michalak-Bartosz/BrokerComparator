@@ -48,7 +48,7 @@ public class HttpStreamController {
         sseEmitter = new SseEmitter(Long.MAX_VALUE);
         configureSseEmitter();
         EXECUTOR.execute(() -> {
-            log.info("Start Http stream");
+            log.info("🏁 Start Http stream");
             startHttpStream();
             DebugInfo debugInfo;
             do {
@@ -61,12 +61,13 @@ public class HttpStreamController {
                 } catch (IOException e) {
                     throw new SseSendMessageException(e);
                 }
-                log.info("DebugInfo message streamed: {}", debugInfo.getTestStatusPercentage());
+                log.info("📈 Test status percentage: {}", debugInfo.getTestStatusPercentage());
+                log.info("📉Broker status percentage: {}", debugInfo.getBrokerStatusPercentage());
             } while (debugInfo.getTestStatusPercentage().compareTo(BigDecimal.valueOf(100)) < 0);
             waitToFinishTest();
-            log.info("Finish Http stream");
+            log.info("🏁 Finish Http stream");
         });
-        log.info("Debug info stream controller exits");
+        log.info("🔚 Debug info server sent event exits");
         return sseEmitter;
     }
 
@@ -93,8 +94,8 @@ public class HttpStreamController {
     }
 
     private static void configureSseEmitter() {
-        sseEmitter.onCompletion(() -> log.debug("SseEmitter is completed"));
-        sseEmitter.onTimeout(() -> log.debug("SseEmitter is timed out"));
-        sseEmitter.onError(ex -> log.debug("SseEmitter got error:", ex));
+        sseEmitter.onCompletion(() -> log.info("✅ SseEmitter is completed"));
+        sseEmitter.onTimeout(() -> log.info("🕒 SseEmitter is timed out"));
+        sseEmitter.onError(ex -> log.info("❌ SseEmitter got error:", ex));
     }
 }

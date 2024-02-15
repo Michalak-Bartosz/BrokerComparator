@@ -23,7 +23,7 @@ function GeneralInfo({ testReport }) {
           <span className="text-blue-800 font-bold mr-2 w-fit">
             Users in test:&nbsp;
           </span>
-          <span className="mr-auto">{testReport.userList?.length}</span>
+          <span className="mr-auto">{testReport?.userList?.length}</span>
         </div>
         <div className="flex m-auto items-center text-2xl my-6">
           <FaDotCircle className="text-blue-800 ml-auto mr-2" />
@@ -33,9 +33,9 @@ function GeneralInfo({ testReport }) {
           <span className="mr-auto">{testReport.numberOfAttempts}</span>
         </div>
       </div>
-      {testReport.brokerInfoDataList && (
+      {testReport?.brokerInfoDataList && (
         <div className="grid grid-cols-2 gap-4 border-t-2 pt-6 border-slate-600">
-          {testReport.brokerInfoDataList.map((brokerInfoData) => {
+          {testReport?.brokerInfoDataList.map((brokerInfoData) => {
             return (
               <div key={brokerInfoData.brokerType}>
                 <div className="flex items-center">
@@ -43,7 +43,7 @@ function GeneralInfo({ testReport }) {
                   <span className="font-bold text-blue-800 text-2xl">
                     Number of users for {brokerInfoData.brokerType}:&nbsp;
                   </span>
-                  <span>{brokerInfoData.userList.length}</span>
+                  <span>{brokerInfoData?.userList?.length}</span>
                 </div>
               </div>
             );

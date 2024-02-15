@@ -70,7 +70,7 @@ public class TestDataController {
     @GetMapping("/report")
     public ResponseEntity<List<TestReport>> getTestReports(
             @CookieValue(name = "accessTokenCookie", defaultValue = "default-access-token-value") String cookie) {
-        return ResponseEntity.ok(reportService.getTestReport());
+        return ResponseEntity.ok(reportService.getTestReports());
     }
 
     private RedirectStartTestResponseDto redirectRequestToStartTest(Object requestBody) {

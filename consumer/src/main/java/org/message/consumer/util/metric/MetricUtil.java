@@ -5,6 +5,7 @@ import com.sun.management.OperatingSystemMXBean;
 import lombok.experimental.UtilityClass;
 import org.message.model.metric.CPUMetric;
 import org.message.model.metric.MemoryMetric;
+import org.message.model.util.BrokerType;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
@@ -20,8 +21,9 @@ public class MetricUtil {
 
     public static final BigDecimal GB = BigDecimal.valueOf(1073741824.0);
 
-    public static MemoryMetric getMemoryMetrics() {
+    public static MemoryMetric getMemoryMetrics(BrokerType brokerType) {
         return MemoryMetric.builder()
+                .brokerType(brokerType)
                 .initialMemoryGB(BigDecimal.valueOf(memoryMXBean.getHeapMemoryUsage().getInit()).divide(GB, 3, RoundingMode.UP))
                 .usedHeapMemoryGB(BigDecimal.valueOf(memoryMXBean.getHeapMemoryUsage().getUsed()).divide(GB, 3, RoundingMode.UP))
                 .maxHeapMemoryGB(BigDecimal.valueOf(memoryMXBean.getHeapMemoryUsage().getMax()).divide(GB, 3, RoundingMode.UP))
@@ -31,8 +33,10 @@ public class MetricUtil {
 
     public static CPUMetric getCpuMetrics(
             BigDecimal systemAverageCpu,
-            BigDecimal appAverageCpu) {
+            BigDecimal appAverageCpu,
+            BrokerType brokerType) {
         return CPUMetric.builder()
+                .brokerType(brokerType)
                 .systemCpuUsagePercentage(systemAverageCpu)
                 .appCpuUsagePercentage(appAverageCpu)
                 .build();

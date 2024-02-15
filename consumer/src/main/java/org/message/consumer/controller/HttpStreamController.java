@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.message.consumer.exception.HttpStreamWaitException;
 import org.message.consumer.exception.SseSendMessageException;
 import org.message.model.DebugInfo;
+import org.message.model.util.BrokerType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -16,6 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static org.message.consumer.config.ApiConstants.PRODUCER_API_URL_ADDRESS;
 import static org.message.consumer.config.ApiConstants.REQUEST_MAPPING_NAME;
 import static org.message.consumer.util.StreamMessageUtil.consumeMessage;
 
@@ -25,6 +28,7 @@ import static org.message.consumer.util.StreamMessageUtil.consumeMessage;
 public class HttpStreamController {
 
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
+    private static final RestClient REST_CLIENT = RestClient.create();
     private static SseEmitter sseEmitter;
     private static boolean isHttpStreamRun = false;
     private static final long WAIT_EXECUTOR_TIMEOUT_MS = 5000;
@@ -48,7 +52,7 @@ public class HttpStreamController {
         sseEmitter = new SseEmitter(Long.MAX_VALUE);
         configureSseEmitter();
         EXECUTOR.execute(() -> {
-            log.info("Start Http stream");
+            log.info("🏁 Start Http stream");
             startHttpStream();
             DebugInfo debugInfo;
             do {
@@ -61,12 +65,17 @@ public class HttpStreamController {
                 } catch (IOException e) {
                     throw new SseSendMessageException(e);
                 }
-                log.info("DebugInfo message streamed: {}", debugInfo.getTestStatusPercentage());
+                log.info("📈 Test status percentage: {}", debugInfo.getTestStatusPercentage());
+                log.info("📉Broker status percentage: {}", debugInfo.getBrokerStatusPercentage());
+                if (debugInfo.getBrokerStatusPercentage().compareTo(BigDecimal.valueOf(100L)) == 0 &&
+                        debugInfo.getTestStatusPercentage().compareTo(BigDecimal.valueOf(100L)) != 0) {
+                    notifyProducer(debugInfo.getBrokerStatusPercentage(), debugInfo.getBrokerType());
+                }
             } while (debugInfo.getTestStatusPercentage().compareTo(BigDecimal.valueOf(100)) < 0);
             waitToFinishTest();
-            log.info("Finish Http stream");
+            log.info("🏁 Finish Http stream");
         });
-        log.info("Debug info stream controller exits");
+        log.info("🔚 Debug info server sent event exits");
         return sseEmitter;
     }
 
@@ -92,9 +101,17 @@ public class HttpStreamController {
         isHttpStreamRun = false;
     }
 
+    private static synchronized void notifyProducer(BigDecimal brokerStatusPercentage, BrokerType brokerType) {
+        REST_CLIENT.post()
+                .uri(PRODUCER_API_URL_ADDRESS + "/notify")
+                .body(brokerStatusPercentage)
+                .retrieve();
+        log.info("🔔 Producer notified about consumed data by broker: {}", brokerType);
+    }
+
     private static void configureSseEmitter() {
-        sseEmitter.onCompletion(() -> log.debug("SseEmitter is completed"));
-        sseEmitter.onTimeout(() -> log.debug("SseEmitter is timed out"));
-        sseEmitter.onError(ex -> log.debug("SseEmitter got error:", ex));
+        sseEmitter.onCompletion(() -> log.info("✅ SseEmitter is completed"));
+        sseEmitter.onTimeout(() -> log.info("🕒 SseEmitter is timed out"));
+        sseEmitter.onError(ex -> log.info("❌ SseEmitter got error:", ex));
     }
 }

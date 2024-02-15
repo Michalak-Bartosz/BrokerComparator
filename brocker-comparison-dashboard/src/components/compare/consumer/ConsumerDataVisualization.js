@@ -154,11 +154,13 @@ function ConsumerDataVisualization(props) {
   useEffect(() => {
     const fillOutChartDataByBrokerType = (brokerTypeList, debugInfoList) => {
       brokerTypeList?.forEach((brokerType) => {
-        const testUUID = debugInfoList[0].testUUID;
-        debugInfoList
-          .filter((debugInfo) => debugInfo.brokerType === brokerType)
+        const testUUID = debugInfoList ? debugInfoList[0].testUUID : "";
+        debugInfoList?.filter((debugInfo) => debugInfo.brokerType === brokerType)
           .sort(function (a, b) {
-            return a.testStatusPercentage - b.testStatusPercentage;
+            return (
+              getDateFromTimestampString(a.consumedTimestamp) -
+              getDateFromTimestampString(b.consumedTimestamp)
+            );
           })
           .map((debugInfo) => updateChartData(debugInfo));
         chartDataArrayValue.push(
@@ -172,8 +174,8 @@ function ConsumerDataVisualization(props) {
     const sortFocusedTestReportArray = () => {
       return props.focusedTestReportArray.sort(function (a, b) {
         return (
-          getDateFromTimestampString(a.debugInfoList?.at(0).producedTimestamp) -
-          getDateFromTimestampString(b.debugInfoList?.at(0).producedTimestamp)
+          getDateFromTimestampString(a.debugInfoList?.at(0).consumedTimestamp) -
+          getDateFromTimestampString(b.debugInfoList?.at(0).consumedTimestamp)
         );
       });
     };

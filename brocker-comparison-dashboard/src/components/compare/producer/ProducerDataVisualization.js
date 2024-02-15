@@ -137,11 +137,13 @@ function ProducerDataVisualizationTEST(props) {
   useEffect(() => {
     const fillOutChartDataByBrokerType = (brokerTypeList, debugInfoList) => {
       brokerTypeList?.forEach((brokerType) => {
-        const testUUID = debugInfoList[0].testUUID;
-        debugInfoList
-          .filter((debugInfo) => debugInfo.brokerType === brokerType)
+        const testUUID = debugInfoList ? debugInfoList[0].testUUID : "";
+        debugInfoList?.filter((debugInfo) => debugInfo.brokerType === brokerType)
           .sort(function (a, b) {
-            return a.testStatusPercentage - b.testStatusPercentage;
+            return (
+              getDateFromTimestampString(a.producedTimestamp) -
+              getDateFromTimestampString(b.producedTimestamp)
+            );
           })
           .map((debugInfo) => updateChartData(debugInfo));
         chartDataArrayValue.push(

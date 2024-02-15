@@ -40,10 +40,10 @@ function TestDataModal(props) {
             <div className="overflow-x-auto rounded-t-md">
               <Tabs aria-label="Full width tabs" theme={tabsCustomTheme}>
                 <Tabs.Item active title="Users" icon={FaUsersLine}>
-                  <UserTable userList={props.userList} />
+                  <UserTable userList={props?.userList} />
                 </Tabs.Item>
                 <Tabs.Item title="Debug Info" icon={MdDataObject}>
-                  <DebugInfoTable debugInfoList={props.debugInfoList} />
+                  <DebugInfoTable debugInfoList={props?.debugInfoList} />
                 </Tabs.Item>
               </Tabs>
             </div>

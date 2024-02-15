@@ -7,7 +7,6 @@ import org.message.producer.dto.RedirectStartTestResponseDto;
 import org.message.producer.dto.TestSettingsDto;
 import org.message.producer.exception.HttpStreamRedirectException;
 import org.message.producer.service.TestService;
-import org.message.producer.util.DataSizeUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,6 +38,12 @@ public class TestDataController {
         return ResponseEntity.ok(RedirectStartTestResponseDto.builder()
                 .producerApiResponse(String.format(PRODUCER_START_TEST_RESPONSE, testSettingDto.getTestUUID()))
                 .build());
+    }
+
+    @PostMapping("/notify")
+    public ResponseEntity<Void> notifyProducer(@RequestBody BigDecimal brokerStatusPercentage) {
+        TestService.notifyProducer(brokerStatusPercentage);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/finish")

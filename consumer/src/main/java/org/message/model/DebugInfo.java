@@ -25,6 +25,7 @@ public class DebugInfo {
     private Integer numberOfAttempt;
     private BrokerType brokerType;
     private BigDecimal testStatusPercentage;
+    private BigDecimal brokerStatusPercentage;
     private Instant producedTimestamp;
     private Instant consumedTimestamp;
     private Duration deltaTimestamp;

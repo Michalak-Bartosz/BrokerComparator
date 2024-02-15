@@ -70,7 +70,7 @@ function TestReportSummary({
           </div>
           <TimeMetric
             timeMetric={testReport.reportTimeMetric}
-            brokerInfoDataList={testReport.brokerInfoDataList}
+            brokerInfoDataList={testReport?.brokerInfoDataList}
           />
         </div>
         <div className="bg-emerald-200 bg-opacity-40 p-6 rounded-lg mt-6">
@@ -82,7 +82,7 @@ function TestReportSummary({
           </div>
           <DataSizeMetric
             dataSizeMetric={testReport.reportDataSizeMetric}
-            brokerInfoDataList={testReport.brokerInfoDataList}
+            brokerInfoDataList={testReport?.brokerInfoDataList}
           />
         </div>
         <div className="bg-stone-300 bg-opacity-40 p-6 rounded-lg mt-6">
@@ -95,16 +95,16 @@ function TestReportSummary({
           <CPUMetric
             cpuMetric={testReport.producerReportCPUMetric}
             brokerCpuMetric={[
-              ...testReport.brokerInfoDataList.map(
-                (brokerInfoData) => brokerInfoData.producerReportCPUMetric
+              ...testReport?.brokerInfoDataList.map(
+                (brokerInfoData) => brokerInfoData?.producerReportCPUMetric
               ),
             ]}
           />
           <MemoryMetric
             memoryMetric={testReport.producerReportMemoryMetric}
             brokerMemoryMetric={[
-              ...testReport.brokerInfoDataList.map(
-                (brokerInfoData) => brokerInfoData.producerReportMemoryMetric
+              ...testReport?.brokerInfoDataList.map(
+                (brokerInfoData) => brokerInfoData?.producerReportMemoryMetric
               ),
             ]}
           />
@@ -119,7 +119,7 @@ function TestReportSummary({
           <CPUMetric
             cpuMetric={testReport.consumerReportCPUMetric}
             brokerCpuMetric={[
-              ...testReport.brokerInfoDataList.map(
+              ...testReport?.brokerInfoDataList.map(
                 (brokerInfoData) => brokerInfoData.consumerReportCPUMetric
               ),
             ]}
@@ -127,7 +127,7 @@ function TestReportSummary({
           <MemoryMetric
             memoryMetric={testReport.consumerReportMemoryMetric}
             brokerMemoryMetric={[
-              ...testReport.brokerInfoDataList.map(
+              ...testReport?.brokerInfoDataList.map(
                 (brokerInfoData) => brokerInfoData.consumerReportMemoryMetric
               ),
             ]}
@@ -141,7 +141,7 @@ function TestReportSummary({
           Show Test Data
         </button>
         <TestDataModal
-          userList={testReport.userList}
+          userList={testReport?.userList}
           debugInfoList={testReport.debugInfoList}
           openModal={openTestDataModal}
           setOpenModal={setOpenTestDataModal}

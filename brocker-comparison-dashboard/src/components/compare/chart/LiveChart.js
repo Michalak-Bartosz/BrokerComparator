@@ -137,11 +137,11 @@ function LiveChart(props) {
       let seriesData;
       if (data.dataArray) {
         seriesData = data.dataArray.map((value, currentIndex) => {
-          let categoryIndex = currentIndex;
+          let categoryIndex = currentIndex + 1;
           if (isTimestampMode) {
-            categoryIndex = categoryIndex + maxIndex;
+            categoryIndex = categoryIndex - 1 + maxIndex;
           }
-          return [categoryIndex + 1, value.yVal];
+          return [categoryIndex, value.yVal];
         });
       } else {
         seriesData = "";

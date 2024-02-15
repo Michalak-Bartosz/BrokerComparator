@@ -15,6 +15,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
+import static org.message.producer.service.TestService.getCurrentBrokerStatusPercentage;
+import static org.message.producer.service.TestService.getCurrentTestStatusPercentage;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -26,6 +29,7 @@ public class DebugInfo {
     private Integer numberOfAttempt;
     private BrokerType brokerType;
     private BigDecimal testStatusPercentage;
+    private BigDecimal brokerStatusPercentage;
     private Instant producedTimestamp;
     private Instant consumedTimestamp;
     private Duration deltaTimestamp;
@@ -42,7 +46,6 @@ public class DebugInfo {
             UUID userUUID,
             Integer numberOfAttempt,
             BrokerType brokerType,
-            BigDecimal testStatusPercent,
             Integer messagesObtained,
             Integer payloadSizeInBytes,
             Integer producedDataInTestInBytes,
@@ -53,7 +56,8 @@ public class DebugInfo {
         this.userUUID = userUUID;
         this.numberOfAttempt = numberOfAttempt;
         this.brokerType = brokerType;
-        this.testStatusPercentage = testStatusPercent;
+        this.testStatusPercentage = getCurrentTestStatusPercentage();
+        this.brokerStatusPercentage = getCurrentBrokerStatusPercentage();
         this.producedTimestamp = Instant.now();
         this.consumedTimestamp = null;
         this.deltaTimestamp = null;

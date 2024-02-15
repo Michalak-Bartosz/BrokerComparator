@@ -49,7 +49,7 @@ function Report({
           isFocusedReport ? "bg-blue-300" : ""
         }`}
       >
-        {report.userList.length}
+        {report?.userList?.length}
       </Table.Cell>
       <Table.Cell
         className={`whitespace-nowrap font-medium text-gray-900 ${

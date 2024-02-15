@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import static org.message.producer.service.TestService.getTestStatusPercentage;
 import static org.message.producer.util.MetricUtil.*;
 
 @Component
@@ -63,7 +62,6 @@ public class RabbitMqProducer {
                 user.getUuid(),
                 numberOfAttempt,
                 BROKER_TYPE,
-                getTestStatusPercentage(),
                 messagesObtainedInAttempt,
                 payloadSizeInBytes,
                 producedDataInTestInBytes,

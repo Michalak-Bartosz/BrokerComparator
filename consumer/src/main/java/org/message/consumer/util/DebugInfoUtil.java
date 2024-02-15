@@ -19,8 +19,8 @@ public class DebugInfoUtil {
             BigDecimal appAverageCpu) {
         Instant consumedTimestamp = Instant.now();
         Duration deltaTimestamp = Duration.between(debugInfo.getProducedTimestamp(), consumedTimestamp);
-        final MemoryMetric consumerMemoryMetric = MetricUtil.getMemoryMetrics();
-        final CPUMetric consumerCPUMetric = MetricUtil.getCpuMetrics(systemAverageCpu, appAverageCpu);
+        final MemoryMetric consumerMemoryMetric = MetricUtil.getMemoryMetrics(debugInfo.getBrokerType());
+        final CPUMetric consumerCPUMetric = MetricUtil.getCpuMetrics(systemAverageCpu, appAverageCpu, debugInfo.getBrokerType());
 
         debugInfo.setCountOfConsumedMessages(debugInfo.getCountOfProducedMessages());
         debugInfo.setConsumedTimestamp(consumedTimestamp);
