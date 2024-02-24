@@ -6,13 +6,14 @@ import AuthPage from "./pages/AuthPage";
 import { useSelector } from "react-redux";
 
 function App() {
-  const accessToken = useSelector((state) => state.token.accessToken);
+  const userName = useSelector((state) => state.user.username);
+
   function PrivateRoute() {
-    return accessToken === null ? <Navigate to="/auth" replace /> : <Outlet />;
+    return userName === null ? <Navigate to="/auth" replace /> : <Outlet />;
   }
 
   function AnonymousRoute() {
-    return accessToken === null ? <Outlet /> : <Navigate to="/" replace />;
+    return userName === null ? <Outlet /> : <Navigate to="/" replace />;
   }
 
   return (

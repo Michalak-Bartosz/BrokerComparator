@@ -2,11 +2,9 @@ package org.message.comparator.config;
 
 
 import lombok.RequiredArgsConstructor;
-import org.message.comparator.auditing.ApplicationAuditAware;
 import org.message.comparator.repository.dashboard.DashboardUserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -33,11 +31,6 @@ public class AppConfiguration {
         authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
-    }
-
-    @Bean
-    public AuditorAware<Integer> auditorAware() {
-        return new ApplicationAuditAware();
     }
 
     @Bean

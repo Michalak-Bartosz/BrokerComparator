@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 import useApi from "../connections/api/useApi";
 
 function Navbar() {
-  const accessToken = useSelector((state) => state.token.accessToken);
   const username = useSelector((state) => state.user.username);
   const navigate = useNavigate();
   const api = useApi();
@@ -29,7 +28,7 @@ function Navbar() {
         </h1>
       </div>
       <div id="button-wrapper" className="flex my-auto ml-auto">
-        {accessToken !== null ? (
+        {username !== null ? (
           <div className="flex">
             <div className="flex">
               <h1 className="m-auto font-bold text-2xl">User:&nbsp;</h1>
