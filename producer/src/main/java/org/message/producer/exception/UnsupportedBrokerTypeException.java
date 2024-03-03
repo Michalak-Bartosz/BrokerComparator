@@ -1,6 +1,7 @@
 package org.message.producer.exception;
 
-import org.message.producer.util.BrokerType;
+
+import org.message.model.util.BrokerType;
 
 public class UnsupportedBrokerTypeException extends RuntimeException {
     public UnsupportedBrokerTypeException(BrokerType brokerType) {

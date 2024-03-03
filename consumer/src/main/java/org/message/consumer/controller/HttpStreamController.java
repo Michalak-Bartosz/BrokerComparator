@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.message.consumer.exception.HttpStreamWaitException;
 import org.message.consumer.exception.SseSendMessageException;
+import org.message.consumer.util.StreamMessageUtil;
 import org.message.model.DebugInfo;
 import org.message.model.util.BrokerType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -69,9 +70,10 @@ public class HttpStreamController {
                 log.info("📉Broker status percentage: {}", debugInfo.getBrokerStatusPercentage());
                 if (debugInfo.getBrokerStatusPercentage().compareTo(BigDecimal.valueOf(100L)) == 0 &&
                         debugInfo.getTestStatusPercentage().compareTo(BigDecimal.valueOf(100L)) != 0) {
-                    notifyProducer(debugInfo.getBrokerStatusPercentage(), debugInfo.getBrokerType());
+                    notifyProducer(debugInfo.getBrokerType());
                 }
             } while (debugInfo.getTestStatusPercentage().compareTo(BigDecimal.valueOf(100)) < 0);
+            StreamMessageUtil.clearQueue();
             waitToFinishTest();
             log.info("🏁 Finish Http stream");
         });
@@ -80,6 +82,7 @@ public class HttpStreamController {
     }
 
     private static synchronized void waitToFinishTest() {
+        log.info("🕒 Waiting to finish the test...");
         try {
             while (isHttpStreamRun) {
                 HttpStreamController.class.wait(WAIT_EXECUTOR_TIMEOUT_MS);
@@ -101,10 +104,10 @@ public class HttpStreamController {
         isHttpStreamRun = false;
     }
 
-    private static synchronized void notifyProducer(BigDecimal brokerStatusPercentage, BrokerType brokerType) {
+    private static synchronized void notifyProducer(BrokerType brokerType) {
         REST_CLIENT.post()
                 .uri(PRODUCER_API_URL_ADDRESS + "/notify")
-                .body(brokerStatusPercentage)
+                .body(brokerType)
                 .retrieve();
         log.info("🔔 Producer notified about consumed data by broker: {}", brokerType);
     }

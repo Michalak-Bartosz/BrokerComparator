@@ -1,21 +1,24 @@
 package org.message.comparator.service.data;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.message.comparator.entity.data.BrokerInfoData;
 import org.message.comparator.entity.data.DebugInfo;
 import org.message.comparator.entity.data.TestReport;
 import org.message.comparator.entity.data.User;
 import org.message.comparator.entity.data.metric.*;
 import org.message.comparator.entity.data.util.BrokerType;
+import org.message.comparator.exception.NoDataToGenerateReportException;
 import org.message.comparator.exception.TestReportAlreadyExistException;
+import org.message.comparator.repository.data.DebugInfoRepository;
 import org.message.comparator.repository.data.TestReportRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TestReportService {
@@ -29,19 +32,36 @@ public class TestReportService {
     private final ReportDataSizeMetricService reportDataSizeMetricService;
     private final BrokerInfoDataService brokerInfoDataService;
 
+    private static final Integer NUMBER_OF_DATA_CHECKS = 3;
+
+    private final DebugInfoRepository debugInfoRepository;
+
     public List<TestReport> getTestReports() {
         return testReportRepository.findAll();
     }
 
-    public void createTestReport(UUID testUUID) {
+    @Transactional
+    public void createTestReport(UUID testUUID, int totalRecordNumber) {
+        log.info("📖⚙️ Start creating test report. Test UUID: {}", testUUID);
         Optional<TestReport> testReportOptional = testReportRepository.findById(testUUID);
 
         if (testReportOptional.isPresent()) {
             throw new TestReportAlreadyExistException(testUUID);
         }
+        List<User> userList;
+        List<DebugInfo> debugInfoList;
 
-        List<User> userList = userService.getAllUsersByTestUUID(testUUID);
-        List<DebugInfo> debugInfoList = debugInfoService.getAllDebugInfoByTestUUID(testUUID);
+        log.info("🔧 Try to find the data connected with test UUID: {}", testUUID);
+        boolean dataStatus;
+        int dataCheckCounter = 0;
+        do {
+            userList = userService.getAllUsersByTestUUID(testUUID);
+            debugInfoList = debugInfoService.getAllDebugInfoByTestUUID(testUUID);
+            dataStatus = checkTheData(totalRecordNumber, debugInfoList.size(), dataCheckCounter);
+            dataCheckCounter++;
+        } while (!dataStatus);
+        log.info("🛠️ The data found for test UUID: {}! Start generating report...", testUUID);
+
         List<CPUMetric> producerCpuMetricList = debugInfoList.stream().map(DebugInfo::getProducerCPUMetrics).toList();
         List<MemoryMetric> producerMemoryMetricList = debugInfoList.stream().map(DebugInfo::getProducerMemoryMetrics).toList();
         List<CPUMetric> consumerCpuMetricList = debugInfoList.stream().map(DebugInfo::getConsumerCPUMetrics).toList();
@@ -49,7 +69,9 @@ public class TestReportService {
         List<DataSizeMetric> dataSizeMetricList = debugInfoList.stream().map(DebugInfo::getDataSizeMetric).toList();
 
         List<BrokerType> brokerTypeList = debugInfoList.stream().map(DebugInfo::getBrokerType).distinct().toList();
-        Integer numberOfAttempts = debugInfoList.stream().map(DebugInfo::getNumberOfAttempt).max(Integer::compareTo).orElse(0);
+        Integer numberOfAttempts = debugInfoList.stream().map(DebugInfo::getNumberOfAttempt).max(Comparator.naturalOrder()).orElse(0);
+        Boolean isSync = debugInfoList.stream().map(DebugInfo::getIsSync).findFirst().orElse(true);
+        Long delayBetweenAttemptsInMilliseconds = debugInfoList.stream().map(DebugInfo::getDelayBetweenAttemptsInMilliseconds).findFirst().orElse(0L);
 
         ReportCPUMetric producerReportCPUMetric = reportCPUMetricService.saveReportCPUMetric(producerCpuMetricList, BrokerType.ALL);
         ReportMemoryMetric producerReportMemoryMetric = reportMemoryMetricService.saveReportMemoryMetric(producerMemoryMetricList, BrokerType.ALL);
@@ -62,7 +84,10 @@ public class TestReportService {
         TestReport testReport = TestReport.builder()
                 .testUUID(testUUID)
                 .brokerTypeList(brokerTypeList)
+                .isSync(isSync)
                 .numberOfAttempts(numberOfAttempts)
+                .delayBetweenAttemptsInMilliseconds(delayBetweenAttemptsInMilliseconds)
+                .formattedDelayBetweenAttempts(humanReadableTime(delayBetweenAttemptsInMilliseconds))
                 .userList(userList)
                 .debugInfoList(debugInfoList)
                 .producerReportCPUMetric(producerReportCPUMetric)
@@ -75,6 +100,28 @@ public class TestReportService {
                 .build();
         testReportRepository.save(testReport);
         testReportRepository.flush();
+        log.info("✅ Report generated for test UUID {}!", testUUID);
+    }
+
+    private static void waitForDataInDatabase() {
+        log.info("🕒 Waiting for data in database...");
+        try {
+            Thread.sleep(5000L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private boolean checkTheData(int totalRecordNumber, int debugInfoListSize, int dataCheckCounter) {
+        if (debugInfoListSize != totalRecordNumber) {
+            if (dataCheckCounter < NUMBER_OF_DATA_CHECKS) {
+                log.info("❌ No data to generate report!;\n -> Found {} debugInfo;\nShould be {} records\nNumber of left data checks: {}", debugInfoListSize, totalRecordNumber, NUMBER_OF_DATA_CHECKS - dataCheckCounter);
+                waitForDataInDatabase(); // Wait 5s to save the data by consumer service after test.
+                return false;
+            }
+            throw new NoDataToGenerateReportException();
+        }
+        return true;
     }
 
     private List<BrokerInfoData> getBrokerInfoDataList(UUID testUUID, List<BrokerType> brokerTypeList) {
@@ -114,5 +161,9 @@ public class TestReportService {
                 .reportTimeMetric(reportTimeMetric)
                 .reportDataSizeMetric(reportDataSizeMetric)
                 .build();
+    }
+
+    private static String humanReadableTime(Long timeInMilliseconds) {
+        return DurationFormatUtils.formatDuration(timeInMilliseconds, "HH'h' mm'min' ss's' SSS'ms'", false);
     }
 }

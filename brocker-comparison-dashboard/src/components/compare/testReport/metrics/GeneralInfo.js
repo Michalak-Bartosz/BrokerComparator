@@ -5,7 +5,14 @@ function GeneralInfo({ testReport }) {
   return (
     <div>
       <div className="grid grid-cols-3 gap-4">
-        <div className="flex m-auto items-center text-2xl my-6">
+        <div className="flex m-auto items-center ml-4 text-2xl my-6">
+          <FaDotCircle className="text-blue-800 ml-auto mr-2" />
+          <span className="text-blue-800 font-bold mr-2 w-fit">
+            Sync:&nbsp;
+          </span>
+          <span className="mr-auto">{testReport.isSync ? "YES" : "NO"}</span>
+        </div>
+        <div className="flex m-auto items-center ml-4 text-2xl my-6">
           <FaDotCircle className="text-blue-800 ml-auto mr-2" />
           <span className="text-blue-800 font-bold mr-2 w-fit">
             All Broker Types:&nbsp;
@@ -18,19 +25,30 @@ function GeneralInfo({ testReport }) {
             ))}
           </div>
         </div>
-        <div className="flex m-auto items-center text-2xl my-6">
+        <div className="flex m-auto items-center ml-4 text-2xl my-6">
           <FaDotCircle className="text-blue-800 ml-auto mr-2" />
           <span className="text-blue-800 font-bold mr-2 w-fit">
             Users in test:&nbsp;
           </span>
           <span className="mr-auto">{testReport?.userList?.length}</span>
         </div>
-        <div className="flex m-auto items-center text-2xl my-6">
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="flex m-auto items-center ml-4 text-2xl my-6">
           <FaDotCircle className="text-blue-800 ml-auto mr-2" />
           <span className="text-blue-800 font-bold mr-2 w-fit">
             Number Of attempts:&nbsp;
           </span>
           <span className="mr-auto">{testReport.numberOfAttempts}</span>
+        </div>
+        <div className="flex m-auto items-center ml-4 text-2xl my-6">
+          <FaDotCircle className="text-blue-800 ml-auto mr-2" />
+          <span className="text-blue-800 font-bold mr-2 w-fit">
+            Delay between attempts:&nbsp;
+          </span>
+          <span className="mr-auto">
+            {testReport.formattedDelayBetweenAttempts}
+          </span>
         </div>
       </div>
       {testReport?.brokerInfoDataList && (

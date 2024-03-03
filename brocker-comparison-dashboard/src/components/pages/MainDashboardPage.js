@@ -12,15 +12,20 @@ import {
   clearAllForcusedReportsAction,
   removeTestReportFromFocusedAction,
 } from "../../redux/actions/testReportActions";
-import GeneratingDataStatusToast from "../compare/progress/GeneratingDataStatusToast";
+import DataStatusToast from "../compare/progress/DataStatusToast";
 
 function MainDashboardPage() {
   const api = useApi();
   const dispatch = useDispatch();
+  const [asyncTestInProgress, setAsyncTestInProgress] = useState(false);
   const [generatingData, setGeneratingData] = useState(false);
-  const [testInProgressProducer, setTestInProgressProducer] = useState(false);
-  const [testInProgressConsumer, setTestInProgressConsumer] = useState(false);
+  const [isWaitingForReports, setIsWaitingForReports] = useState(false);
+  const [testInProgressProducer, setTestInProgressProducer] =
+    useState("NOT_RUNNED");
+  const [testInProgressConsumer, setTestInProgressConsumer] =
+    useState("NOT_RUNNED");
   const [lastTestUUID, setLastTestUUID] = useState(null);
+  const [isSync, setIsSync] = useState(true);
   const [numberOfMessagesToSend, setNumberOfMessagesToSend] = useState(10);
   const [numberOfAttempts, setNumberOfAttempts] = useState(1);
   const [delayInMilliseconds, setDelayInMilliseconds] = useState(0);
@@ -33,18 +38,32 @@ function MainDashboardPage() {
   async function performTest() {
     try {
       let testSettings = {
+        isSync: isSync,
         brokerTypes: brokerTypes,
         numberOfMessagesToSend: numberOfMessagesToSend,
         numberOfAttempts: numberOfAttempts,
         delayInMilliseconds: delayInMilliseconds,
       };
+
+      if (!isSync) {
+        setAsyncTestInProgress(true);
+      }
       const response = await api.performTest(testSettings);
       setLastTestUUID(response.testUUID);
-      setTestInProgressProducer(true);
-      setTestInProgressConsumer(true);
-      setGeneratingData(true);
+      if (isSync) {
+        setTestInProgressProducer("IN_PROGRESS");
+        setTestInProgressConsumer("IN_PROGRESS");
+        setGeneratingData(true);
+      } else {
+        setAsyncTestInProgress(false);
+        getTestReportArrayAndSetCurrentReport();
+      }
     } catch (e) {
       console.log(e);
+      setAsyncTestInProgress(false);
+      setGeneratingData(false);
+      setTestInProgressProducer("NOT_RUNNED");
+      setTestInProgressConsumer("NOT_RUNNED");
     }
   }
 
@@ -61,6 +80,8 @@ function MainDashboardPage() {
       if (response?.producerFinishTest && response?.consumerFinishTest) {
         getTestReportArrayAndSetCurrentReport();
       }
+      setTestInProgressProducer("NOT_RUNNED");
+      setTestInProgressConsumer("NOT_RUNNED");
     } catch (e) {
       console.log(e);
     }
@@ -110,12 +131,15 @@ function MainDashboardPage() {
 
   async function getTestReportArrayAndSetCurrentReport() {
     try {
+      setIsWaitingForReports(true);
       const response = await api.getTestReports();
       if (response) {
         setTestReportArray([...response]);
         updateFocusedTestReportArray(response);
+        setIsWaitingForReports(false);
       }
     } catch (e) {
+      setIsWaitingForReports(false);
       console.log(e);
     }
   }
@@ -124,10 +148,14 @@ function MainDashboardPage() {
     getTestReportArrayAndSetCurrentReport();
     dispatch(clearAllForcusedReportsAction());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [asyncTestInProgress]);
 
   useEffect(() => {
-    if (!testInProgressProducer && !testInProgressConsumer && lastTestUUID) {
+    if (
+      testInProgressProducer === "COMPLETE" &&
+      testInProgressConsumer === "COMPLETE" &&
+      lastTestUUID
+    ) {
       finishTest();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -139,6 +167,8 @@ function MainDashboardPage() {
         <TestSettingsMenu
           numberOfMessagesToSend={numberOfMessagesToSend}
           setNumberOfMessagesToSend={setNumberOfMessagesToSend}
+          isSync={isSync}
+          setIsSync={setIsSync}
           numberOfAttempts={numberOfAttempts}
           setNumberOfAttempts={setNumberOfAttempts}
           delayInMilliseconds={delayInMilliseconds}
@@ -146,6 +176,7 @@ function MainDashboardPage() {
           setBrokerTypes={setBrokerTypes}
           testInProgressProducer={testInProgressProducer}
           testInProgressConsumer={testInProgressConsumer}
+          asyncTestInProgress={asyncTestInProgress}
           performTest={performTest}
         />
         <div className="col-span-2">
@@ -180,7 +211,11 @@ function MainDashboardPage() {
           />
         </div>
       </div>
-      <div className="flex text-center my-10">
+
+      <div
+        className={`flex text-center my-10 transition-all 
+      ${asyncTestInProgress ? "opacity-30 pointer-events-none" : ""}`}
+      >
         <div id="content-wrapper" className="w-full">
           <ProducerDataVisualization
             testUUID={lastTestUUID}
@@ -204,9 +239,11 @@ function MainDashboardPage() {
           />
         </div>
       </div>
-      <GeneratingDataStatusToast
-        showToast={generatingData}
-        setShowToast={setGeneratingData}
+
+      <DataStatusToast
+        generatingData={generatingData}
+        asyncTestInProgress={asyncTestInProgress}
+        isWaitingForReports={isWaitingForReports}
       />
     </div>
   );

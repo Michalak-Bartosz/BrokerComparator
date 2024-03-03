@@ -1,6 +1,7 @@
 package org.message.comparator.controller.data;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.message.comparator.dto.data.FinishTestDto;
 import org.message.comparator.dto.data.RedirectFinishTestResponseDto;
 import org.message.comparator.dto.data.RedirectStartTestResponseDto;
@@ -21,6 +22,7 @@ import java.util.UUID;
 import static org.message.comparator.config.ApiConstants.PRODUCER_API_URL_ADDRESS;
 import static org.message.comparator.config.ApiConstants.REQUEST_MAPPING_NAME;
 
+@Slf4j
 @RestController
 @RequestMapping(REQUEST_MAPPING_NAME + "/test")
 @RequiredArgsConstructor
@@ -39,6 +41,9 @@ public class TestDataController {
         UUID testUUID = UUID.randomUUID();
         testSettingsDto.setTestUUID(testUUID);
         RedirectStartTestResponseDto redirectStartTestResponseDto = redirectRequestToStartTest(testSettingsDto);
+        if (!testSettingsDto.isSync()) {
+            reportService.createTestReport(testUUID, calculateTotalRecordNumber(testSettingsDto));
+        }
         redirectStartTestResponseDto.setCompareApiResponse(String.format(COMPARE_API_START_TEST_RESPONSE, testUUID));
         redirectStartTestResponseDto.setTestUUID(testUUID);
         return ResponseEntity.ok(redirectStartTestResponseDto);
@@ -58,7 +63,7 @@ public class TestDataController {
         RedirectFinishTestResponseDto redirectFinishTestResponseDto = redirectRequestToFinishTest(finishTestDto);
         String compareApiResponse = String.format(COMPARE_API_FINISH_TEST_RESPONSE, testUUID);
         try {
-            reportService.createTestReport(testUUID);
+            reportService.createTestReport(testUUID, finishTestDto.getNumberOfReceivedMessagesProducer());
         } catch (TestReportAlreadyExistException e) {
             compareApiResponse = String.format(COMPARE_API_CREATE_TEST_REPORT_EXCEPTION_FINISH_TEST_RESPONSE, testUUID);
         }
@@ -71,6 +76,10 @@ public class TestDataController {
     public ResponseEntity<List<TestReport>> getTestReports(
             @CookieValue(name = "accessTokenCookie", defaultValue = "default-access-token-value") String cookie) {
         return ResponseEntity.ok(reportService.getTestReports());
+    }
+
+    private int calculateTotalRecordNumber(TestSettingsDto testSettingsDto) {
+        return testSettingsDto.getNumberOfAttempts() * testSettingsDto.getNumberOfMessagesToSend() * testSettingsDto.getBrokerTypes().size();
     }
 
     private RedirectStartTestResponseDto redirectRequestToStartTest(Object requestBody) {

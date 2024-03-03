@@ -77,24 +77,24 @@ function TimeMetric({ timeMetric, brokerInfoDataList }) {
                     <div className="flex items-center">
                       <FaDotCircle className="text-sm mr-2" />
                       <span className="font-bold">
-                        {"Max delta time:"}&nbsp;
-                      </span>
-                      <span>
-                        {
-                          brokerInfoData?.reportTimeMetric
-                            ?.formattedMaxDeltaTime
-                        }
-                      </span>
-                    </div>
-                    <div className="flex items-center">
-                      <FaDotCircle className="text-sm mr-2" />
-                      <span className="font-bold">
                         {"Average delta time:"}&nbsp;
                       </span>
                       <span>
                         {
                           brokerInfoData?.reportTimeMetric
                             ?.formattedAverageDeltaTime
+                        }
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <FaDotCircle className="text-sm mr-2" />
+                      <span className="font-bold">
+                        {"Max delta time:"}&nbsp;
+                      </span>
+                      <span>
+                        {
+                          brokerInfoData?.reportTimeMetric
+                            ?.formattedMaxDeltaTime
                         }
                       </span>
                     </div>
@@ -145,13 +145,13 @@ function TimeMetric({ timeMetric, brokerInfoDataList }) {
               </div>
               <div className="flex items-center">
                 <FaDotCircle className="text-sm mr-2" />
-                <span className="font-bold">{"Max delta time:"}&nbsp;</span>
-                <span>{timeMetric?.formattedMaxDeltaTime}</span>
+                <span className="font-bold">{"Average delta time:"}&nbsp;</span>
+                <span>{timeMetric?.formattedAverageDeltaTime}</span>
               </div>
               <div className="flex items-center">
                 <FaDotCircle className="text-sm mr-2" />
-                <span className="font-bold">{"Average delta time:"}&nbsp;</span>
-                <span>{timeMetric?.formattedAverageDeltaTime}</span>
+                <span className="font-bold">{"Max delta time:"}&nbsp;</span>
+                <span>{timeMetric?.formattedMaxDeltaTime}</span>
               </div>
             </div>
             {getDeltaTimeForBrokerTypes()}

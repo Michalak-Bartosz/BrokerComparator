@@ -6,16 +6,17 @@ import org.message.consumer.service.DebugInfoService;
 import org.message.consumer.service.UserService;
 import org.message.consumer.util.DebugInfoUtil;
 import org.message.consumer.util.StreamMessageUtil;
+import org.message.consumer.util.TestProgressUtil;
 import org.message.model.DebugInfo;
 import org.message.model.Report;
 import org.message.model.User;
+import org.message.model.util.BrokerType;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-import static org.message.consumer.service.TestService.TOTAL_MESSAGES_OBTAINED;
-import static org.message.consumer.util.metric.MetricUtil.*;
+import static org.message.consumer.util.MetricUtil.*;
 
 @Component
 @Slf4j
@@ -43,9 +44,8 @@ public class RabbitMqConsumer {
         final BigDecimal systemCpuBefore = getSystemCpuUsagePercentage();
         final BigDecimal appCpuBefore = getAppCpuUsagePercentage();
 
-        synchronized (TOTAL_MESSAGES_OBTAINED) {
-            TOTAL_MESSAGES_OBTAINED.incrementAndGet();
-        }
+        TestProgressUtil.incrementTotalMessagesObtained();
+        TestProgressUtil.incrementBrokerTotalMessagesObtained(BrokerType.RABBITMQ);
 
         final BigDecimal systemCpuAfter = getSystemCpuUsagePercentage();
         final BigDecimal appCpuAfter = getAppCpuUsagePercentage();
@@ -56,7 +56,11 @@ public class RabbitMqConsumer {
         DebugInfoUtil.updateDebugInfo(debugInfo, systemAverageCpu, appAverageCpu);
 
         debugInfoService.saveDebugInfoModel(debugInfo);
-        StreamMessageUtil.addMessage(debugInfo);
+
+        if (Boolean.TRUE.equals(debugInfo.getIsSync())) {
+            StreamMessageUtil.addMessage(debugInfo);
+        }
+
         log.debug("DebugInfo UUID record received -> {} test status percentage [ {}% ]", debugInfo.getUuid(), debugInfo.getTestStatusPercentage());
     }
 }

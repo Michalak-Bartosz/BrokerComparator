@@ -4,50 +4,34 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.message.model.User;
+import org.message.model.util.BrokerType;
 import org.message.producer.controller.HttpStreamController;
 import org.message.producer.dto.FinishTestDto;
 import org.message.producer.dto.TestSettingsDto;
 import org.message.producer.exception.DelayBetweenTestException;
 import org.message.producer.exception.HttpStreamWaitException;
-import org.message.producer.exception.NotifyProducerException;
 import org.message.producer.exception.UnsupportedBrokerTypeException;
 import org.message.producer.kafka.KafkaProducer;
 import org.message.producer.rabbitmq.RabbitMqProducer;
-import org.message.producer.util.BrokerType;
 import org.message.producer.util.RandomUtil;
+import org.message.producer.util.TestProgressUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
-
-import static org.message.producer.util.DataSizeUtil.getObjectSizeInBytes;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class TestService {
-
-    public static final AtomicInteger TOTAL_MESSAGES_TO_SEND = new AtomicInteger(0);
-    public static final AtomicInteger TOTAL_MESSAGES_OBTAINED = new AtomicInteger(0);
-    public static final AtomicInteger TOTAL_PRODUCED_DATA_SIZE_IN_BYTES = new AtomicInteger(0);
-    public static final AtomicInteger CURRENT_BROKER_TO_SEND = new AtomicInteger(0);
-    public static final AtomicInteger CURRENT_BROKER_OBTAINED = new AtomicInteger(0);
     private static final long WAIT_TO_CONSUME_TIMEOUT_MS = 5000;
 
-    private static boolean isWaitingToConsume = false;
-    private static boolean isAlreadyConsume = false;
-    private static boolean isWaitingBetweenNextAttempt = false;
-
-    public static BigDecimal getCurrentTestStatusPercentage() {
-        return BigDecimal.valueOf((TOTAL_MESSAGES_OBTAINED.get() * 100L) / TOTAL_MESSAGES_TO_SEND.get());
-    }
-
-    public static BigDecimal getCurrentBrokerStatusPercentage() {
-        return BigDecimal.valueOf((CURRENT_BROKER_OBTAINED.get() * 100L) / CURRENT_BROKER_TO_SEND.get());
-    }
+    private static final AtomicBoolean isWaitingToConsume = new AtomicBoolean(false);
+    private static final AtomicBoolean isAlreadyConsume = new AtomicBoolean(false);
+    private static final AtomicBoolean isWaitingBetweenNextAttempt = new AtomicBoolean(false);
 
     private final KafkaProducer kafkaProducer;
     private final RabbitMqProducer rabbitMqProducer;
@@ -61,13 +45,10 @@ public class TestService {
     }
 
     @Transactional
-    public synchronized void performTest(TestSettingsDto testSettingsDto) {
+    public void performTest(TestSettingsDto testSettingsDto) {
         List<User> users = prepareData(testSettingsDto);
         List<BrokerType> brokerTypes = testSettingsDto.getBrokerTypes();
         int brokerTypeSize = testSettingsDto.getBrokerTypes().size();
-        TOTAL_MESSAGES_TO_SEND.set(calculateTotalMessagesToSend(testSettingsDto));
-        TOTAL_MESSAGES_OBTAINED.set(0);
-        TOTAL_PRODUCED_DATA_SIZE_IN_BYTES.set(0);
         waitInMilliseconds(5000L); //Wait 5s before start test to skip PC resource pick after parallel producing data
         for (int i = 0; i < brokerTypeSize; i++) {
             BrokerType brokerType = brokerTypes.get(i);
@@ -83,22 +64,22 @@ public class TestService {
     @Transactional
     public boolean finishTest(FinishTestDto finishTestDto) {
         HttpStreamController.finishHttpStream();
-        boolean isFinishSuccessful = finishTestDto.getNumberOfReceivedMessagesProducer() == TOTAL_MESSAGES_OBTAINED.get();
-        TOTAL_MESSAGES_OBTAINED.set(0);
-        TOTAL_PRODUCED_DATA_SIZE_IN_BYTES.set(0);
+        boolean isFinishSuccessful = finishTestDto.getNumberOfReceivedMessagesProducer() == TestProgressUtil.getTotalMessagesObtained();
+        TestProgressUtil.setTotalMessagesObtained(0);
+        TestProgressUtil.setCurrentBrokerTotalProducedDataSizeInBytes(0);
         return isFinishSuccessful;
     }
 
     private static synchronized void waitToFinishConsumeBrokerData() {
-        if (isAlreadyConsume) {
-            isAlreadyConsume = false;
+        if (isAlreadyConsume.get()) {
+            isAlreadyConsume.set(false);
             return;
         }
 
-        isWaitingToConsume = true;
+        isWaitingToConsume.set(true);
         try {
             log.info("⏳ Waiting to consume...");
-            while (isWaitingToConsume) {
+            while (isWaitingToConsume.get()) {
                 TestService.class.wait(WAIT_TO_CONSUME_TIMEOUT_MS);
             }
             log.info("🎯 Notification received. Continue producing the data... 🏭");
@@ -108,23 +89,20 @@ public class TestService {
         }
     }
 
-    public static synchronized void notifyProducer(BigDecimal brokerStatusPercentage) {
-        if (!brokerStatusPercentage.equals(BigDecimal.valueOf(100))) {
-            throw new NotifyProducerException(brokerStatusPercentage);
-        }
-        log.info("🔔 Notification from consumer app. Broker data is consumed.");
-        if (isWaitingBetweenNextAttempt) {
-            isAlreadyConsume = true;
+    public static synchronized void notifyProducer(org.message.model.util.BrokerType brokerType) {
+        log.info("🔔 Notification from consumer app. Broker {} consumed all data!", brokerType);
+        if (isWaitingBetweenNextAttempt.get()) {
+            isAlreadyConsume.set(true);
         } else {
             TestService.class.notifyAll();
-            isWaitingToConsume = false;
+            isWaitingToConsume.set(false);
         }
     }
 
     private List<User> prepareData(TestSettingsDto testSettingsDto) {
+        log.info("🏭 Preparing the data...");
         List<User> users = new ArrayList<>();
-        int totalMessagesToSendInAttempt = testSettingsDto.getNumberOfMessagesToSend() * testSettingsDto.getNumberOfAttempts();
-        IntStream.range(0, totalMessagesToSendInAttempt)
+        IntStream.range(0, testSettingsDto.getNumberOfMessagesToSend())
                 .parallel()
                 .forEach(i -> {
                     User user = RandomUtil.generateUser(testSettingsDto.getTestUUID());
@@ -132,64 +110,82 @@ public class TestService {
                         users.add(user);
                     }
                 });
+        log.info("🪪 The data is ready!");
         return users;
-    }
-
-    private int calculateTotalMessagesToSend(TestSettingsDto testSettingsDto) {
-        return testSettingsDto.getNumberOfMessagesToSend() * testSettingsDto.getNumberOfAttempts() * testSettingsDto.getBrokerTypes().size();
     }
 
     private void sendRecords(BrokerType brokerType,
                              TestSettingsDto testSettingsDto,
                              List<User> users) {
+        log.info("🏁 Start test for broker: {}", brokerType);
         TestRunnerFunction testRunnerFunction = Optional.ofNullable(testRunnerMap.get(brokerType))
                 .orElseThrow(() -> new UnsupportedBrokerTypeException(brokerType));
-        int producedDataInTestInBytes = 0;
-        int attemptCounter = 1;
+        AtomicInteger attemptCounter = new AtomicInteger(1);
         int numberOfAttempts = testSettingsDto.getNumberOfAttempts();
         int numberOfMessagesToSend = testSettingsDto.getNumberOfMessagesToSend();
         long delayInMilliseconds = testSettingsDto.getDelayInMilliseconds();
+        boolean isSync = testSettingsDto.isSync();
         UUID testUUID = testSettingsDto.getTestUUID();
-        CURRENT_BROKER_TO_SEND.set(numberOfMessagesToSend * numberOfAttempts);
-        CURRENT_BROKER_OBTAINED.set(0);
 
-        while (attemptCounter <= numberOfAttempts) {
-            int messagesObtainedInAttempt = 1;
-            while (messagesObtainedInAttempt <= numberOfMessagesToSend) {
-                User user = users.get(CURRENT_BROKER_OBTAINED.get());
-                int payloadSizeInBytes = getObjectSizeInBytes(user);
-                TOTAL_MESSAGES_OBTAINED.incrementAndGet();
-                CURRENT_BROKER_OBTAINED.incrementAndGet();
-                TOTAL_PRODUCED_DATA_SIZE_IN_BYTES.addAndGet(payloadSizeInBytes);
-                producedDataInTestInBytes += payloadSizeInBytes;
-                testRunnerFunction.apply(testUUID,
-                        attemptCounter,
-                        messagesObtainedInAttempt,
-                        user,
-                        payloadSizeInBytes,
-                        producedDataInTestInBytes);
-                messagesObtainedInAttempt++;
+        TestProgressUtil.setCurrentBrokerTotalProducedDataSizeInBytes(0);
+        TestProgressUtil.setCurrentBrokerMessagesToSend(numberOfMessagesToSend * numberOfAttempts);
+        TestProgressUtil.setCurrentBrokerMessagesObtained(0);
+
+        while (attemptCounter.get() <= numberOfAttempts) {
+            TestProgressUtil.setMessageObtainedInAttempt(0);
+
+            if (isSync) {
+                sendSync(users, testRunnerFunction, testUUID, attemptCounter.get(), delayInMilliseconds);
+            } else {
+                sendAsync(users, testRunnerFunction, testUUID, attemptCounter.get(), delayInMilliseconds);
             }
-            attemptCounter++;
-            if (attemptCounter < numberOfAttempts) {
+            attemptCounter.incrementAndGet();
+            if (attemptCounter.get() < numberOfAttempts) {
                 waitInMilliseconds(delayInMilliseconds);
             }
         }
+        log.info("🏁 Finish test for broker: {}", brokerType);
+    }
+
+    private void sendSync(List<User> users,
+                          TestRunnerFunction testRunnerFunction,
+                          UUID testUUID,
+                          int numberOfAttempt,
+                          long delayInMilliseconds) {
+        users.forEach(user -> testRunnerFunction.apply(testUUID,
+                true,
+                numberOfAttempt,
+                delayInMilliseconds,
+                user));
+    }
+
+    private void sendAsync(List<User> users,
+                           TestRunnerFunction testRunnerFunction,
+                           UUID testUUID,
+                           int numberOfAttempt,
+                           long delayInMilliseconds) {
+        users.stream()
+                .parallel()
+                .forEach(user -> testRunnerFunction.apply(testUUID,
+                        false,
+                        numberOfAttempt,
+                        delayInMilliseconds,
+                        user));
     }
 
     private static void waitInMilliseconds(Long delayInMilliseconds) {
-        isWaitingBetweenNextAttempt = true;
+        isWaitingBetweenNextAttempt.set(true);
         try {
             Thread.sleep(delayInMilliseconds);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new DelayBetweenTestException(e);
         }
-        isWaitingBetweenNextAttempt = false;
+        isWaitingBetweenNextAttempt.set(false);
     }
 
     @FunctionalInterface
     private interface TestRunnerFunction {
-        void apply(UUID testUUID, int numberOfAttempt, int messagesObtainedInTest, User user, Integer payloadSizeInBytes, Integer producedDataInTestInBytes);
+        void apply(UUID testUUID, boolean isSync, int numberOfAttempt, long delayInMilliseconds, User user);
     }
 }

@@ -71,7 +71,7 @@ public class RandomUtil {
     }
 
     private static List<Report> generateReports(UUID userUUID, UUID testUUID) {
-        int numberOfReports = RandomUtils.nextInt(1, 10);
+        int numberOfReports = RandomUtils.nextInt(2, 5);
         List<Report> reports = new ArrayList<>();
 
         do {
@@ -84,8 +84,8 @@ public class RandomUtil {
 
     private static Report generateReport(UUID userUUID, UUID testUUID) {
         UUID reportUUID = UUID.randomUUID();
-        int summaryWords = RandomUtils.nextInt(1, 3);
-        int sentenceCount = RandomUtils.nextInt(3, 6);
+        int summaryWords = RandomUtils.nextInt(3, 6);
+        int sentenceCount = RandomUtils.nextInt(4, 8);
         return Report.builder()
                 .uuid(reportUUID)
                 .testUUID(testUUID)
@@ -98,7 +98,7 @@ public class RandomUtil {
     }
 
     private static List<Comment> getComments(UUID reportUUID) {
-        int commentsCount = RandomUtils.nextInt(6, 18);
+        int commentsCount = RandomUtils.nextInt(10, 15);
         List<Comment> comments = new ArrayList<>();
         do {
             comments.add(getComment(reportUUID));
@@ -108,10 +108,11 @@ public class RandomUtil {
     }
 
     private static Comment getComment(UUID reportUUID) {
+        int sentenceCount = RandomUtils.nextInt(4, 8);
         return Comment.builder()
                 .uuid(UUID.randomUUID())
                 .reportUuid(reportUUID)
-                .description(faker.lorem().paragraph())
+                .description(faker.lorem().paragraph(sentenceCount))
                 .build();
     }
 }

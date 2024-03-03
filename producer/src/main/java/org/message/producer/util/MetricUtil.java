@@ -3,6 +3,7 @@ package org.message.producer.util;
 
 import com.sun.management.OperatingSystemMXBean;
 import lombok.experimental.UtilityClass;
+import org.message.model.User;
 import org.message.model.metric.CPUMetric;
 import org.message.model.metric.DataSizeMetric;
 import org.message.model.metric.MemoryMetric;
@@ -21,13 +22,13 @@ public class MetricUtil {
 
     public static final BigDecimal GB = BigDecimal.valueOf(1073741824.0);
 
-    public static DataSizeMetric getDataSizeMetric(Integer payloadSizeInBytes,
-                                                   Integer producerDataSizeInBytes,
+    public static DataSizeMetric getDataSizeMetric(User user,
                                                    BrokerType brokerType) {
+        int payloadSizeInBytes = DataSizeUtil.getObjectSizeInBytes(user);
         return DataSizeMetric.builder()
                 .brokerType(brokerType)
                 .payloadSizeInBytes(payloadSizeInBytes)
-                .producedDataSizeInBytes(producerDataSizeInBytes)
+                .producedDataSizeInBytes(TestProgressUtil.addToCurrentBrokerTotalProducedDataSizeInBytes(payloadSizeInBytes))
                 .consumedDataSizeInBytes(null)
                 .build();
     }
@@ -58,10 +59,12 @@ public class MetricUtil {
     }
 
     public static BigDecimal getSystemCpuUsagePercentage() {
-        return BigDecimal.valueOf(osBean.getCpuLoad()).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.UP);
+        double cpu = osBean.getCpuLoad();
+        return cpu >= 0 ? BigDecimal.valueOf(cpu).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.UP) : BigDecimal.ZERO;
     }
 
     public static BigDecimal getAppCpuUsagePercentage() {
-        return BigDecimal.valueOf(osBean.getProcessCpuLoad()).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.UP);
+        double cpu = osBean.getProcessCpuLoad();
+        return cpu >= 0 ? BigDecimal.valueOf(cpu).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.UP) : BigDecimal.ZERO;
     }
 }

@@ -1,7 +1,6 @@
 package org.message.consumer.util;
 
 import lombok.experimental.UtilityClass;
-import org.message.consumer.util.metric.MetricUtil;
 import org.message.model.DebugInfo;
 import org.message.model.metric.CPUMetric;
 import org.message.model.metric.MemoryMetric;

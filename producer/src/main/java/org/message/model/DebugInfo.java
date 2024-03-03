@@ -9,14 +9,12 @@ import org.message.model.metric.DataSizeMetric;
 import org.message.model.metric.MemoryMetric;
 import org.message.model.util.BrokerType;
 import org.message.producer.util.MetricUtil;
+import org.message.producer.util.TestProgressUtil;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
-
-import static org.message.producer.service.TestService.getCurrentBrokerStatusPercentage;
-import static org.message.producer.service.TestService.getCurrentTestStatusPercentage;
 
 @Data
 @Builder
@@ -26,7 +24,9 @@ public class DebugInfo {
     private UUID uuid;
     private UUID testUUID;
     private UUID userUUID;
+    private Boolean isSync;
     private Integer numberOfAttempt;
+    private Long delayBetweenAttemptsInMilliseconds;
     private BrokerType brokerType;
     private BigDecimal testStatusPercentage;
     private BigDecimal brokerStatusPercentage;
@@ -44,26 +44,28 @@ public class DebugInfo {
     public DebugInfo(
             UUID testUUID,
             UUID userUUID,
+            Boolean isSync,
             Integer numberOfAttempt,
+            Long delayBetweenAttemptsInMilliseconds,
             BrokerType brokerType,
-            Integer messagesObtained,
-            Integer payloadSizeInBytes,
-            Integer producedDataInTestInBytes,
+            User user,
             BigDecimal systemAverageCpu,
             BigDecimal appAverageCpu) {
         this.uuid = UUID.randomUUID();
         this.testUUID = testUUID;
         this.userUUID = userUUID;
+        this.isSync = isSync;
         this.numberOfAttempt = numberOfAttempt;
+        this.delayBetweenAttemptsInMilliseconds = delayBetweenAttemptsInMilliseconds;
         this.brokerType = brokerType;
-        this.testStatusPercentage = getCurrentTestStatusPercentage();
-        this.brokerStatusPercentage = getCurrentBrokerStatusPercentage();
+        this.testStatusPercentage = TestProgressUtil.getCurrentTestStatusPercentage();
+        this.brokerStatusPercentage = TestProgressUtil.getCurrentBrokerStatusPercentage();
         this.producedTimestamp = Instant.now();
         this.consumedTimestamp = null;
         this.deltaTimestamp = null;
-        this.countOfProducedMessages = messagesObtained;
+        this.countOfProducedMessages = TestProgressUtil.incrementMessageObtainedInAttempt();
         this.countOfConsumedMessages = null;
-        this.dataSizeMetric = MetricUtil.getDataSizeMetric(payloadSizeInBytes, producedDataInTestInBytes, brokerType);
+        this.dataSizeMetric = MetricUtil.getDataSizeMetric(user, brokerType);
         this.producerMemoryMetrics = MetricUtil.getMemoryMetrics(brokerType);
         this.consumerMemoryMetrics = null;
         this.producerCPUMetrics = MetricUtil.getCpuMetrics(systemAverageCpu, appAverageCpu, brokerType);

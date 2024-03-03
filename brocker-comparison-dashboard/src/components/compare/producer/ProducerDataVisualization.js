@@ -253,14 +253,14 @@ function ProducerDataVisualizationTEST(props) {
           "PRODUCER EVENTSOURCE CLOSED (" + event.target.readyState + ")"
         );
       }
-      props.setIsInProgress(false);
+      props.setIsInProgress("NOT_RUNNED");
       eventSource.close();
     };
 
     const endListenDebugInfoMessageStream = (brokerType) => {
       console.log("STOP PRODUCER LISTEN DEBUG INFO DATA STREAM.");
       updateChartDataArray(brokerType);
-      props.setIsInProgress(false);
+      props.setIsInProgress("COMPLETE");
       eventSource.close();
     };
 
@@ -269,7 +269,7 @@ function ProducerDataVisualizationTEST(props) {
       startListenDebugInfoMessageStream();
     };
 
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       handleStartTest();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -292,7 +292,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getProducedMessagesChartData = () => {
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       return [createChartDataElement(receivedMsgData, datasetName)];
     }
     return [
@@ -307,7 +307,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getInitialMemoryChartData = () => {
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       return [createChartDataElement(initialMemoryData, datasetName)];
     }
     return [
@@ -322,7 +322,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getUsedHeapMemoryChartData = () => {
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       return [createChartDataElement(usedHeapMemoryData, datasetName)];
     }
     return [
@@ -337,7 +337,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getMaxHeapMemoryChartData = () => {
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       return [createChartDataElement(maxHeapMemoryData, datasetName)];
     }
     return [
@@ -352,7 +352,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getCommittedMemoryChartData = () => {
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       return [createChartDataElement(committedMemoryData, datasetName)];
     }
     return [
@@ -367,7 +367,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getSystemCpuChartData = () => {
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       return [createChartDataElement(systemCpuData, datasetName)];
     }
     return [
@@ -382,7 +382,7 @@ function ProducerDataVisualizationTEST(props) {
   };
 
   const getAppCpuChartData = () => {
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       return [createChartDataElement(appCpuData, datasetName)];
     }
     return [

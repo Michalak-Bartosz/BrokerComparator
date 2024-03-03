@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.message.model.DebugInfo;
 import org.message.producer.exception.HttpStreamWaitException;
 import org.message.producer.exception.SseSendMessageException;
+import org.message.producer.util.StreamMessageUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.message.producer.config.ApiConstants.REQUEST_MAPPING_NAME;
 import static org.message.producer.util.StreamMessageUtil.consumeMessage;
@@ -47,6 +49,7 @@ public class HttpStreamController {
     public static SseEmitter streamDebugInfoMessages() {
         sseEmitter = new SseEmitter(Long.MAX_VALUE);
         configureSseEmitter();
+        AtomicInteger messagesSendBySse = new AtomicInteger(0);
         EXECUTOR.execute(() -> {
             log.info("🏁 Start Http stream");
             startHttpStream();
@@ -61,9 +64,11 @@ public class HttpStreamController {
                 } catch (IOException e) {
                     throw new SseSendMessageException(e);
                 }
+                messagesSendBySse.incrementAndGet();
                 log.info("📈 Test status percentage: {}", debugInfo.getTestStatusPercentage());
                 log.info("📉Broker status percentage: {}", debugInfo.getBrokerStatusPercentage());
             } while (debugInfo.getTestStatusPercentage().compareTo(BigDecimal.valueOf(100)) < 0);
+            StreamMessageUtil.clearQueue();
             waitToFinishTest();
             log.info("🏁 Finish Http stream");
         });
@@ -72,6 +77,7 @@ public class HttpStreamController {
     }
 
     private static synchronized void waitToFinishTest() {
+        log.info("🕒 Waiting to finish the test...");
         try {
             while (isHttpStreamRun) {
                 HttpStreamController.class.wait(WAIT_EXECUTOR_TIMEOUT_MS);

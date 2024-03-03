@@ -21,20 +21,20 @@ public class BrokerInfoData {
     @GeneratedValue
     private Long id;
     private BrokerType brokerType;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<User> userList;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<DebugInfo> debugInfoList;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private ReportCPUMetric producerReportCPUMetric;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private ReportMemoryMetric producerReportMemoryMetric;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private ReportCPUMetric consumerReportCPUMetric;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private ReportMemoryMetric consumerReportMemoryMetric;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private ReportTimeMetric reportTimeMetric;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private ReportDataSizeMetric reportDataSizeMetric;
 }

@@ -7,12 +7,12 @@ function TestStatus(props) {
       <span className="font-bold text-2xl p-4 bg-green-800 rounded-l-md bg-opacity-90 border-r-4">
         Test status:
       </span>
-      {props.isInProgress ? (
+      {props.isInProgress === "IN_PROGRESS" ? (
         <div className="flex     items-center bg-blue-500 p-4 rounded-r-md bg-opacity-50">
           <Spinner size="lg" />
           <span className="ml-4 text-2xl text-white">Loading...</span>
         </div>
-      ) : props.testStatus === 100 ? (
+      ) : props.testStatus === 100 && props.isInProgress === "COMPLETE" ? (
         <span className="text-2xl text-white bg-green-800 p-4 rounded-r-md bg-opacity-90">
           Complete
         </span>

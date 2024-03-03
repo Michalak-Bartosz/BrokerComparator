@@ -9,6 +9,7 @@ import java.math.RoundingMode;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.time.Duration;
+import java.util.Comparator;
 import java.util.List;
 
 @UtilityClass
@@ -17,14 +18,14 @@ public class ReportDataSizeMetricUtil {
     public static Integer getMaxPayloadSizeInBytes(List<DataSizeMetric> dataSizeMetrics) {
         return dataSizeMetrics.stream()
                 .map(DataSizeMetric::getPayloadSizeInBytes)
-                .max(Integer::compareTo)
+                .max(Comparator.naturalOrder())
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportDataSizeMetricUtil.class.getSimpleName(), "Get max payload size in bytes exception!"));
     }
 
     public static Integer getMinPayloadSizeInBytes(List<DataSizeMetric> dataSizeMetrics) {
         return dataSizeMetrics.stream()
                 .map(DataSizeMetric::getPayloadSizeInBytes)
-                .min(Integer::compareTo)
+                .min(Comparator.naturalOrder())
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportDataSizeMetricUtil.class.getSimpleName(), "Get min payload size in bytes exception!"));
     }
 
@@ -48,14 +49,14 @@ public class ReportDataSizeMetricUtil {
     public static Integer getTotalProducedDataSizeInBytes(List<DataSizeMetric> dataSizeMetrics) {
         return dataSizeMetrics.stream()
                 .map(DataSizeMetric::getProducedDataSizeInBytes)
-                .max(Integer::compareTo)
+                .max(Comparator.naturalOrder())
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportDataSizeMetricUtil.class.getSimpleName(), "Get total produced data size in bytes exception!"));
     }
 
     public static Integer getTotalConsumedDataSizeInBytes(List<DataSizeMetric> dataSizeMetrics) {
         return dataSizeMetrics.stream()
                 .map(DataSizeMetric::getConsumedDataSizeInBytes)
-                .max(Integer::compareTo)
+                .max(Comparator.naturalOrder())
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportDataSizeMetricUtil.class.getSimpleName(), "Get total consumed data size in bytes exception!"));
     }
 
@@ -69,12 +70,12 @@ public class ReportDataSizeMetricUtil {
 
     public static BigDecimal getProducedDataSizeInBytesPerSecond(Integer totalProducedDataSizeInBytes, Duration producedTime) {
         BigDecimal time = BigDecimal.valueOf(producedTime.getSeconds()).add(BigDecimal.valueOf(producedTime.getNano(), 9));
-        return BigDecimal.valueOf(totalProducedDataSizeInBytes).divide(time, 3, RoundingMode.UP);
+        return BigDecimal.valueOf(totalProducedDataSizeInBytes).divide(handleZeroDivider(time), 3, RoundingMode.UP);
     }
 
     public static BigDecimal getConsumedDataSizeInBytesPerSecond(Integer totalConsumedDataSizeInBytes, Duration consumedTime) {
         BigDecimal time = BigDecimal.valueOf(consumedTime.getSeconds()).add(BigDecimal.valueOf(consumedTime.getNano(), 9));
-        return BigDecimal.valueOf(totalConsumedDataSizeInBytes).divide(time, 3, RoundingMode.UP);
+        return BigDecimal.valueOf(totalConsumedDataSizeInBytes).divide(handleZeroDivider(time), 3, RoundingMode.UP);
     }
 
     public static String getFormattedProducedDataSizePerSecond(BigDecimal producedDataSizeInBytesPerSecond) {
@@ -83,6 +84,10 @@ public class ReportDataSizeMetricUtil {
 
     public static String getFormattedConsumedDataSizePerSecond(BigDecimal consumedDataSizeInBytesPerSecond) {
         return humanReadableByteCountBin(consumedDataSizeInBytesPerSecond.setScale(2, RoundingMode.UP).longValue());
+    }
+
+    private BigDecimal handleZeroDivider(BigDecimal divider) {
+        return divider.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ONE : divider;
     }
 
     private static String humanReadableByteCountBin(long bytes) {

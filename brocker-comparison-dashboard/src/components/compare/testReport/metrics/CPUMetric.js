@@ -22,15 +22,6 @@ function CPUMetric({ cpuMetric, brokerCpuMetric }) {
                       <div className="flex items-center">
                         <FaDotCircle className="text-sm mr-2" />
                         <span className="font-bold">
-                          {"Max System Cpu Usage:"}&nbsp;
-                        </span>
-                        <span>
-                          {brokerCpuMetric?.maxSystemCpuUsagePercentage + "%"}
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <FaDotCircle className="text-sm mr-2" />
-                        <span className="font-bold">
                           {"Min System Cpu Usage:"}&nbsp;
                         </span>
                         <span>
@@ -47,20 +38,20 @@ function CPUMetric({ cpuMetric, brokerCpuMetric }) {
                             "%"}
                         </span>
                       </div>
+                      <div className="flex items-center">
+                        <FaDotCircle className="text-sm mr-2" />
+                        <span className="font-bold">
+                          {"Max System Cpu Usage:"}&nbsp;
+                        </span>
+                        <span>
+                          {brokerCpuMetric?.maxSystemCpuUsagePercentage + "%"}
+                        </span>
+                      </div>
                     </div>
                     <div id="app-cpu-metrics">
                       <h2 className="mb-2 text-blue-800 text-2xl font-bold">
                         App CPU Metrics
                       </h2>
-                      <div className="flex items-center">
-                        <FaDotCircle className="text-sm mr-2" />
-                        <span className="font-bold">
-                          {"Max App Cpu Usage:"}&nbsp;
-                        </span>
-                        <span>
-                          {brokerCpuMetric?.maxAppCpuUsagePercentage + "%"}
-                        </span>
-                      </div>
                       <div className="flex items-center">
                         <FaDotCircle className="text-sm mr-2" />
                         <span className="font-bold">
@@ -77,6 +68,15 @@ function CPUMetric({ cpuMetric, brokerCpuMetric }) {
                         </span>
                         <span>
                           {brokerCpuMetric?.averageAppCpuUsagePercentage + "%"}
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <FaDotCircle className="text-sm mr-2" />
+                        <span className="font-bold">
+                          {"Max App Cpu Usage:"}&nbsp;
+                        </span>
+                        <span>
+                          {brokerCpuMetric?.maxAppCpuUsagePercentage + "%"}
                         </span>
                       </div>
                     </div>
@@ -105,11 +105,6 @@ function CPUMetric({ cpuMetric, brokerCpuMetric }) {
             </h2>
             <div className="flex items-center">
               <FaDotCircle className="text-sm mr-2" />
-              <span className="font-bold">{"Max System Cpu Usage:"}&nbsp;</span>
-              <span>{cpuMetric?.maxSystemCpuUsagePercentage + "%"}</span>
-            </div>
-            <div className="flex items-center">
-              <FaDotCircle className="text-sm mr-2" />
               <span className="font-bold">{"Min System Cpu Usage:"}&nbsp;</span>
               <span>{cpuMetric?.minSystemCpuUsagePercentage + "%"}</span>
             </div>
@@ -120,16 +115,16 @@ function CPUMetric({ cpuMetric, brokerCpuMetric }) {
               </span>
               <span>{cpuMetric?.averageSystemCpuUsagePercentage + "%"}</span>
             </div>
+            <div className="flex items-center">
+              <FaDotCircle className="text-sm mr-2" />
+              <span className="font-bold">{"Max System Cpu Usage:"}&nbsp;</span>
+              <span>{cpuMetric?.maxSystemCpuUsagePercentage + "%"}</span>
+            </div>
           </div>
           <div id="app-cpu-metrics">
             <h2 className="mb-2 text-blue-800 text-2xl font-bold">
               App CPU Metrics
             </h2>
-            <div className="flex items-center">
-              <FaDotCircle className="text-sm mr-2" />
-              <span className="font-bold">{"Max App Cpu Usage:"}&nbsp;</span>
-              <span>{cpuMetric?.maxAppCpuUsagePercentage + "%"}</span>
-            </div>
             <div className="flex items-center">
               <FaDotCircle className="text-sm mr-2" />
               <span className="font-bold">{"Min App Cpu Usage:"}&nbsp;</span>
@@ -141,6 +136,11 @@ function CPUMetric({ cpuMetric, brokerCpuMetric }) {
                 {"Average App Cpu Usage:"}&nbsp;
               </span>
               <span>{cpuMetric?.averageAppCpuUsagePercentage + "%"}</span>
+            </div>
+            <div className="flex items-center">
+              <FaDotCircle className="text-sm mr-2" />
+              <span className="font-bold">{"Max App Cpu Usage:"}&nbsp;</span>
+              <span>{cpuMetric?.maxAppCpuUsagePercentage + "%"}</span>
             </div>
           </div>
         </div>

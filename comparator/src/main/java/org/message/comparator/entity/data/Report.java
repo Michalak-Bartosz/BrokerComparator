@@ -33,6 +33,6 @@ public class Report {
     private String description;
     @Enumerated(EnumType.STRING)
     private ReportStatus status;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Comment> comments;
 }

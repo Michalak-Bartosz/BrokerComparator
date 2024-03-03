@@ -17,6 +17,8 @@ function TestSettingsMenu(props) {
     "You can set from 1 do 50 attempts in one test.";
   const delayInMillisecondsTooltip =
     "You can set from 0 do 60 000 milliseconds of delay between attempts in test.";
+  const syncTooltip =
+    "By default, test data is sent synchronously and in sequence - this allows live visualization of progress.<br>An asynchronous test is faster - data is sent parallel, but live visualization of progress is not available.";
   const startTestTooltip =
     "You can not start test without messages to send or zero attempts in test.";
 
@@ -58,7 +60,7 @@ function TestSettingsMenu(props) {
             <Label
               id={(Math.random() + 1).toString(36).substring(7)}
               htmlFor="number-messages-to-send-input"
-              value="Number of messages to send in test:&nbsp;"
+              value="Number of messages to send:&nbsp;"
               className="text-2xl text-white mr-4"
             />
           </div>
@@ -92,7 +94,7 @@ function TestSettingsMenu(props) {
             <Label
               id={(Math.random() + 1).toString(36).substring(7)}
               htmlFor="number-of-attempts-input"
-              value="Number of attempts in test:&nbsp;"
+              value="Number of attempts:&nbsp;"
               className="text-2xl text-white mr-4"
             />
           </div>
@@ -160,7 +162,7 @@ function TestSettingsMenu(props) {
             <Label
               id={(Math.random() + 1).toString(36).substring(7)}
               htmlFor="broker-select"
-              value="Select in which broker perform test:&nbsp;"
+              value="Select broker:&nbsp;"
               className="text-2xl text-white mr-4"
             />
           </div>
@@ -188,22 +190,47 @@ function TestSettingsMenu(props) {
       {(!props.numberOfMessagesToSend || !props.numberOfAttempts) && (
         <Tooltip id="start-test-tooltip" className="text-2xl" />
       )}
-      <button
-        id="start-test-button"
-        data-tooltip-id="start-test-tooltip"
-        data-tooltip-html={startTestTooltip}
-        data-tooltip-place="bottom"
-        className="flex m-auto px-4 py-2 outline outline-offset-2 outline-green-700 rounded-md bg-green-800 hover:bg-green-600 disabled:bg-slate-400 disabled:outline-slate-500 text-white font-bold text-2xl"
-        disabled={
-          !props.numberOfMessagesToSend ||
-          !props.numberOfAttempts ||
-          props.testInProgressProducer ||
-          props.testInProgressConsumer
-        }
-        onClick={() => props.performTest()}
-      >
-        Start test
-      </button>
+      <div className="flex">
+        <button
+          id="start-test-button"
+          data-tooltip-id="start-test-tooltip"
+          data-tooltip-html={startTestTooltip}
+          data-tooltip-place="bottom"
+          className="flex m-auto px-4 py-2 outline outline-offset-2 outline-green-700 rounded-md bg-green-800 hover:bg-green-600 disabled:bg-slate-400 disabled:outline-slate-500 text-white font-bold text-2xl"
+          disabled={
+            !props.numberOfMessagesToSend ||
+            !props.numberOfAttempts ||
+            props.testInProgressProducer === "IN_PROGRESS" ||
+            props.testInProgressConsumer === "IN_PROGRESS" ||
+            props.asyncTestInProgress
+          }
+          onClick={() => props.performTest()}
+        >
+          Start test
+        </button>
+        <div className="flex items-center">
+          <div className="grid my-auto items-center">
+            <label className="mb-2 font-bold text-xl mx-auto" htmlFor="isSync">
+              Sync
+            </label>
+            <input
+              type="checkbox"
+              id="isSync"
+              className="mx-auto text-2xl text-center w-6 h-6 rounded-md"
+              name="isSync"
+              checked={props.isSync}
+              onChange={() => props.setIsSync((prev) => !prev)}
+            />
+          </div>
+          <Tooltip id="sync-tooltip" className="text-2xl z-50" />
+          <IoMdInformationCircle
+            className="m-auto ml-3 text-4xl text-blue-500"
+            data-tooltip-id="sync-tooltip"
+            data-tooltip-html={syncTooltip}
+            data-tooltip-place="right"
+          />
+        </div>
+      </div>
     </div>
   );
 }

@@ -8,13 +8,8 @@ spring:
     consumer:
       bootstrap-servers: localhost:9092
       group-id: identificationDataGroup
-      auto-offset-reset: latest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring:
-          json:
-            trusted.packages: "org.message.model"
+      fetch-min-size: 16384
+      max-poll-records: 1000
     topic:
       user-data-topic: "user-data-events-topic"
       report-data-topic: "report-data-events-topic"

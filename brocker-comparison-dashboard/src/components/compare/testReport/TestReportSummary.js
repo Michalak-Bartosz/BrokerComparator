@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CPUMetric from "./metrics/CPUMetric";
 import MemoryMetric from "./metrics/MemoryMetric";
 import TestDataModal from "./TestDataModal";
@@ -16,6 +16,23 @@ function TestReportSummary({
   decreseCurrentTestReportIndex,
 }) {
   const [openTestDataModal, setOpenTestDataModal] = useState(false);
+
+  useEffect(() => {
+    const listener = (event) => {
+      if (event.code === "ArrowLeft") {
+        event.preventDefault();
+        decreseCurrentTestReportIndex();
+      } else if (event.code === "ArrowRight") {
+        event.preventDefault();
+        increaseCurrentTestReportIndex();
+      }
+    };
+    document.addEventListener("keydown", listener);
+    return () => {
+      document.removeEventListener("keydown", listener);
+    };
+  }, [decreseCurrentTestReportIndex, increaseCurrentTestReportIndex]);
+
   const navigationComponent = () => {
     return (
       <div className="block py-2">

@@ -7,6 +7,7 @@ import org.message.consumer.entity.User;
 import org.message.consumer.mappers.UserMapper;
 import org.message.consumer.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,7 +19,8 @@ public class UserService {
     private final AddressService addressService;
     private final ReportService reportService;
 
-    public void saveUserModel(org.message.model.User userModel) {
+    @Transactional
+    public synchronized void saveUserModel(org.message.model.User userModel) {
         org.message.model.Address addressModel = userModel.getAddress();
         List<org.message.model.Report> reportModelList = userModel.getReports();
         Address address = addressService.saveAddressModel(addressModel);

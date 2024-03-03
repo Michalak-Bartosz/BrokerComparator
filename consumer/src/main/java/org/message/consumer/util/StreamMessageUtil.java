@@ -12,24 +12,26 @@ import java.util.PriorityQueue;
 public class StreamMessageUtil {
     private static final PriorityQueue<DebugInfo> DEBUG_INFO_STREAM_QUEUE = new PriorityQueue<>(Comparator.comparingInt(DebugInfo::getCountOfConsumedMessages));
 
-    public void addMessage(DebugInfo newMessage) {
+    public static synchronized void clearQueue() {
+        DEBUG_INFO_STREAM_QUEUE.clear();
+    }
+
+    public static synchronized void addMessage(DebugInfo newMessage) {
         log.debug("UPDATE QUEUE WITH DEBUG INFO VALUE: {}", newMessage.toString());
         DEBUG_INFO_STREAM_QUEUE.add(newMessage);
     }
 
-    public static Object consumeMessage() {
+    public static synchronized Object consumeMessage() {
         if (getCountMessages() > 0) {
             DebugInfo debugInfo;
-            synchronized (DEBUG_INFO_STREAM_QUEUE) {
-                debugInfo = DEBUG_INFO_STREAM_QUEUE.poll();
-            }
+            debugInfo = DEBUG_INFO_STREAM_QUEUE.poll();
             log.debug("CONSUMED DEBUG INFO MESSAGE: {}", debugInfo);
             return debugInfo;
         }
         return null;
     }
 
-    public static int getCountMessages() {
+    private static int getCountMessages() {
         log.debug("COUNT DEBUG INFO MESSAGE TO CONSUME: {}", DEBUG_INFO_STREAM_QUEUE.size());
         return DEBUG_INFO_STREAM_QUEUE.size();
     }

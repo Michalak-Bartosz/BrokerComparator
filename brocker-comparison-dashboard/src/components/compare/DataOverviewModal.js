@@ -4,7 +4,7 @@ import DataOverview from "./DataOverview";
 import { FaWindowClose } from "react-icons/fa";
 
 function DataOverviewModal(props) {
-  const customModalTheme = {
+  const modalCustomTheme = {
     root: {
       base: "fixed top-0 right-0 left-0 z-50 h-modal h-screen overflow-y-auto overflow-x-hidden md:inset-0 md:h-full",
       show: {
@@ -27,7 +27,7 @@ function DataOverviewModal(props) {
       show={props.openFullscreenDataOverviewModal}
       className="p-12"
       size="10xl"
-      theme={customModalTheme}
+      theme={modalCustomTheme}
       onClose={() => props.setOpenFullscreenDataOverviewModal(false)}
     >
       <Modal.Header className="bg-gray-800">Data Overview</Modal.Header>

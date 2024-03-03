@@ -24,7 +24,9 @@ public class DebugInfo {
     private UUID uuid;
     private UUID testUUID;
     private UUID userUUID;
+    private Boolean isSync;
     private Integer numberOfAttempt;
+    private Long delayBetweenAttemptsInMilliseconds;
     @Enumerated(EnumType.STRING)
     private BrokerType brokerType;
     @Column(precision = 5, scale = 2)
@@ -35,14 +37,14 @@ public class DebugInfo {
     private String formattedDeltaTimestamp;
     private Integer countOfProducedMessages;
     private Integer countOfConsumedMessages;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private DataSizeMetric dataSizeMetric;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private MemoryMetric producerMemoryMetrics;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private MemoryMetric consumerMemoryMetrics;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private CPUMetric producerCPUMetrics;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private CPUMetric consumerCPUMetrics;
 }

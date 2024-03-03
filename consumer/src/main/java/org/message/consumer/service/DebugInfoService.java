@@ -8,6 +8,7 @@ import org.message.consumer.entity.metric.MemoryMetric;
 import org.message.consumer.repository.DebugInfoRepository;
 import org.message.consumer.util.DurationUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +19,8 @@ public class DebugInfoService {
     private final CPUMetricService cpuMetricService;
     private final DataSizeMetricService dataSizeMetricService;
 
-    public void saveDebugInfoModel(org.message.model.DebugInfo debugInfoModel) {
+    @Transactional
+    public synchronized void saveDebugInfoModel(org.message.model.DebugInfo debugInfoModel) {
         MemoryMetric producerMemoryMetric = memoryMetricService.saveMemoryMetricModel(debugInfoModel.getProducerMemoryMetrics());
         MemoryMetric consumerMemoryMetric = memoryMetricService.saveMemoryMetricModel(debugInfoModel.getConsumerMemoryMetrics());
         CPUMetric producerCpuMetric = cpuMetricService.saveCPUMetricModel(debugInfoModel.getProducerCPUMetrics());
@@ -29,7 +31,9 @@ public class DebugInfoService {
                 .uuid(debugInfoModel.getUuid())
                 .testUUID(debugInfoModel.getTestUUID())
                 .userUUID(debugInfoModel.getUserUUID())
+                .isSync(debugInfoModel.getIsSync())
                 .numberOfAttempt(debugInfoModel.getNumberOfAttempt())
+                .delayBetweenAttemptsInMilliseconds(debugInfoModel.getDelayBetweenAttemptsInMilliseconds())
                 .brokerType(debugInfoModel.getBrokerType())
                 .testStatusPercentage(debugInfoModel.getTestStatusPercentage())
                 .producedTimestamp(debugInfoModel.getProducedTimestamp())

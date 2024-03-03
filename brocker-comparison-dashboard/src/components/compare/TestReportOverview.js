@@ -3,7 +3,6 @@ import TestReportSummary from "./testReport/TestReportSummary";
 
 function TestReportOverview({
   focusedTestReportArray,
-  setOpenFullscreenDataOverviewModal,
 }) {
   const [currentTestReportIndex, setCurrentTestReportIndex] = useState(0);
   const isReportFocused = (index) => {

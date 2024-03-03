@@ -22,15 +22,6 @@ function MemoryMetric({ memoryMetric, brokerMemoryMetric }) {
                       <div className="flex items-center">
                         <FaDotCircle className="text-sm mr-2" />
                         <span className="font-bold">
-                          {"Max Used Heap Memory:"}&nbsp;
-                        </span>
-                        <span>
-                          {brokermemoryMetric?.maxUsedHeapMemoryGB + "GB"}
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <FaDotCircle className="text-sm mr-2" />
-                        <span className="font-bold">
                           {"Min Used Heap Memory:"}&nbsp;
                         </span>
                         <span>
@@ -46,20 +37,20 @@ function MemoryMetric({ memoryMetric, brokerMemoryMetric }) {
                           {brokermemoryMetric?.averageUsedHeapMemoryGB + "GB"}
                         </span>
                       </div>
+                      <div className="flex items-center">
+                        <FaDotCircle className="text-sm mr-2" />
+                        <span className="font-bold">
+                          {"Max Used Heap Memory:"}&nbsp;
+                        </span>
+                        <span>
+                          {brokermemoryMetric?.maxUsedHeapMemoryGB + "GB"}
+                        </span>
+                      </div>
                     </div>
                     <div id="committed-memory-metrics">
                       <h2 className="my-2 text-blue-800 text-2xl font-bold">
                         Committed Memory Metrics
                       </h2>
-                      <div className="flex items-center">
-                        <FaDotCircle className="text-sm mr-2" />
-                        <span className="font-bold">
-                          {"Max Committed Memory:"}&nbsp;
-                        </span>
-                        <span>
-                          {brokermemoryMetric?.maxCommittedMemoryGB + "GB"}
-                        </span>
-                      </div>
                       <div className="flex items-center">
                         <FaDotCircle className="text-sm mr-2" />
                         <span className="font-bold">
@@ -76,6 +67,15 @@ function MemoryMetric({ memoryMetric, brokerMemoryMetric }) {
                         </span>
                         <span>
                           {brokermemoryMetric?.averageCommittedMemoryGB + "GB"}
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <FaDotCircle className="text-sm mr-2" />
+                        <span className="font-bold">
+                          {"Max Committed Memory:"}&nbsp;
+                        </span>
+                        <span>
+                          {brokermemoryMetric?.maxCommittedMemoryGB + "GB"}
                         </span>
                       </div>
                     </div>
@@ -118,11 +118,6 @@ function MemoryMetric({ memoryMetric, brokerMemoryMetric }) {
             </h2>
             <div className="flex items-center">
               <FaDotCircle className="text-sm mr-2" />
-              <span className="font-bold">{"Max Used Heap Memory:"}&nbsp;</span>
-              <span>{memoryMetric?.maxUsedHeapMemoryGB + "GB"}</span>
-            </div>
-            <div className="flex items-center">
-              <FaDotCircle className="text-sm mr-2" />
               <span className="font-bold">{"Min Used Heap Memory:"}&nbsp;</span>
               <span>{memoryMetric?.minUsedHeapMemoryGB + "GB"}</span>
             </div>
@@ -133,16 +128,16 @@ function MemoryMetric({ memoryMetric, brokerMemoryMetric }) {
               </span>
               <span>{memoryMetric?.averageUsedHeapMemoryGB + "GB"}</span>
             </div>
+            <div className="flex items-center">
+              <FaDotCircle className="text-sm mr-2" />
+              <span className="font-bold">{"Max Used Heap Memory:"}&nbsp;</span>
+              <span>{memoryMetric?.maxUsedHeapMemoryGB + "GB"}</span>
+            </div>
           </div>
           <div id="committed-memory-metrics">
             <h2 className="my-2 text-blue-800 text-2xl font-bold">
               Committed Memory Metrics
             </h2>
-            <div className="flex items-center">
-              <FaDotCircle className="text-sm mr-2" />
-              <span className="font-bold">{"Max Committed Memory:"}&nbsp;</span>
-              <span>{memoryMetric?.maxCommittedMemoryGB + "GB"}</span>
-            </div>
             <div className="flex items-center">
               <FaDotCircle className="text-sm mr-2" />
               <span className="font-bold">{"Min Committed Memory:"}&nbsp;</span>
@@ -154,6 +149,11 @@ function MemoryMetric({ memoryMetric, brokerMemoryMetric }) {
                 {"Average Committed Memory:"}&nbsp;
               </span>
               <span>{memoryMetric?.averageCommittedMemoryGB + "GB"}</span>
+            </div>
+            <div className="flex items-center">
+              <FaDotCircle className="text-sm mr-2" />
+              <span className="font-bold">{"Max Committed Memory:"}&nbsp;</span>
+              <span>{memoryMetric?.maxCommittedMemoryGB + "GB"}</span>
             </div>
           </div>
         </div>

@@ -33,8 +33,12 @@ function ReportTable({
   const sortTestReportArray = (reportsOnPage) => {
     return reportsOnPage.sort(function (a, b) {
       return (
-        getDateFromTimestampString(a.debugInfoList ? a.debugInfoList[0].producedTimestamp : "") -
-        getDateFromTimestampString(b.debugInfoList ? b.debugInfoList[0].producedTimestamp: "")
+        getDateFromTimestampString(
+          a.debugInfoList ? a.debugInfoList[0]?.producedTimestamp : ""
+        ) -
+        getDateFromTimestampString(
+          b.debugInfoList ? b.debugInfoList[0]?.producedTimestamp : ""
+        )
       );
     });
   };
@@ -102,6 +106,9 @@ function ReportTable({
               Nr
             </Table.HeadCell>
             <Table.HeadCell className="text-blue-500 font-bold text-xl text-center bg-slate-900">
+              Sync
+            </Table.HeadCell>
+            <Table.HeadCell className="text-blue-500 font-bold text-xl text-center bg-slate-900">
               Test UUID
             </Table.HeadCell>
             <Table.HeadCell className="text-blue-500 font-bold text-xl text-center bg-slate-900">
@@ -122,6 +129,7 @@ function ReportTable({
               return (
                 <Report
                   key={report.testUUID}
+                  isSync={report.isSync}
                   report={report}
                   index={calculateItemIndex(index)}
                   addReportToFocusedTestReportArray={

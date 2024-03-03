@@ -24,7 +24,9 @@ public class DebugInfo {
     private UUID uuid;
     private UUID testUUID;
     private UUID userUUID;
+    private Boolean isSync;
     private Integer numberOfAttempt;
+    private Long delayBetweenAttemptsInMilliseconds;
     @Enumerated(EnumType.STRING)
     private BrokerType brokerType;
     @Column(precision = 5, scale = 2)

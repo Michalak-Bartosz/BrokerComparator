@@ -2,6 +2,7 @@ package org.message.producer.rabbitmq;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomUtils;
 import org.message.model.DebugInfo;
 import org.message.model.User;
 import org.message.model.util.BrokerType;
@@ -33,11 +34,10 @@ public class RabbitMqProducer {
     private String debugInfoQueueRoutingKey;
 
     public void sendRecord(UUID testUUID,
+                           boolean isSync,
                            int numberOfAttempt,
-                           int messagesObtainedInAttempt,
-                           User user,
-                           Integer payloadSizeInBytes,
-                           Integer producedDataInTestInBytes) {
+                           long delayInMilliseconds,
+                           User user) {
         final BigDecimal systemCpuBefore = getSystemCpuUsagePercentage();
         final BigDecimal appCpuBefore = getAppCpuUsagePercentage();
 
@@ -60,14 +60,18 @@ public class RabbitMqProducer {
 
         DebugInfo debugInfo = new DebugInfo(testUUID,
                 user.getUuid(),
+                isSync,
                 numberOfAttempt,
+                delayInMilliseconds,
                 BROKER_TYPE,
-                messagesObtainedInAttempt,
-                payloadSizeInBytes,
-                producedDataInTestInBytes,
+                user,
                 systemAverageCpu,
                 appAverageCpu);
-        StreamMessageUtil.addMessage(debugInfo);
+
+        if (isSync) {
+            StreamMessageUtil.addMessage(debugInfo);
+        }
+
         rabbitTemplate.convertAndSend(exchange.getName(), debugInfoQueueRoutingKey, debugInfo);
         log.debug("DebugInfo UUID sent -> {}", debugInfo.getUuid());
     }

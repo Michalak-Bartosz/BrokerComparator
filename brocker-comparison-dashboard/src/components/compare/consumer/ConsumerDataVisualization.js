@@ -267,14 +267,14 @@ function ConsumerDataVisualization(props) {
           "CONSUMER EVENTSOURCE CLOSED (" + event.target.readyState + ")"
         );
       }
-      props.setIsInProgress(false);
+      props.setIsInProgress("NOT_RUNNED");
       eventSource.close();
     };
 
     const endListenDebugInfoMessageStream = (brokerType) => {
       console.log("STOP CONSUMER LISTEN DEBUG INFO DATA STREAM.");
       updateChartDataArray(brokerType);
-      props.setIsInProgress(false);
+      props.setIsInProgress("COMPLETE");
       eventSource.close();
     };
 
@@ -283,7 +283,7 @@ function ConsumerDataVisualization(props) {
       startListenDebugInfoMessageStream();
     };
 
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       handleStartTest();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -306,7 +306,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getConsumedMessagesChartData = () => {
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       return [createChartDataElement(receivedMsgData, datasetName)];
     }
     return [
@@ -321,7 +321,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getDeltaTimeChartData = () => {
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       return [createChartDataElement(deltaTimeData, datasetName)];
     }
     return [
@@ -336,7 +336,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getInitialMemoryChartData = () => {
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       return [createChartDataElement(initialMemoryData, datasetName)];
     }
     return [
@@ -351,7 +351,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getUsedHeapMemoryChartData = () => {
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       return [createChartDataElement(usedHeapMemoryData, datasetName)];
     }
     return [
@@ -366,7 +366,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getMaxHeapMemoryChartData = () => {
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       return [createChartDataElement(maxHeapMemoryData, datasetName)];
     }
     return [
@@ -381,7 +381,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getCommittedMemoryChartData = () => {
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       return [createChartDataElement(committedMemoryData, datasetName)];
     }
     return [
@@ -396,7 +396,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getSystemCpuChartData = () => {
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       return [createChartDataElement(systemCpuData, datasetName)];
     }
     return [
@@ -411,7 +411,7 @@ function ConsumerDataVisualization(props) {
   };
 
   const getAppCpuChartData = () => {
-    if (props.isInProgress) {
+    if (props.isInProgress === "IN_PROGRESS") {
       return [createChartDataElement(appCpuData, datasetName)];
     }
     return [

@@ -7,18 +7,19 @@ import org.message.comparator.exception.ReportMetricCalculateException;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 
 @UtilityClass
 public class ReportTimeMetricUtil {
 
     public static Duration getMinDeltaTime(List<DebugInfo> debugInfoList) {
-        return debugInfoList.stream().map(DebugInfo::getDeltaTimestamp).min(Duration::compareTo)
+        return debugInfoList.stream().map(DebugInfo::getDeltaTimestamp).min(Comparator.naturalOrder())
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportTimeMetricUtil.class.getSimpleName(), "Get min delta time exception!"));
     }
 
     public static Duration getMaxDeltaTime(List<DebugInfo> debugInfoList) {
-        return debugInfoList.stream().map(DebugInfo::getDeltaTimestamp).max(Duration::compareTo)
+        return debugInfoList.stream().map(DebugInfo::getDeltaTimestamp).max(Comparator.naturalOrder())
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportTimeMetricUtil.class.getSimpleName(), "Get max delta time exception!"));
     }
 
@@ -28,17 +29,17 @@ public class ReportTimeMetricUtil {
     }
 
     public static Duration getProducedTime(List<DebugInfo> debugInfoList) {
-        Instant startProducedTimestamp = debugInfoList.stream().map(DebugInfo::getProducedTimestamp).min(Instant::compareTo)
+        Instant startProducedTimestamp = debugInfoList.stream().map(DebugInfo::getProducedTimestamp).min(Comparator.naturalOrder())
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportTimeMetricUtil.class.getSimpleName(), "Get start produced time exception!"));
-        Instant endProducedTimestamp = debugInfoList.stream().map(DebugInfo::getProducedTimestamp).max(Instant::compareTo)
+        Instant endProducedTimestamp = debugInfoList.stream().map(DebugInfo::getProducedTimestamp).max(Comparator.naturalOrder())
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportTimeMetricUtil.class.getSimpleName(), "Get end produced time exception!"));
         return Duration.between(startProducedTimestamp, endProducedTimestamp);
     }
 
     public static Duration getConsumedTime(List<DebugInfo> debugInfoList) {
-        Instant startConsumedTimestamp = debugInfoList.stream().map(DebugInfo::getConsumedTimestamp).min(Instant::compareTo)
+        Instant startConsumedTimestamp = debugInfoList.stream().map(DebugInfo::getConsumedTimestamp).min(Comparator.naturalOrder())
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportTimeMetricUtil.class.getSimpleName(), "Get start consumed time exception!"));
-        Instant endConsumedTimestamp = debugInfoList.stream().map(DebugInfo::getConsumedTimestamp).max(Instant::compareTo)
+        Instant endConsumedTimestamp = debugInfoList.stream().map(DebugInfo::getConsumedTimestamp).max(Comparator.naturalOrder())
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportTimeMetricUtil.class.getSimpleName(), "Get end consumed time exception!"));
         return Duration.between(startConsumedTimestamp, endConsumedTimestamp);
     }

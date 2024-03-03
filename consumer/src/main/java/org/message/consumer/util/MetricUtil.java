@@ -1,4 +1,4 @@
-package org.message.consumer.util.metric;
+package org.message.consumer.util;
 
 
 import com.sun.management.OperatingSystemMXBean;
@@ -47,10 +47,12 @@ public class MetricUtil {
     }
 
     public static BigDecimal getSystemCpuUsagePercentage() {
-        return BigDecimal.valueOf(osBean.getCpuLoad()).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.UP);
+        double cpu = osBean.getCpuLoad();
+        return cpu >= 0 ? BigDecimal.valueOf(cpu).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.UP) : BigDecimal.ZERO;
     }
 
     public static BigDecimal getAppCpuUsagePercentage() {
-        return BigDecimal.valueOf(osBean.getProcessCpuLoad()).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.UP);
+        double cpu = osBean.getProcessCpuLoad();
+        return cpu >= 0 ? BigDecimal.valueOf(cpu).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.UP) : BigDecimal.ZERO;
     }
 }

@@ -17,8 +17,8 @@ function TestDataModal(props) {
         styles: {
           default: {
             active: {
-              on: "text-xl bg-white text-black p-4 active rounded-none",
-              off: "text-xl bg-slate-200 text-slate-500 rounded-none",
+              on: "text-xl bg-white text-black active rounded-none p-4",
+              off: "text-xl bg-slate-200 text-slate-500 rounded-none p-4",
             },
           },
         },

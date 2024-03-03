@@ -2,7 +2,6 @@ import BASE_URL from "../constants/BASE_URL";
 import ApiError from "./errors/ApiError";
 import BadRequestError from "./errors/BadRequestError";
 import ConflictError from "./errors/ConflictError";
-import ForbiddenError from "./errors/ForbiddenError";
 import NotFoundError from "./errors/NotFoundError";
 import UnauthorizedError from "./errors/UnauthorizedError";
 
@@ -28,7 +27,7 @@ const useHttpApi = () => {
   async function get(url) {
     const request = getRequest("GET");
 
-    const response = await fetch(BASE_URL.API_URL + url, request);
+    const response = await fetch(BASE_URL.API_URL + url, request)
 
     if (response.ok) {
       const jsonOut = await response.json();

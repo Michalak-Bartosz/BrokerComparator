@@ -2,9 +2,7 @@ package org.message.producer.kafka;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.message.model.DebugInfo;
-import org.message.model.Report;
 import org.message.model.User;
 import org.message.model.util.BrokerType;
 import org.message.producer.util.StreamMessageUtil;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import static org.message.producer.kafka.util.KafkaMessageUtil.getKafkaProducerRecord;
 import static org.message.producer.util.MetricUtil.*;
 
 @Component
@@ -25,9 +22,7 @@ public class KafkaProducer {
 
     private static final BrokerType BROKER_TYPE = BrokerType.KAFKA;
 
-    private final KafkaTemplate<String, User> kafkaTemplateUserEvent;
-    private final KafkaTemplate<String, Report> kafkaTemplateReportEvent;
-    private final KafkaTemplate<String, DebugInfo> kafkaTemplateDebugInfoEvent;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Value("${spring.kafka.topic.user-data-topic}")
     private String userDataTopic;
@@ -37,25 +32,22 @@ public class KafkaProducer {
     private String debugInfoDataTopic;
 
     public void sendRecord(UUID testUUID,
+                           boolean isSync,
                            int numberOfAttempt,
-                           int messagesObtainedInAttempt,
-                           User user,
-                           Integer payloadSizeInBytes,
-                           Integer producedDataInTestInBytes) {
+                           long delayInMilliseconds,
+                           User user) {
         final BigDecimal systemCpuBefore = getSystemCpuUsagePercentage();
         final BigDecimal appCpuBefore = getAppCpuUsagePercentage();
 
         updateBrokerType(user);
-        ProducerRecord<String, User> userKafkaRecord = getKafkaProducerRecord(userDataTopic, user);
 
-        kafkaTemplateUserEvent.send(userKafkaRecord);
-        log.debug("User sent -> {}", userKafkaRecord);
+        kafkaTemplate.send(userDataTopic, user);
+        log.debug("User sent -> {}", user);
 
-        user.getReports().stream()
-                .map(report -> getKafkaProducerRecord(reportDataTopic, report))
-                .forEach(reportProducerRecord -> {
-                    kafkaTemplateReportEvent.send(reportProducerRecord);
-                    log.debug("Report sent -> {}", reportProducerRecord);
+        user.getReports()
+                .forEach(report -> {
+                    kafkaTemplate.send(reportDataTopic, report);
+                    log.debug("Report sent -> {}", report);
                 });
 
         final BigDecimal systemCpuAfter = getSystemCpuUsagePercentage();
@@ -66,17 +58,20 @@ public class KafkaProducer {
 
         DebugInfo debugInfo = new DebugInfo(testUUID,
                 user.getUuid(),
+                isSync,
                 numberOfAttempt,
+                delayInMilliseconds,
                 BROKER_TYPE,
-                messagesObtainedInAttempt,
-                payloadSizeInBytes,
-                producedDataInTestInBytes,
+                user,
                 systemAverageCpu,
                 appAverageCpu);
-        ProducerRecord<String, DebugInfo> debugInfoKafkaRecord = getKafkaProducerRecord(debugInfoDataTopic, debugInfo);
-        StreamMessageUtil.addMessage(debugInfo);
-        kafkaTemplateDebugInfoEvent.send(debugInfoKafkaRecord);
-        log.debug("DebugInfo sent -> {}", debugInfoKafkaRecord);
+
+        if (isSync) {
+            StreamMessageUtil.addMessage(debugInfo);
+        }
+
+        kafkaTemplate.send(debugInfoDataTopic, debugInfo);
+        log.debug("DebugInfo sent -> {}", debugInfo);
     }
 
     private void updateBrokerType(User user) {

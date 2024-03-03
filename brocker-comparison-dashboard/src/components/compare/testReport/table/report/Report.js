@@ -4,6 +4,7 @@ import React from "react";
 
 function Report({
   report,
+  isSync,
   index,
   addReportToFocusedTestReportArray,
   removeReportFromFocusedTestReportArray,
@@ -25,6 +26,13 @@ function Report({
         }`}
       >
         {index}
+      </Table.Cell>
+      <Table.Cell
+        className={`whitespace-nowrap font-bold text-gray-900 ${
+          isFocusedReport ? "bg-blue-300" : ""
+        }`}
+      >
+        {isSync ? "YES" : "NO"}
       </Table.Cell>
       <Table.Cell
         className={`whitespace-nowrap font-bold text-gray-900 ${

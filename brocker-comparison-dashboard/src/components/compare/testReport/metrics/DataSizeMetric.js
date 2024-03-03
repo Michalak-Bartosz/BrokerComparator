@@ -55,11 +55,6 @@ function DataSizeMetric({ dataSizeMetric, brokerInfoDataList }) {
         <div className="grid grid-cols-3 gap-4">
           <div className="flex items-center">
             <FaDotCircle className="text-sm mr-2" />
-            <span className="font-bold">{"Max Payload Size:"}&nbsp;</span>
-            <span>{dataSizeMetric?.formattedMaxPayloadSize}</span>
-          </div>
-          <div className="flex items-center">
-            <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">{"Min Payload Size:"}&nbsp;</span>
             <span>{dataSizeMetric?.formattedMinPayloadSize}</span>
           </div>
@@ -67,6 +62,11 @@ function DataSizeMetric({ dataSizeMetric, brokerInfoDataList }) {
             <FaDotCircle className="text-sm mr-2" />
             <span className="font-bold">{"Average Payload Size:"}&nbsp;</span>
             <span>{dataSizeMetric?.formattedAveragePayloadSize}</span>
+          </div>
+          <div className="flex items-center">
+            <FaDotCircle className="text-sm mr-2" />
+            <span className="font-bold">{"Max Payload Size:"}&nbsp;</span>
+            <span>{dataSizeMetric?.formattedMaxPayloadSize}</span>
           </div>
         </div>
       </div>

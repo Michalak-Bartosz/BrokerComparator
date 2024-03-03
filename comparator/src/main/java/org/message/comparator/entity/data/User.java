@@ -29,8 +29,8 @@ public class User {
     private String lastName;
     private String email;
     private String cellPhone;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Address address;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Report> reports;
 }

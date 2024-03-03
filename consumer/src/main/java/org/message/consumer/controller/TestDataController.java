@@ -1,14 +1,14 @@
 package org.message.consumer.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.message.consumer.dto.FinishAsyncTestDto;
 import org.message.consumer.dto.FinishTestDto;
+import org.message.consumer.dto.RedirectFinishAsyncTestResponseDto;
 import org.message.consumer.dto.RedirectFinishTestResponseDto;
 import org.message.consumer.service.TestService;
+import org.message.consumer.util.TestProgressUtil;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -31,9 +31,18 @@ public class TestDataController {
                 .build());
     }
 
+    @PostMapping("/finish/async")
+    public ResponseEntity<RedirectFinishAsyncTestResponseDto> finishAsyncTest(@RequestBody FinishAsyncTestDto finishAsyncTestDto) {
+        boolean isConsumerFinishTest = testService.finishAsyncTest(finishAsyncTestDto);
+        return ResponseEntity.ok(RedirectFinishAsyncTestResponseDto.builder()
+                .isConsumerFinishTest(isConsumerFinishTest)
+                .consumerApiResponse(getProducerApiResponse(isConsumerFinishTest, finishAsyncTestDto.getTestUUID()))
+                .build());
+    }
+
     private String getProducerApiResponse(boolean isProducerFinishTest, UUID testUUID) {
         return isProducerFinishTest ?
                 String.format(CONSUMER_FINISH_TEST_RESPONSE, testUUID) :
-                String.format(CONSUMER_EXCEPTION_FINISH_TEST_RESPONSE, testUUID, TestService.TOTAL_MESSAGES_OBTAINED);
+                String.format(CONSUMER_EXCEPTION_FINISH_TEST_RESPONSE, testUUID, TestProgressUtil.getTotalMessagesObtained());
     }
 }

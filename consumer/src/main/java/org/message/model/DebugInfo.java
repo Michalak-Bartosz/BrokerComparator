@@ -22,7 +22,9 @@ public class DebugInfo {
     private UUID uuid;
     private UUID testUUID;
     private UUID userUUID;
+    private Boolean isSync;
     private Integer numberOfAttempt;
+    private Long delayBetweenAttemptsInMilliseconds;
     private BrokerType brokerType;
     private BigDecimal testStatusPercentage;
     private BigDecimal brokerStatusPercentage;

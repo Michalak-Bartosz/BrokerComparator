@@ -6,6 +6,7 @@ import org.message.comparator.exception.ReportMetricCalculateException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Comparator;
 import java.util.List;
 
 @UtilityClass
@@ -13,28 +14,28 @@ public class ReportCPUMetricUtil {
 
     public static BigDecimal getMaxSystemCpuUsagePercentage(List<CPUMetric> cpuMetricList) {
         return cpuMetricList.stream().map(CPUMetric::getSystemCpuUsagePercentage)
-                .max(BigDecimal::compareTo)
+                .max(Comparator.naturalOrder())
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportCPUMetricUtil.class.getSimpleName(), "Get max system cpu usage percentage exception!"))
                 .setScale(2, RoundingMode.UP);
     }
 
     public static BigDecimal getMaxAppCpuUsagePercentage(List<CPUMetric> cpuMetricList) {
         return cpuMetricList.stream().map(CPUMetric::getAppCpuUsagePercentage)
-                .max(BigDecimal::compareTo)
+                .max(Comparator.naturalOrder())
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportCPUMetricUtil.class.getSimpleName(), "Get max app cpu usage percentage exception!"))
                 .setScale(2, RoundingMode.UP);
     }
 
     public static BigDecimal getMinSystemCpuUsagePercentage(List<CPUMetric> cpuMetricList) {
         return cpuMetricList.stream().map(CPUMetric::getSystemCpuUsagePercentage)
-                .min(BigDecimal::compareTo)
+                .min(Comparator.naturalOrder())
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportCPUMetricUtil.class.getSimpleName(), "Get min system cpu usage percentage exception!"))
                 .setScale(2, RoundingMode.UP);
     }
 
     public static BigDecimal getMinAppCpuUsagePercentage(List<CPUMetric> cpuMetricList) {
         return cpuMetricList.stream().map(CPUMetric::getAppCpuUsagePercentage)
-                .min(BigDecimal::compareTo)
+                .min(Comparator.naturalOrder())
                 .orElseThrow(() -> new ReportMetricCalculateException(ReportCPUMetricUtil.class.getSimpleName(), "Get min app cpu usage percentage exception!"))
                 .setScale(2, RoundingMode.UP);
     }
