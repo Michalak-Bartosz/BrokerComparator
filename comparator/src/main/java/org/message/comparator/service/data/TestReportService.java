@@ -48,20 +48,19 @@ public class TestReportService {
         if (testReportOptional.isPresent()) {
             throw new TestReportAlreadyExistException(testUUID);
         }
-        List<User> userList;
-        List<DebugInfo> debugInfoList;
 
+        List<DebugInfo> debugInfoList;
         log.info("🔧 Try to find the data connected with test UUID: {}", testUUID);
         boolean dataStatus;
         int dataCheckCounter = 0;
         do {
-            userList = userService.getAllUsersByTestUUID(testUUID);
             debugInfoList = debugInfoService.getAllDebugInfoByTestUUID(testUUID);
             dataStatus = checkTheData(totalRecordNumber, debugInfoList.size(), dataCheckCounter);
             dataCheckCounter++;
         } while (!dataStatus);
         log.info("🛠️ The data found for test UUID: {}! Start generating report...", testUUID);
 
+        List<User> userList = userService.getAllUsersByTestUUID(testUUID);
         List<CPUMetric> producerCpuMetricList = debugInfoList.stream().map(DebugInfo::getProducerCPUMetrics).toList();
         List<MemoryMetric> producerMemoryMetricList = debugInfoList.stream().map(DebugInfo::getProducerMemoryMetrics).toList();
         List<CPUMetric> consumerCpuMetricList = debugInfoList.stream().map(DebugInfo::getConsumerCPUMetrics).toList();

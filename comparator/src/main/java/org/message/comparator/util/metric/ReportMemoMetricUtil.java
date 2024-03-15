@@ -15,14 +15,16 @@ public class ReportMemoMetricUtil {
     public static BigDecimal getInitialMemoryGB(List<MemoryMetric> memoryMetricList) {
         return memoryMetricList.stream().map(MemoryMetric::getInitialMemoryGB)
                 .findAny()
-                .orElseThrow(() -> new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get initial memory [GB] exception!"))
+                .orElseThrow(() ->
+                        new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get initial memory [GB] exception!"))
                 .setScale(3, RoundingMode.UP);
     }
 
     public static BigDecimal getMaxHeapMemoryGB(List<MemoryMetric> memoryMetricList) {
         return memoryMetricList.stream().map(MemoryMetric::getMaxHeapMemoryGB)
                 .findAny()
-                .orElseThrow(() -> new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get max heap memory [GB] exception!"))
+                .orElseThrow(() ->
+                        new ReportMetricCalculateException(ReportMemoMetricUtil.class.getSimpleName(), "Get max heap memory [GB] exception!"))
                 .setScale(3, RoundingMode.UP);
     }
 

@@ -19,14 +19,16 @@ public class ReportDataSizeMetricUtil {
         return dataSizeMetrics.stream()
                 .map(DataSizeMetric::getPayloadSizeInBytes)
                 .max(Comparator.naturalOrder())
-                .orElseThrow(() -> new ReportMetricCalculateException(ReportDataSizeMetricUtil.class.getSimpleName(), "Get max payload size in bytes exception!"));
+                .orElseThrow(() ->
+                        new ReportMetricCalculateException(ReportDataSizeMetricUtil.class.getSimpleName(), "Get max payload size in bytes exception!"));
     }
 
     public static Integer getMinPayloadSizeInBytes(List<DataSizeMetric> dataSizeMetrics) {
         return dataSizeMetrics.stream()
                 .map(DataSizeMetric::getPayloadSizeInBytes)
                 .min(Comparator.naturalOrder())
-                .orElseThrow(() -> new ReportMetricCalculateException(ReportDataSizeMetricUtil.class.getSimpleName(), "Get min payload size in bytes exception!"));
+                .orElseThrow(() ->
+                        new ReportMetricCalculateException(ReportDataSizeMetricUtil.class.getSimpleName(), "Get min payload size in bytes exception!"));
     }
 
     public static BigDecimal getAveragePayloadSizeInBytes(List<DataSizeMetric> dataSizeMetrics) {
@@ -50,14 +52,16 @@ public class ReportDataSizeMetricUtil {
         return dataSizeMetrics.stream()
                 .map(DataSizeMetric::getProducedDataSizeInBytes)
                 .max(Comparator.naturalOrder())
-                .orElseThrow(() -> new ReportMetricCalculateException(ReportDataSizeMetricUtil.class.getSimpleName(), "Get total produced data size in bytes exception!"));
+                .orElseThrow(() ->
+                        new ReportMetricCalculateException(ReportDataSizeMetricUtil.class.getSimpleName(), "Get total produced data size in bytes exception!"));
     }
 
     public static Integer getTotalConsumedDataSizeInBytes(List<DataSizeMetric> dataSizeMetrics) {
         return dataSizeMetrics.stream()
                 .map(DataSizeMetric::getConsumedDataSizeInBytes)
                 .max(Comparator.naturalOrder())
-                .orElseThrow(() -> new ReportMetricCalculateException(ReportDataSizeMetricUtil.class.getSimpleName(), "Get total consumed data size in bytes exception!"));
+                .orElseThrow(() ->
+                        new ReportMetricCalculateException(ReportDataSizeMetricUtil.class.getSimpleName(), "Get total consumed data size in bytes exception!"));
     }
 
     public static String getFormattedTotalProducedDataSize(Integer totalProducedDataSizeInBytes) {
